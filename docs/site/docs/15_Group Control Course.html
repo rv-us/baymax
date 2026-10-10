@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>15 Group Control Course &mdash; TonyPi &amp; TonyPi Pro v2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=31ac2de9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=731f67d5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/custom.js?v=fd93d8dd"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Appendix" href="resources_download.html" />
+    <link rel="prev" title="14. Raspberry Pi Series Robot Network Configuration Instruction" href="14_network_configuration.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tonypi-pro" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/docs/15_Group%20Control%20Course.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #f98800" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TonyPi & TonyPi Pro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">TonyPi &amp; TonyPi Pro</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_getting_ready.html">1. Getting Ready</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_quick_user_experience.html">2. Quick User Experience</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_remote_desktop_tool_installation_and_connection.html">3. Remote Desktop Tool Installation and Connection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_pc_software_action_control_courses.html">4. PC Software Action Control Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_ai_vision_course.html">5. AI Vision Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ai_voice_interaction_course.html">6. AI Voice Interaction Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_pc_software_control.html">7. PC Software Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_vision_gripping_lessons.html">8. Vision Gripping Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9_athletics_sport_lessons.html">9. Athletics Sport Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_sensor_development_basics_courses.html">10. Sensor Development Basics Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_sensor_integration_and_application_development_courses.html">11. Sensor Integration and Application Development Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_aI_large_model_course.html">12. AI Large Model Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_group_control_lessons.html">13. Group Control Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14_network_configuration.html">14. Raspberry Pi Series Robot Network Configuration Instruction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">15 Group Control Course</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#wireless-controller-control">15.1 Wireless Controller Control</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#getting-ready">15.1.1 Getting Ready</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#device-connection">15.1.2 Device Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mode-introduction">15.1.3 Mode Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#button-instruction">15.1.4 Button Instruction</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#group-control">15.2 Group Control</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#getting-started">15.2.1 Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">15.2.2 Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#group-control-setup">15.2.3 Group Control Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#project-outcome">15.2.4 Project Outcome</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="resources_download.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1EJppBKT0G0KF8uXjyMVlsAD1MwwAzq_2?usp=sharing">TonyPi Download</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1HsYi21H4fkIuNB8lpkcdnTRUkJyE4ObE?usp=sharing">TonyPi Pro Download</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #f98800" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TonyPi & TonyPi Pro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">15 Group Control Course</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/docs/15_Group Control Course.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="group-control-course">
+<h1>15 Group Control Course<a class="headerlink" href="#group-control-course" title="Link to this heading"></a></h1>
+<section id="wireless-controller-control">
+<h2>15.1 Wireless Controller Control<a class="headerlink" href="#wireless-controller-control" title="Link to this heading"></a></h2>
+<section id="getting-ready">
+<h3>15.1.1 Getting Ready<a class="headerlink" href="#getting-ready" title="Link to this heading"></a></h3>
+<p>Step 1: Plug the controller receiver into one of USB ports of TonyPi.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Note: The controller receiver must be inserted before the robot is turned on.</strong></p>
+</div>
+<p>Step 2: Prepare two AAA batteries. Take off the back cover of the handle and insert them into the battery slot. Please pay attention to the direction of the positive and negative poles.</p>
+<img class="common_img" src="../_static/media/chapter_15\section_1/media/image3.png" style="width:500px" />
+</section>
+<section id="device-connection">
+<h3>15.1.2 Device Connection<a class="headerlink" href="#device-connection" title="Link to this heading"></a></h3>
+<p>If you do not connect the robot within 30 seconds after turning on the handle switch, or if you do not operate the handle within 5 minutes after connecting it, the handle will enter</p>
+<p>sleep mode. If you need to turn on the handle again, press the “<strong>START</strong>” button.</p>
+<p>Step 1: Turn on the robot.</p>
+<p>Step 2: Switch on the handle, and then the two LED lights (red and green) on handle will flash simultaneously.</p>
+<p>Step 3: Wait for a few seconds, pair the handle with the robot. After pairing, the</p>
+<p>green light will keep on.</p>
+</section>
+<section id="mode-introduction">
+<h3>15.1.3 Mode Introduction<a class="headerlink" href="#mode-introduction" title="Link to this heading"></a></h3>
+<p>The handle has two modes: single green light mode and green and red lights mode (The red and green lights will turn on simultaneously ).</p>
+<p><strong>Single green light mode:</strong> all the buttons can be used.</p>
+<p><strong>Red and green lights mode:</strong> the four buttons “<strong>↑</strong> 、<strong>↓</strong>、<strong>←</strong>、<strong>→</strong>” are locked and can not be used. The function of the remaining buttons is the same as that of the green and red lights mode.</p>
+<p>Two modes switching method: press “<strong>MODE</strong>” button to switch the mode from the green light mode to another mode, and press the button again to switch to the green light mode.</p>
+</section>
+<section id="button-instruction">
+<h3>15.1.4 Button Instruction<a class="headerlink" href="#button-instruction" title="Link to this heading"></a></h3>
+<p>The corresponding relation between the button and the action is as the following table:</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;">Button</th>
+<th style="text-align: center;">Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">START</td>
+<td style="text-align: center;">the robot returns to the initial posture</td>
+</tr>
+<tr>
+<td style="text-align: center;">L1</td>
+<td style="text-align: center;">right tilt and lift the left foot</td>
+</tr>
+<tr>
+<td style="text-align: center;">R1</td>
+<td style="text-align: center;">left tilt and lift right foot</td>
+</tr>
+<tr>
+<td style="text-align: center;">↑</td>
+<td style="text-align: center;">move forward</td>
+</tr>
+<tr>
+<td style="text-align: center;">↓</td>
+<td style="text-align: center;">move backward</td>
+</tr>
+<tr>
+<td style="text-align: center;">←</td>
+<td style="text-align: center;">move to left</td>
+</tr>
+<tr>
+<td style="text-align: center;">→</td>
+<td style="text-align: center;">move to right</td>
+</tr>
+<tr>
+<td style="text-align: center;">△</td>
+<td style="text-align: center;">wave</td>
+</tr>
+<tr>
+<td style="text-align: center;">×</td>
+<td style="text-align: center;">bow</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img class="common_img" src="../_static/media/chapter_15\section_1/media/image4.png" style="width:40px" /></td>
+<td style="text-align: center;">twist waist</td>
+</tr>
+<tr>
+<td style="text-align: center;">○</td>
+<td style="text-align: center;">right-footed shot</td>
+</tr>
+<tr>
+<td style="text-align: center;">Push up the left slider</td>
+<td style="text-align: center;">move forward</td>
+</tr>
+<tr>
+<td style="text-align: center;">Push down the left slider</td>
+<td style="text-align: center;">move backward</td>
+</tr>
+<tr>
+<td style="text-align: center;">Push the left slider to left</td>
+<td style="text-align: center;">move to left</td>
+</tr>
+<tr>
+<td style="text-align: center;">select+L1</td>
+<td style="text-align: center;">Dance 1</td>
+</tr>
+<tr>
+<td style="text-align: center;">select+L2</td>
+<td style="text-align: center;">Dance 2</td>
+</tr>
+<tr>
+<td style="text-align: center;">select+R1</td>
+<td style="text-align: center;">Dance 3</td>
+</tr>
+<tr>
+<td style="text-align: center;">select+R2</td>
+<td style="text-align: center;">Dance 4</td>
+</tr>
+<tr>
+<td style="text-align: center;">select+△</td>
+<td style="text-align: center;">Dance 5</td>
+</tr>
+<tr>
+<td style="text-align: center;">select+<img class="common_img" src="../_static/media/chapter_15\section_1/media/image4.png" style="width:40px" /></td>
+<td style="text-align: center;">Dance 6</td>
+</tr>
+<tr>
+<td style="text-align: center;">select+○</td>
+<td style="text-align: center;">Dance 7</td>
+</tr>
+<tr>
+<td style="text-align: center;">select+start</td>
+<td style="text-align: center;">Activate athlete mode</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="group-control">
+<h2>15.2 Group Control<a class="headerlink" href="#group-control" title="Link to this heading"></a></h2>
+<section id="getting-started">
+<h3>15.2.1 Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Prepare at least two TonyPi Pro robots. In this lesson, two TonyPi Pro robots are used for demonstrating.</p></li>
+<li><p>Set up the development environment. Refer to “<strong><a class="reference external" href="https://drive.google.com/drive/folders/1aEXEUxJD5vHFtTVFyGs2Dt8q5HPY-cGk?usp=sharing">Remote Desktop Tool Installation and Connection \ Remote Tool Installation and Connection</a></strong>” to download and install the VNC remote connection tool.</p></li>
+</ol>
+</section>
+<section id="introduction">
+<h3>15.2.2 Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h3>
+<p>By configuring the master and slave robots on the same network, the master can send action commands to the slave robots through the group control program, enabling control of the slave robots.</p>
+</section>
+<section id="group-control-setup">
+<h3>15.2.3 Group Control Setup<a class="headerlink" href="#group-control-setup" title="Link to this heading"></a></h3>
+<p>There are two ways to perform group control: LAN mode and master-slave mode.</p>
+<ul class="simple">
+<li><p><strong>LAN Mode</strong></p></li>
+</ul>
+<p><strong>1. Network Configuration</strong></p>
+<p>First, connect all robots that need group control to the same local network using a Wi-Fi router with a strong signal.</p>
+<ol class="arabic">
+<li><p>Open the command line terminal and navigate to the Wi-Fi configuration directory. Enter the following command and press <strong>Enter</strong>.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">hiwonder</span><span class="o">-</span><span class="n">toolbox</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image1.png" style="width:500px" />
+<ol class="arabic" start="2">
+<li><p>Open the Wi-Fi configuration file using the vi editor by entering:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">vim</span> <span class="n">wifi_conf</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image2.png" style="width:500px" />
+<ol class="arabic simple" start="3">
+<li><p>Press the <strong>i</strong> key to enter edit mode.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image3.png" style="width:500px" />
+<ol class="arabic simple" start="4">
+<li><p>Modify the value of HW_WIFI_MODE to 2, and change the values of WIFI_SSID and PASSWORD fields to match your Wi-Fi network name and password.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image4.png" style="width:500px" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>The password must be at least 8 characters long.</strong></p>
+</div>
+<ol class="arabic" start="5">
+<li><p>After modifying, press <strong>Esc</strong> to exit edit mode, then save and exit by entering:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">wq</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image5.png" style="width:500px" />
+<ol class="arabic" start="6">
+<li><p>Finally, reboot the device by entering the following command. <strong>Do not skip this step.</strong></p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">reboot</span>
+</pre></div>
+</div>
+</li>
+<li><p>Repeat the above steps for all robots, ensuring they are all configured on the same local network.</p></li>
+</ol>
+<p><strong>2. IP Address Configuration</strong></p>
+<ol class="arabic">
+<li><p>On any TonyPi Pro, open the command line terminal and enter the following command to check the device’s IP address. Remember this IP address, as it will be used as the server IP for forwarding:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">ifconfig</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image6.png" style="width:500px" />
+<ol class="arabic" start="2">
+<li><p>Insert the wireless controller’s receiver into this TonyPi Pro, which will act as the master device.</p></li>
+<li><p>Edit the local forwarding address in the wireless controller’s control program by entering:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">vim</span> <span class="o">~/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Joystick</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image7.png" style="width:500px" />
+<ol class="arabic" start="4">
+<li><p>Next, remotely connect to the other robots that need to be controlled, and configure the client IP address by entering:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">vim</span> <span class="o">~/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">multi_control</span><span class="o">/</span><span class="n">multi_control_client</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</li>
+<li><p>Modify the relevant section to the server IP address you checked. After changing it, press <strong>Esc</strong> and enter :wq to save and exit.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image8.png" style="width:500px" />
+<ol class="arabic" start="6">
+<li><p>Finally, reboot the device by entering the following command. <strong>Do not skip this step.</strong></p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">reboot</span>
+</pre></div>
+</div>
+</li>
+<li><p>Repeat the above IP configuration steps for all other robots.</p></li>
+</ol>
+<p><strong>3. Group Control</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Note:</strong> When using group control, first power on the robot with the wireless controller receiver, then start the other robots.</p>
+</div>
+<ol class="arabic simple">
+<li><p>Place all robots on a flat, open surface, keeping a reasonable distance between each robot.</p></li>
+<li><p>During group control, only single commands can be sent. To perform actions such as continuously moving forward, <strong>press the controller buttons multiple times</strong> instead of holding the stick.</p></li>
+</ol>
+<ul class="simple">
+<li><p><strong>Master-Slave Mode</strong></p></li>
+</ul>
+<p><strong>1. Master Robot Configuration</strong></p>
+<ol class="arabic simple">
+<li><p>First, power on one robot to serve as the master and establish a remote desktop connection. In this example, the robot with the hotspot named <strong>HW-F199CEEE</strong> is used.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image9.png" style="width:500px" alt="QQ图片20211213152528" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Remember the master robot’s hotspot name, as it will be used in the following steps.</strong></p>
+</div>
+<ol class="arabic" start="2">
+<li><p>Open the command line terminal and navigate to the Wi-Fi configuration directory. Enter the following command and press <strong>Enter</strong>.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">hiwonder</span><span class="o">-</span><span class="n">toolbox</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image1.png" style="width:500px" />
+<ol class="arabic" start="3">
+<li><p>Open the Wi-Fi configuration file using the vi editor by entering:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">vim</span> <span class="n">wifi_conf</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image2.png" style="width:500px" />
+<ol class="arabic simple" start="4">
+<li><p>Press the <strong>i</strong> key to enter edit mode.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image3.png" style="width:500px" />
+<ol class="arabic simple" start="5">
+<li><p>Change the master hotspot’s Wi-Fi password to <strong>123456789</strong> and then uncomment the corresponding line. As shown in the figure below:</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image10.png" style="width:500px" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>The password must be at least 8 characters long.</strong></p>
+</div>
+<ol class="arabic" start="6">
+<li><p>After modifying, press <strong>Esc</strong> to exit edit mode, then save and exit by entering:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">wq</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image5.png" style="width:500px" />
+<ol class="arabic" start="7">
+<li><p>Finally, reboot the device by entering the following command. <strong>Do not skip this step.</strong></p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">reboot</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p><strong>2. Slave Robot Configuration</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This example demonstrates the configuration using a single slave robot. The same method can be applied to multiple slave robots.</strong></p>
+</div>
+<ol class="arabic">
+<li><p>Open the command line terminal and navigate to the Wi-Fi configuration directory. Enter the following command and press <strong>Enter</strong>.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">hiwonder</span><span class="o">-</span><span class="n">toolbox</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image1.png" style="width:500px" />
+<ol class="arabic" start="2">
+<li><p>Open the Wi-Fi configuration file using the vi editor by entering:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">vim</span> <span class="n">wifi_conf</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image2.png" style="width:500px" />
+<p>Press the <strong>i</strong> key to enter edit mode.</p>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image11.png" style="width:500px" />
+<ol class="arabic simple" start="3">
+<li><p>Set the hotspot name and password to match the master robot, using the default ID <strong>HW-F119CEEE</strong> in this lesson, then uncomment the corresponding lines in the code. As shown in the figure below:</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image12.png" style="width:500px" />
+<ol class="arabic" start="4">
+<li><p>After modifying, press <strong>Esc</strong> to exit edit mode, then save and exit by entering:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">wq</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image13.png" style="width:500px" />
+<ol class="arabic" start="5">
+<li><p>Finally, reboot the device by entering the following command. <strong>Do not skip this step.</strong></p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">reboot</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p><strong>3. Group Control</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>When using group control, slave robots must be powered on only after the master robot is fully operational.c</strong></p>
+</div>
+<ol class="arabic simple">
+<li><p>Place all robots on a flat, open surface, keeping a reasonable distance between each robot.</p></li>
+<li><p>Insert the PS2 wireless controller’s receiver into the master robot’s USB port and turn it on to control the robot group.</p></li>
+<li><p>During group control, only single commands can be sent. To perform actions such as continuously moving forward, press the controller buttons multiple times instead of holding the stick.</p></li>
+</ol>
+</section>
+<section id="project-outcome">
+<h3>15.2.4 Project Outcome<a class="headerlink" href="#project-outcome" title="Link to this heading"></a></h3>
+<p>After the program starts, the slave robots execute the same set of actions simultaneously with the master robot.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="14_network_configuration.html" class="btn btn-neutral float-left" title="14. Raspberry Pi Series Robot Network Configuration Instruction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="resources_download.html" class="btn btn-neutral float-right" title="Appendix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Hiwonder.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

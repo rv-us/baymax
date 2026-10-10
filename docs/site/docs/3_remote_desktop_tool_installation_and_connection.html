@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3. Remote Desktop Tool Installation and Connection &mdash; TonyPi &amp; TonyPi Pro v2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=31ac2de9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=731f67d5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/custom.js?v=fd93d8dd"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4. PC Software Action Control Courses" href="4_pc_software_action_control_courses.html" />
+    <link rel="prev" title="2. Quick User Experience" href="2_quick_user_experience.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tonypi-pro" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/docs/3_remote_desktop_tool_installation_and_connection.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #f98800" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TonyPi & TonyPi Pro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">TonyPi &amp; TonyPi Pro</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_getting_ready.html">1. Getting Ready</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_quick_user_experience.html">2. Quick User Experience</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3. Remote Desktop Tool Installation and Connection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#remote-tool-installation-and-connection">3.1 Remote Tool Installation and Connection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#getting-ready">3.1.1 Getting Ready</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#start-the-robot">3.1.2 Start the Robot</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#device-connection">3.2 Device Connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview-of-the-robot-version-configuration-tool">3.3 Overview of the Robot Version Configuration Tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="4_pc_software_action_control_courses.html">4. PC Software Action Control Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_ai_vision_course.html">5. AI Vision Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ai_voice_interaction_course.html">6. AI Voice Interaction Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_pc_software_control.html">7. PC Software Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_vision_gripping_lessons.html">8. Vision Gripping Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9_athletics_sport_lessons.html">9. Athletics Sport Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_sensor_development_basics_courses.html">10. Sensor Development Basics Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_sensor_integration_and_application_development_courses.html">11. Sensor Integration and Application Development Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_aI_large_model_course.html">12. AI Large Model Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_group_control_lessons.html">13. Group Control Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14_network_configuration.html">14. Raspberry Pi Series Robot Network Configuration Instruction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_Group%20Control%20Course.html">15 Group Control Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources_download.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1EJppBKT0G0KF8uXjyMVlsAD1MwwAzq_2?usp=sharing">TonyPi Download</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1HsYi21H4fkIuNB8lpkcdnTRUkJyE4ObE?usp=sharing">TonyPi Pro Download</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #f98800" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TonyPi & TonyPi Pro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">3. Remote Desktop Tool Installation and Connection</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/docs/3_remote_desktop_tool_installation_and_connection.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="remote-desktop-tool-installation-and-connection">
+<h1>3. Remote Desktop Tool Installation and Connection<a class="headerlink" href="#remote-desktop-tool-installation-and-connection" title="Link to this heading"></a></h1>
+<p id="anchor_3_1"></p>
+<section id="remote-tool-installation-and-connection">
+<h2>3.1 Remote Tool Installation and Connection<a class="headerlink" href="#remote-tool-installation-and-connection" title="Link to this heading"></a></h2>
+<p>To complete this section, a laptop is required. If you are using a desktop computer, please ensure it is equipped with a wireless network adapter. A demonstration video is available in the corresponding folder for reference.</p>
+<p>This tutorial is based on the Windows version. For macOS installation, please refer to official resources or search online for platform-specific instructions.</p>
+<section id="getting-ready">
+<h3>3.1.1 Getting Ready<a class="headerlink" href="#getting-ready" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>VNC Installation</strong></p></li>
+</ul>
+<p>If you want to run the programming games through computer, and to know how to find and modify the programs at last, please finish the learning of this section and the installation of VNC.</p>
+<p>VNC is a graphics remote control software. With VNC, we can control the Raspberry Pi directly from your computer through the hotspot created by Raspberry Pi. Next, you will learn how to use VNC.</p>
+<p>(1) Double-click the <strong>“VNC-Viewer-6.17.731-Windows”</strong> file in this folder. In the pop-up dialogue box, select the installation language as <strong>“English”</strong> and then click the <strong>“OK”</strong> button.</p>
+<img src="../_static/media/chapter_3/section_1/image3.png" class="common_img" />
+<p>(2) Then click the <strong>“Next”</strong> button on the pop-up interface.</p>
+<img src="../_static/media/chapter_3/section_1/image4.png" class="common_img" />
+<p>(3) Then click <strong>“accept the terms in the License Agreement”</strong> in the prompt box, and click <strong>“Next”</strong> to enter the next step.</p>
+<img src="../_static/media/chapter_3/section_1/image5.png" class="common_img" />
+<p>(4) Then click <strong>“Install”</strong> in the pop-up page.</p>
+<img src="../_static/media/chapter_3/section_1/image6.png" class="common_img" />
+<p>(5) After VNC has been successfully installed, click the <strong>“Finish”</strong> button which completes the installation process. You can now open VNC.</p>
+<img src="../_static/media/chapter_3/section_1/image7.png" class="common_img" />
+<p>After successfully connecting，open the icon <img src="../_static/media/chapter_3/section_1/image8.png"   /> directly.</p>
+</section>
+<section id="start-the-robot">
+<h3>3.1.2 Start the Robot<a class="headerlink" href="#start-the-robot" title="Link to this heading"></a></h3>
+<p>Based on what you’ve learned earlier, after connecting the power adapter, toggle the switch on the Raspberry Pi expansion board. After a short moment, the LED2 indicator on the board should change from steadily lit to blinking once per second—this indicates that the Raspberry Pi has successfully powered on.</p>
+</section>
+</section>
+<section id="device-connection">
+<h2>3.2 Device Connection<a class="headerlink" href="#device-connection" title="Link to this heading"></a></h2>
+<p>(1) After turning on, Raspberry Pi will launch a Wi-Fi hotspot with a network named with the first letters <strong>“HW”</strong>. Click to connect.</p>
+<img src="../_static/media/chapter_3/section_1/image9.png" class="common_img"  />
+<p>(2) Enter the default IP address of the Raspberry Pi <code class="docutils literal notranslate"><span class="pre">192.168.149.1</span></code> in the VNC Viewer, and then press <strong>“Enter”</strong>. If the software warns that the connection is not safe just Click <strong>“Continue”</strong>.</p>
+<img src="../_static/media/chapter_3/section_1/image10.png" class="common_img"  />
+<p>(3) A login prompt will appear requesting a Username and Password.</p>
+<ul class="simple">
+<li><p>Raspberry Pi 5 version:</p>
+<ul>
+<li><p><strong>Username：pi</strong></p></li>
+<li><p><strong>Password: raspberrypi</strong></p></li>
+</ul>
+</li>
+</ul>
+<p>Check the <strong>“Remember password”</strong> option, then click <strong>“OK”</strong>. The Raspberry Pi desktop should now be displayed.</p>
+<img src="../_static/media/chapter_3/section_1/image11.png" class="common_img"  />
+<img src="../_static/media/chapter_3/section_1/image12.png" class="common_img"  />
+<img src="../_static/media/chapter_3/section_1/image13.png" class="common_img" />
+<p>(4) There is a warning dialogue box will pop up in the desktop (this is normal). Click <strong>“OK”</strong> to close it. If a black screen occurs, please restart the Raspberry Pi.</p>
+<p>Detailed starting steps of each game project can be found in the following lessons.</p>
+</section>
+<section id="overview-of-the-robot-version-configuration-tool">
+<h2>3.3 Overview of the Robot Version Configuration Tool<a class="headerlink" href="#overview-of-the-robot-version-configuration-tool" title="Link to this heading"></a></h2>
+<p>The robot firmware supports multiple configurations, accommodating different models (TonyPi and TonyPi Pro) as well as both Chinese and English versions of the large AI model. When you need to switch between robot models or change the language version of the AI model, please follow the steps outlined below:</p>
+<p>(1) Turn on the robot and connect it to the remote control software VNC. For detailed steps on how to connect via remote desktop, please refer to <a class="reference internal" href="#anchor_3_1"><span class="xref myst"><strong>“3.1 Remote Tool Installation and Connection”</strong></span></a>.</p>
+<p>(2) On the remote desktop, double-click the robot system configuration tool <img src="../_static/media/chapter_3/section_2/image2.png"  />, then click <strong>“Execute”</strong> to open it.</p>
+<img src="../_static/media/chapter_3/section_2/image3.png" class="common_img" />
+<img src="../_static/media/chapter_3/section_2/image4.png" class="common_img" />
+<p>(3) In the configuration window, choose the robot model you want to switch to under <strong>“Robot Type”</strong>. For example:</p>
+<img src="../_static/media/chapter_3/section_2/image5.png" class="common_img" />
+<ul class="simple">
+<li><p><strong>TonyPi:</strong> Standard version without the open/close palm feature.</p></li>
+<li><p><strong>TonyPi Pro</strong>: Professional version with the open/close palm feature.</p></li>
+</ul>
+<p>(4) Then, under <strong>“Voice Function,”</strong> select the AI model you want to use:</p>
+<img src="../_static/media/chapter_3/section_2/image6.png" class="common_img" />
+<ul class="simple">
+<li><p>Chinese large AI models such as Aliyun and Jieyue Xingchen.</p></li>
+<li><p>English: International models like ChatGPT and OpenRouter.</p></li>
+</ul>
+<p>(5) Once you’ve made your choices, click <strong>Save &gt; Apply &gt; Exit</strong> in that order to ensure the changes take effect.</p>
+<img src="../_static/media/chapter_3/section_2/image7.png" class="common_img" />
+<p>(6) Wait for the buzzer to beep once — this confirms the switch was successful. You can then open the command line terminal <img src="../_static/media/chapter_3/section_2/image8.png"  /> to check the system status.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="2_quick_user_experience.html" class="btn btn-neutral float-left" title="2. Quick User Experience" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="4_pc_software_action_control_courses.html" class="btn btn-neutral float-right" title="4. PC Software Action Control Courses" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Hiwonder.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

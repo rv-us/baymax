@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>10. Sensor Development Basics Courses &mdash; TonyPi &amp; TonyPi Pro v2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=31ac2de9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=731f67d5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/custom.js?v=fd93d8dd"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="11. Sensor Integration and Application Development Courses" href="11_sensor_integration_and_application_development_courses.html" />
+    <link rel="prev" title="9. Athletics Sport Lessons" href="9_athletics_sport_lessons.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tonypi-pro" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/docs/10_sensor_development_basics_courses.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #f98800" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TonyPi & TonyPi Pro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">TonyPi &amp; TonyPi Pro</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_getting_ready.html">1. Getting Ready</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_quick_user_experience.html">2. Quick User Experience</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_remote_desktop_tool_installation_and_connection.html">3. Remote Desktop Tool Installation and Connection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_pc_software_action_control_courses.html">4. PC Software Action Control Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_ai_vision_course.html">5. AI Vision Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ai_voice_interaction_course.html">6. AI Voice Interaction Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_pc_software_control.html">7. PC Software Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_vision_gripping_lessons.html">8. Vision Gripping Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9_athletics_sport_lessons.html">9. Athletics Sport Lessons</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">10. Sensor Development Basics Courses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fan-module">10.1 Fan Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#getting-ready">10.1.1 Getting Ready</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-usage">10.1.2 Module Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operation-steps">10.1.3 Operation Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#project-outcome">10.1.4 Project Outcome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#program-analysis">10.1.5 Program Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#touch-sensor">10.2 Touch Sensor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preparation">10.2.1 Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">10.2.2 Module Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">10.2.3 Operation Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">10.2.4 Project Outcome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-principle">10.2.5 Working Principle</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#temperature-and-humidity-sensor">10.3 Temperature and Humidity Sensor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">10.3.1 Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operation-overview">10.3.2 Operation Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">10.3.3 Operation Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#program-outcome">10.3.4 Program Outcome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#program-overview">10.3.5 Program Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ultrasonic-sensor">10.4 Ultrasonic Sensor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">10.4.1 Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">10.4.2 Module Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">10.4.3 Operation Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">10.4.4 Project Outcome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#function-extension">10.4.5 Function Extension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">10.4.6 Program Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#dot-matrix-module">10.5 Dot Matrix Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id11">10.5.1 Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">10.5.2 Module Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">10.5.3 Operation Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">10.5.4 Project Outcome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">10.5.5 Function Extension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">10.5.6 Working Principle</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#light-sensor">10.6 Light Sensor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id17">10.6.1 Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">10.6.2 Module Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">10.6.3 Operation Steps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">10.6.4 Project Outcome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">10.6.5 Working Principle</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="11_sensor_integration_and_application_development_courses.html">11. Sensor Integration and Application Development Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_aI_large_model_course.html">12. AI Large Model Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_group_control_lessons.html">13. Group Control Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14_network_configuration.html">14. Raspberry Pi Series Robot Network Configuration Instruction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_Group%20Control%20Course.html">15 Group Control Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources_download.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1EJppBKT0G0KF8uXjyMVlsAD1MwwAzq_2?usp=sharing">TonyPi Download</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1HsYi21H4fkIuNB8lpkcdnTRUkJyE4ObE?usp=sharing">TonyPi Pro Download</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #f98800" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TonyPi & TonyPi Pro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">10. Sensor Development Basics Courses</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/docs/10_sensor_development_basics_courses.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="sensor-development-basics-courses">
+<h1>10. Sensor Development Basics Courses<a class="headerlink" href="#sensor-development-basics-courses" title="Link to this heading"></a></h1>
+<section id="fan-module">
+<h2>10.1 Fan Module<a class="headerlink" href="#fan-module" title="Link to this heading"></a></h2>
+<section id="getting-ready">
+<h3>10.1.1 Getting Ready<a class="headerlink" href="#getting-ready" title="Link to this heading"></a></h3>
+<p>Prepare a fan module and connect it to GPIO pins 7 and 8 on the Raspberry Pi expansion board using a 4-Pin cable. The wiring should appear as shown in the diagram below.</p>
+<img src="../_static/media/chapter_10/section_1/image2.png" class="common_img" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please do not insert forcefully because 4PIN cable uses anti-reverse plugging design.</p>
+</div>
+</section>
+<section id="module-usage">
+<h3>10.1.2 Module Usage<a class="headerlink" href="#module-usage" title="Link to this heading"></a></h3>
+<p>No additional motor driver board is required to use the fan module. Its rotation direction and speed can be controlled programmatically. Additionally, the module is compatible with LEGO series components, enabling more creative DIY designs.</p>
+</section>
+<section id="operation-steps">
+<h3>10.1.3 Operation Steps<a class="headerlink" href="#operation-steps" title="Link to this heading"></a></h3>
+<p>(1) Click icon in the upper left corner to open a new terminal window. Then enter the following command and press Enter to navigate to the game directory.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_example</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(2) Enter the command below, and then press Enter to start the game.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">fan_control</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(3) If want to close this program, press <strong>“Ctrl+C”</strong>. You can try multiple time if fail to close.</p>
+</section>
+<section id="project-outcome">
+<h3>10.1.4 Project Outcome<a class="headerlink" href="#project-outcome" title="Link to this heading"></a></h3>
+<p>The fan starts spinning when the program runs and automatically stops when the program is closed.</p>
+</section>
+<section id="program-analysis">
+<h3>10.1.5 Program Analysis<a class="headerlink" href="#program-analysis" title="Link to this heading"></a></h3>
+<p><a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">Source Code</span></a></p>
+<p>In this project, the fan is controlled using two GPIO ports. When one GPIO port is set to high and the other to low, the fan begins to rotate.</p>
+<p>The source code of the program is located in: <a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">/home/pi/TonyPi/Extend/sensor_course/sensor_example/fan_control.py</span></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="c1"># coding=utf8</span>
+<span class="c1"># 4.拓展课程学习\7.拓展课程之传感器基础开发课程\第1课 风扇模块实验(4.Advanced Lessons\7.Sensor Development Course\Lesson1 Fan Module)</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">gpiod</span>
+
+<span class="c1">## 初始化引脚模式(initial pin mode)</span>
+<span class="n">chip</span> <span class="o">=</span> <span class="n">gpiod</span><span class="o">.</span><span class="n">Chip</span><span class="p">(</span><span class="s2">&quot;gpiochip4&quot;</span><span class="p">)</span>
+<span class="n">fanPin1</span> <span class="o">=</span> <span class="n">chip</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">fanPin1</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">consumer</span><span class="o">=</span><span class="s2">&quot;pin1&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_DIR_OUT</span><span class="p">)</span>
+
+<span class="n">fanPin2</span> <span class="o">=</span> <span class="n">chip</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">fanPin2</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">consumer</span><span class="o">=</span><span class="s2">&quot;pin2&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_DIR_OUT</span><span class="p">)</span>
+
+<span class="c1"># initial</span>
+<span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">set_fan</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fan Control Init&quot;</span><span class="p">)</span>
+    
+<span class="c1">#fan control</span>
+<span class="k">def</span> <span class="nf">set_fan</span><span class="p">(</span><span class="n">start</span><span class="p">):</span>
+               
+    <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1">## 开启风扇, 顺时针(turn on the fan, clockwise)</span>
+        <span class="n">fanPin1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 设置引脚输出高电平(set pin output high voltage)</span>
+        <span class="n">fanPin2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 设置引脚输出低电平(set pin output low voltage)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1">## 关闭风扇(turn off the fan)</span>
+        <span class="n">fanPin1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 设置引脚输出低电平(set pin output low voltage)</span>
+        <span class="n">fanPin2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 设置引脚输出低电平(set pin output low voltage)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">set_fan</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="n">set_fan</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">break</span>
+</pre></div></td></tr></table></div>
+</div>
+<ul class="simple">
+<li><p><strong>GPIO Pin Control</strong></p></li>
+</ul>
+<p>(1) <code class="docutils literal notranslate"><span class="pre">chip.get_line(pin_number)</span></code>: Get GPIO (pin).</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">chip</span> <span class="o">=</span> <span class="n">gpiod</span><span class="o">.</span><span class="n">Chip</span><span class="p">(</span><span class="s2">&quot;gpiochip4&quot;</span><span class="p">)</span>
+<span class="n">fanPin1</span> <span class="o">=</span> <span class="n">chip</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">fanPin2</span> <span class="o">=</span> <span class="n">chip</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(2) <code class="docutils literal notranslate"><span class="pre">fanPin1.set_value()</span></code>: Set the voltage level of GPIO pin.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">fanPin1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 设置引脚输出高电平(set pin output high voltage)</span>
+<span class="n">fanPin2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 设置引脚输出低电平(set pin output low voltage)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(3) In the example, the encoding method used is digital logic level encoding.</p>
+<p>(4) High level (usually 1) and low level (usually 0).</p>
+<p>(5) In the code, the <code class="docutils literal notranslate"><span class="pre">fanPin1.set_value()</span></code> functions is used to set the logic level state of the GPIO line.</p>
+<p>(6) <code class="docutils literal notranslate"><span class="pre">fanPin1.set_value(1)</span></code>: Set No.8 GPIO pin to high voltage level</p>
+<p>(7) <code class="docutils literal notranslate"><span class="pre">fanPin2.set_value(0)</span></code>: Set No.7 GPIO pin to low voltage level</p>
+<p>(8) <code class="docutils literal notranslate"><span class="pre">fanPin1.set_value(0)</span></code>: Set No.8 GPIO pin to low voltage level</p>
+<p>(9) <code class="docutils literal notranslate"><span class="pre">fanPin2.set_value(0)</span></code>: Set No.7 GPIO pin to low voltage level</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">32</span>
+<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">fanPin1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 设置引脚输出低电平(set pin output low voltage)</span>
+<span class="n">fanPin2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># 设置引脚输出低电平(set pin output low voltage)</span>
+</pre></div></td></tr></table></div>
+</div>
+</section>
+</section>
+<section id="touch-sensor">
+<h2>10.2 Touch Sensor<a class="headerlink" href="#touch-sensor" title="Link to this heading"></a></h2>
+<section id="preparation">
+<h3>10.2.1 Preparation<a class="headerlink" href="#preparation" title="Link to this heading"></a></h3>
+<p>Prepare a touch sensor and connect it to the GPIO21 and GPIO22 ports on the Raspberry Pi expansion board using a 4-Pin cable. The wiring should appear as shown in the figure below.</p>
+<img src="../_static/media/chapter_10/section_1/image20.png" class="common_img" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Do not insert the 4-pin cable with force. It features an anti-reverse design to prevent incorrect connections.</p>
+</div>
+</section>
+<section id="id1">
+<h3>10.2.2 Module Usage<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>The touch sensor operates based on the principle of capacitive sensing. When a human body or metal touches the sensor’s gold-plated contact surface, the sensor detects the contact. Additionally, the sensor can sense touches through materials like plastic or paper of certain thicknesses. The sensitivity depends on the size of the contact area and the thickness of the covering material.</p>
+<p>This sensor is ideal for switch control applications, such as light switches or doorbell buttons. Moreover, it is compatible with the LEGO series, enabling more creative DIY designs.</p>
+</section>
+<section id="id2">
+<h3>10.2.3 Operation Steps<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>(1) Click in the upper left corner to open the terminal. Enter command and press Enter to go to the directory of game.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_example</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(2) Enter the command below, and then press Enter to start the game.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">touch_buzzer</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(3) If you want to close this program, press <strong>“Ctrl+C”</strong>. You can try multiple time if fail to close.</p>
+</section>
+<section id="id3">
+<h3>10.2.4 Project Outcome<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>After the program starts, touch the sensor’s metal plate. The buzzer will sound once upon detecting the touch.</p>
+</section>
+<section id="working-principle">
+<h3>10.2.5 Working Principle<a class="headerlink" href="#working-principle" title="Link to this heading"></a></h3>
+<p><a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">Source Code</span></a></p>
+<p>When the sensor detects a touch, it outputs a high level; otherwise, it outputs a low level. You can determine the sensor’s current status by monitoring the I/O port’s level changes.</p>
+<p>The program source code is located at: <a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">/home/pi/TonyPi/Extend/sensor_course/sensor_example/touch_buzzer.py</span></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="c1"># coding=utf8</span>
+<span class="c1"># 4.拓展课程学习\7.拓展课程之传感器基础开发课程\第2课 触摸传感器实验(4.Advanced Lessons\7.Sensor Development Course\Lesson2 Touch Sensor Module)</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">gpiod</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ros_robot_controller_sdk</span> <span class="k">as</span> <span class="nn">rrc</span>
+
+
+<span class="n">board</span> <span class="o">=</span> <span class="n">rrc</span><span class="o">.</span><span class="n">Board</span><span class="p">()</span>
+    
+<span class="n">st</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">chip</span> <span class="o">=</span> <span class="n">gpiod</span><span class="o">.</span><span class="n">Chip</span><span class="p">(</span><span class="s1">&#39;gpiochip4&#39;</span><span class="p">)</span>
+<span class="n">touch</span> <span class="o">=</span> <span class="n">chip</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>
+<span class="n">touch</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">consumer</span><span class="o">=</span><span class="s2">&quot;touch&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_DIR_IN</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_FLAG_BIAS_PULL_UP</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">touch</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>   <span class="c1">#读取引脚数字值(read pin numerical value)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">st</span> <span class="p">:</span>            <span class="c1">#这里做一个判断，防止反复响(make a judgement to prevent repeated ringing here)</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 以1900Hz的频率，持续响0.1秒，关闭0.9秒，重复1次(at a frequency of 1900Hz, sound for 0.1 seconds, then pause for 0.9 seconds, repeat once)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 关闭(close)</span>
+
+    <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 关闭(close)</span>
+</pre></div></td></tr></table></div>
+</div>
+<ul class="simple">
+<li><p><strong>Touch Detection and Control</strong></p></li>
+</ul>
+<p>(1) Connect the touch sensor to GPIO pin No. 22. The sensor is controlled via <code class="docutils literal notranslate"><span class="pre">gpiochip4</span></code>, and its pin is configured as input mode.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">chip</span> <span class="o">=</span> <span class="n">gpiod</span><span class="o">.</span><span class="n">Chip</span><span class="p">(</span><span class="s1">&#39;gpiochip4&#39;</span><span class="p">)</span>
+<span class="n">touch</span> <span class="o">=</span> <span class="n">chip</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>
+<span class="n">touch</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">consumer</span><span class="o">=</span><span class="s2">&quot;touch&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_DIR_IN</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_FLAG_BIAS_PULL_UP</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(2) Initialize an <code class="docutils literal notranslate"><span class="pre">rrc.Board()</span></code> object and a <strong>gpiod.Chip</strong> object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">board</span> <span class="o">=</span> <span class="n">rrc</span><span class="o">.</span><span class="n">Board</span><span class="p">()</span>
+    
+<span class="n">st</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(3) The program then enters an infinite loop to continuously monitor the touch sensor’s state.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">touch</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>   <span class="c1">#读取引脚数字值(read pin numerical value)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(4) Within the loop, the program reads the digital value of the pin using <code class="docutils literal notranslate"><span class="pre">touch.get_value()</span></code>, which indicates whether the sensor is currently touched. If the sensor is touched (state is low level) and the previous state was untouched (<strong>st == 1</strong>), the following actions occur:</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">st</span> <span class="p">:</span>            <span class="c1">#这里做一个判断，防止反复响(make a judgement to prevent repeated ringing here)</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 以1900Hz的频率，持续响0.1秒，关闭0.9秒，重复1次(at a frequency of 1900Hz, sound for 0.1 seconds, then pause for 0.9 seconds, repeat once)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(5) Update <code class="docutils literal notranslate"><span class="pre">st</span></code> to 0 to mark that the touch event has been handled.</p>
+<p>(6) Use the <code class="docutils literal notranslate"><span class="pre">board.set_buzzer()</span></code> function to activate the buzzer at 1900 Hz for 0.1 seconds, followed by a 0.9-second pause, repeating once.</p>
+<p>(7) Introduce a 1-second delay to prevent multiple triggers from the same touch event.</p>
+<p>(8) If the sensor is not touched (state is high level), set <code class="docutils literal notranslate"><span class="pre">st</span></code> back to 1 to indicate the idle state.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span>        <span class="k">else</span><span class="p">:</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 关闭(close)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(9) At the end of each loop iteration, <code class="docutils literal notranslate"><span class="pre">board.set_buzzer()</span></code> is called to turn off the buzzer, ensuring it remains silent when no touch is detected.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span>    <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 关闭(close)</span>
+</pre></div></td></tr></table></div>
+</div>
+</section>
+</section>
+<section id="temperature-and-humidity-sensor">
+<h2>10.3 Temperature and Humidity Sensor<a class="headerlink" href="#temperature-and-humidity-sensor" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>10.3.1 Preparation<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>Prepare a temperature and humidity sensor module along with a dot matrix display module. Connect both modules to the Raspberry Pi expansion board using 4-pin cables as illustrated in the diagram below.</p>
+<img src="../_static/media/chapter_10/section_1/image3.png" class="common_img" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The 4-pin cable features an anti-reverse design—please do not force it in.</p>
+</div>
+</section>
+<section id="operation-overview">
+<h3>10.3.2 Operation Overview<a class="headerlink" href="#operation-overview" title="Link to this heading"></a></h3>
+<p>The source code for this program can be found at: <a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">/home/pi/TonyPi/Extend/sensor_course/sensor_example/temperature_detection.py</span></a></p>
+<p>The temperature and humidity sensor module (AHT10) communicates with the Raspberry Pi via the I2C interface, while the dot matrix display module connects through the GPIO interface. The sensor converts the ambient temperature and humidity into digital signals, which the control board reads and processes. The processed temperature and humidity data are then displayed on the dot matrix module.</p>
+</section>
+<section id="id5">
+<h3>10.3.3 Operation Steps<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The input commands are case-sensitive, and keywords can be auto-completed using the Tab key.</p>
+</div>
+<p>(1) Power on the TonyPi robot and connect to the Raspberry Pi desktop remotely via VNC.</p>
+<p>(2) Click the icon at the top-left corner of the system desktop to open the Terminator terminal.</p>
+<p>(3) Enter the following command and press Enter to navigate to the program directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_example</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(4) Open a new terminal window, enter the following command, and press Enter to run the program:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">temperature_detection</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(5) To exit the program, press <strong>“Ctrl+C”</strong> in the terminal window. If the program does not close immediately, please try pressing it repeatedly.</p>
+</section>
+<section id="program-outcome">
+<h3>10.3.4 Program Outcome<a class="headerlink" href="#program-outcome" title="Link to this heading"></a></h3>
+<p>Once the program is running, the terminal will display the temperature and humidity readings from the sensor module, while the dot matrix module simultaneously shows the current temperature and humidity values.</p>
+</section>
+<section id="program-overview">
+<h3>10.3.5 Program Overview<a class="headerlink" href="#program-overview" title="Link to this heading"></a></h3>
+<p><a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">Source Code</span></a></p>
+<ul class="simple">
+<li><p><strong>Initialization</strong></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">class</span> <span class="nc">AHT10</span><span class="p">:</span>
+    <span class="n">CONFIG</span> <span class="o">=</span> <span class="p">[</span><span class="mh">0x08</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">]</span>
+    <span class="n">MEASURE</span> <span class="o">=</span> <span class="p">[</span><span class="mh">0x33</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x38</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bus</span> <span class="o">=</span> <span class="n">smbus</span><span class="o">.</span><span class="n">SMBus</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="n">addr</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>The sensor communicates with the Raspberry Pi via the I2C bus.</p>
+<ul class="simple">
+<li><p><strong>Retrieving Temperature and Humidity Data</strong></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span>    <span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">byte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">read_byte</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">write_i2c_block_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">,</span> <span class="mh">0xAC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MEASURE</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">read_i2c_block_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x0F</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span> <span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+        <span class="n">ctemp</span> <span class="o">=</span> <span class="p">((</span><span class="n">temp</span><span class="o">*</span><span class="mi">200</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1048576</span><span class="p">)</span> <span class="o">-</span> <span class="mi">50</span>
+        <span class="n">hum</span> <span class="o">=</span> <span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span> <span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span>
+        <span class="n">chum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hum</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="mi">1048576</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="p">(</span><span class="n">ctemp</span><span class="p">,</span> <span class="n">chum</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(1) <code class="docutils literal notranslate"><span class="pre">self.bus.read_byte(self.addr)</span></code>: Reads the status byte from the sensor.</p>
+<p>(2) <code class="docutils literal notranslate"><span class="pre">self.bus.write_i2c_block_data(self.addr,</span> <span class="pre">0xAC,</span> <span class="pre">self.MEASURE)</span></code>: Sends a measurement command to initiate data collection.</p>
+<p>(3) <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">self.bus.read_i2c_block_data(self.addr,</span> <span class="pre">0x00)</span></code>: Reads 6 bytes of measurement data from the sensor.</p>
+<ul class="simple">
+<li><p><strong>Device Setup</strong></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">aht10</span> <span class="o">=</span> <span class="n">AHT10</span><span class="p">()</span>
+    <span class="n">display</span> <span class="o">=</span> <span class="n">TM1640</span><span class="p">(</span><span class="n">dio</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">clk</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+    <span class="n">display</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>Initializes the AHT10 sensor instance (<code class="docutils literal notranslate"><span class="pre">aht10</span></code>) and the TM1640 LED display module (<code class="docutils literal notranslate"><span class="pre">display</span></code>), then clears any existing content from the display.</p>
+<ul class="simple">
+<li><p><strong>Data Display Loop</strong></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># 提取温度(extraction temperature)</span>
+        <span class="n">tempture</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">aht10</span><span class="o">.</span><span class="n">getData</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># 提取出三个数字(Extract three numbers)</span>
+        <span class="n">num1</span><span class="p">,</span> <span class="n">num2</span><span class="p">,</span> <span class="n">num3</span> <span class="o">=</span> <span class="n">tempture</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tempture</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tempture</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+        <span class="n">display</span><span class="o">.</span><span class="n">display_buf</span> <span class="o">=</span> <span class="n">render_number</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span> <span class="n">num2</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">num3</span><span class="p">)</span>
+        <span class="n">display</span><span class="o">.</span><span class="n">update_display</span><span class="p">()</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1">#提取湿度(Extract humidity)</span>
+        <span class="n">humidity</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">aht10</span><span class="o">.</span><span class="n">getData</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># 提取出两个数字(Extract two numbers)</span>
+        <span class="n">num1</span><span class="p">,</span> <span class="n">num2</span> <span class="o">=</span> <span class="n">humidity</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">humidity</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">display</span><span class="o">.</span><span class="n">display_buf</span> <span class="o">=</span> <span class="n">render_number</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span> <span class="n">num2</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">,</span> <span class="s2">&quot;%&quot;</span><span class="p">)</span>
+        
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p><strong>Display Temperature</strong>: The temperature is read and rounded to one decimal place. The integer and fractional digits are extracted and passed to the <code class="docutils literal notranslate"><span class="pre">render_number</span></code> function to generate the display output. The result is shown on the screen for 2 seconds.</p>
+<p><strong>Display Humidity</strong>: The humidity is read and similarly rounded. The integer digit is extracted, a percentage symbol is appended using the <code class="docutils literal notranslate"><span class="pre">render_number</span></code> function, and the result is displayed for 2 seconds.</p>
+</section>
+</section>
+<section id="ultrasonic-sensor">
+<h2>10.4 Ultrasonic Sensor<a class="headerlink" href="#ultrasonic-sensor" title="Link to this heading"></a></h2>
+<section id="id6">
+<h3>10.4.1 Preparation<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p>Prepare an ultrasonic sensor and connect it to any available I²C port on the Raspberry Pi expansion board using a 4-pin cable. The wiring setup is shown below:</p>
+<img src="../_static/media/chapter_10/section_4/image2.png" class="common_img" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Do not force the 4-Pin cable into the connector; it is designed to prevent incorrect insertion.</p>
+</div>
+</section>
+<section id="id7">
+<h3>10.4.2 Module Usage<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p>In this lesson, the distance measurement chip of the ultrasonic sensor integrates an ultrasonic transmitter, receiver, and digital signal processing circuit. The module communicates via I²C ports, allowing the measured distance to be read efficiently through I²C communication.</p>
+<p>Additionally, the ultrasonic probe includes two integrated RGB lights. These lights not only support adjustable brightness but also allow color customization by modifying the parameters of the red (R), green (G), and blue (B) channels.</p>
+</section>
+<section id="id8">
+<h3>10.4.3 Operation Steps<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p>(1) Click in the upper left corner to open the terminal. Enter the following command and press Enter to navigate to the directory of the game program.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_example</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(2) Enter the command below, and then press Enter to start the game.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">sonar_rgbd</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(3) If want to close this program, press <strong>“Ctrl+C”</strong>. You can try multiple time if fail to close.</p>
+</section>
+<section id="id9">
+<h3>10.4.4 Project Outcome<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<p>Once the program starts, place an obstacle in front of the ultrasonic sensor. The terminal will display the measured distance, and the RGB light will illuminate in a color corresponding to that distance. The color-distance mapping is as follows:</p>
+<p>Distance &lt; 100 mm: Red<br />
+100 mm ≤ Distance &lt; 150 mm: Green<br />
+150 mm ≤ Distance &lt; 200 mm: Blue<br />
+Distance ≥ 200 mm: White</p>
+</section>
+<section id="function-extension">
+<h3>10.4.5 Function Extension<a class="headerlink" href="#function-extension" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Modify the Measured Distance</strong></p></li>
+</ul>
+<p>We can adjust the distance ranges that correspond to each RGB light color. For example, you can change the range for the blue light from <strong>“150.0 &lt; distance ≤ 200.0”</strong> to <strong>“150.0 &lt; distance ≤ 250.0”</strong>, and update the range for the white light from <strong>“distance &gt; 200”</strong> to <strong>“distance &gt; 250”</strong>. Please follow the steps below to make these modifications:</p>
+<p>(1) Launch a terminal, and then enter the following command to come to the directory of the game programmings.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_example</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(2) Enter the following command, and then press Enter to start the game.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vim</span> <span class="n">sonar_rgbd</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(3) Find the code shown in the figure below.</p>
+<img src="../_static/media/chapter_10/section_4/image7.png" class="common_img" />
+<p>(4) Press <strong>“i”</strong> key on keyboard to enter the edit mode.</p>
+<p>(5) Modify data as the figure shown below:</p>
+<img src="../_static/media/chapter_10/section_4/image9.png" class="common_img" />
+<p>(6) After modification, press <strong>“Esc”</strong> and enter <strong>“:wq”</strong> (please note that the colon is in front of wq), and then press Enter to save the modified content.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">wq</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Customize RGB Color</strong></p></li>
+</ul>
+<p>Similarly, we can change the RGB light color. Take changing the color of RGB light from white to orange as example. The specific operation step is as follow:</p>
+<p>(1) Please refer to <strong>“Modify the Measured Distance”</strong> to open game program file.</p>
+<p>(2) Find the code as the figure shown below in the opening interface.</p>
+<img src="../_static/media/chapter_10/section_4/image11.png" class="common_img" />
+<p>(3) Modify the value of RGB to change the light color. <code class="docutils literal notranslate"><span class="pre">setRGB(1,(255,255,255))</span></code> and <code class="docutils literal notranslate"><span class="pre">setRGB(0,(255,255,255))</span></code> are modified to <code class="docutils literal notranslate"><span class="pre">setRGB(1,(255,</span> <span class="pre">127,0))</span></code> and <code class="docutils literal notranslate"><span class="pre">setRGB(0,(255,</span> <span class="pre">127,0))</span></code>, as the figure shown below:</p>
+<img src="../_static/media/chapter_10/section_4/image12.png" class="common_img" />
+<p>RGB value refers to the red, green and blue components in a certain color. Theoretically, the three primary colors which are red, green and blue can be mixed in different proportion to make any color. The closer of the RGB value of a color, the closer it is to gray or black and white, and the larger the value, the whiter it is, and vice verse, the darker it is.</p>
+<p>For example, the value of B is the largest in RGB (150, 152, 183), which means the color contains more blue color, so it can be identified as a grayish blue.</p>
+<p>(4) After modification, press <strong>“Esc”</strong> and enter <strong>“:wq”</strong> (please note that the colon is in front of wq), and then press Enter to save the modified content.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">wq</span>
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h3>10.4.6 Program Analysis<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<p><a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">Source Code</span></a></p>
+<p>Firstly, set the distance measurement. Then control the on and off of the RGB light by changing the high and low levels. Finally, control the displayed light color by changing the value of each color component.</p>
+<p>The source code of program is located in: <a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">/home/pi/TonyPi/Extend/sensor_course/sensor_example/sonar_rgbd.py</span></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="c1"># coding=utf8</span>
+<span class="c1"># 4.拓展课程学习\7.拓展课程之传感器基础开发课程\第4课 超声波模块实验(4.Advanced Lessons\7.Sensor Development Course\Lesson4 Ultrasonic Module)</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">hiwonder.Sonar</span> <span class="k">as</span> <span class="nn">Sonar</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Please run this program with python3!&#39;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">Sonar</span><span class="o">.</span><span class="n">Sonar</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">setRGBMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>    <span class="c1">#设置灯的模式，0为彩灯模式，1为呼吸灯模式(set the light mode, 0 is color light mode, 1 is breathing light mode)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">35</span><span class="p">,</span><span class="mi">205</span><span class="p">,</span><span class="mi">55</span><span class="p">))</span>
+<span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">235</span><span class="p">,</span><span class="mi">205</span><span class="p">,</span><span class="mi">55</span><span class="p">))</span>
+<span class="n">s</span><span class="o">.</span><span class="n">startSymphony</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">getDistance</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">99999</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distance:&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">getDistance</span><span class="p">()</span> <span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">getDistance</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">distance</span> <span class="o">&lt;=</span> <span class="mf">100.0</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGBMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>  <span class="c1">#两边RGB设置为红色(set both RGB to red)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+                
+            <span class="k">if</span> <span class="mf">100.0</span> <span class="o">&lt;</span> <span class="n">distance</span> <span class="o">&lt;=</span> <span class="mf">150.0</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGBMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>  <span class="c1">#两边RGB设置为绿色(set both RGB to green)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+                
+            <span class="k">if</span> <span class="mf">150.0</span> <span class="o">&lt;</span> <span class="n">distance</span> <span class="o">&lt;=</span> <span class="mf">200.0</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGBMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span>  <span class="c1">#两边RGB设置为蓝色(set both RGB to blue)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span>
+                
+            <span class="k">if</span> <span class="n">distance</span> <span class="o">&gt;</span> <span class="mf">200.0</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGBMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>      
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span> <span class="c1"># 两边RGB设置为白色(set both RGB to white)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span>
+</pre></div></td></tr></table></div>
+</div>
+<ul class="simple">
+<li><p><strong>Sensor Initialization and Control</strong></p></li>
+</ul>
+<p>(1) The <code class="docutils literal notranslate"><span class="pre">Sonar</span></code> module is imported first, and a <code class="docutils literal notranslate"><span class="pre">Sonar.Sonar</span></code> object is created to control the ultrasonic sensor and RGB light.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">Sonar</span><span class="o">.</span><span class="n">Sonar</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">setRGBMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>    <span class="c1">#设置灯的模式，0为彩灯模式，1为呼吸灯模式(set the light mode, 0 is color light mode, 1 is breathing light mode)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">35</span><span class="p">,</span><span class="mi">205</span><span class="p">,</span><span class="mi">55</span><span class="p">))</span>
+<span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">235</span><span class="p">,</span><span class="mi">205</span><span class="p">,</span><span class="mi">55</span><span class="p">))</span>
+<span class="n">s</span><span class="o">.</span><span class="n">startSymphony</span><span class="p">()</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(2) The <strong>setRGBMode()</strong> function is used to set the mode of the light to color light mode (0), and the <strong>setRGB()</strong> function is used to set the colors of the two lights. Specifically, <code class="docutils literal notranslate"><span class="pre">setRGB(1,</span> <span class="pre">(35,205,55))</span></code> sets the first light to green, and the second light to yellow.</p>
+<p>(3) The <code class="docutils literal notranslate"><span class="pre">startSymphony()</span></code> function is used to start the mode.</p>
+<p>(4) In the main loop, the program executes every 1 second.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span>        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">getDistance</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">99999</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distance:&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">getDistance</span><span class="p">()</span> <span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">getDistance</span><span class="p">()</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(5) Get distance and process: By calling the <code class="docutils literal notranslate"><span class="pre">getDistance()</span></code> function, obtain the distance measured by the ultrasonic sensor and store it in the <code class="docutils literal notranslate"><span class="pre">distance</span></code> variable.</p>
+<p>(6) Set the color of the lights based on the distance: Use the <code class="docutils literal notranslate"><span class="pre">setRGB()</span></code> function to set the colors of the two lights based on the distance measurement and the following conditional statements.</p>
+<p>(7) If the distance is between 0.0 and 100.0, set the colors of the two lights to red.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span>            <span class="k">if</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">distance</span> <span class="o">&lt;=</span> <span class="mf">100.0</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGBMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>  <span class="c1">#两边RGB设置为红色(set both RGB to red)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(8) If the distance is between 100.0 and 150.0, set the colors of the two lights to green.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span>            <span class="k">if</span> <span class="mf">100.0</span> <span class="o">&lt;</span> <span class="n">distance</span> <span class="o">&lt;=</span> <span class="mf">150.0</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGBMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>  <span class="c1">#两边RGB设置为绿色(set both RGB to green)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(9) If the distance is between 150.0 and 200.0, set the colors of the two lights to blue.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span>            <span class="k">if</span> <span class="mf">150.0</span> <span class="o">&lt;</span> <span class="n">distance</span> <span class="o">&lt;=</span> <span class="mf">200.0</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGBMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span>  <span class="c1">#两边RGB设置为蓝色(set both RGB to blue)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(10) If the distance is greater than 200.0, set the colors of the two lights to white.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span>            <span class="k">if</span> <span class="n">distance</span> <span class="o">&gt;</span> <span class="mf">200.0</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGBMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>      
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span> <span class="c1"># 两边RGB设置为白色(set both RGB to white)</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span>
+</pre></div></td></tr></table></div>
+</div>
+</section>
+</section>
+<section id="dot-matrix-module">
+<h2>10.5 Dot Matrix Module<a class="headerlink" href="#dot-matrix-module" title="Link to this heading"></a></h2>
+<section id="id11">
+<h3>10.5.1 Preparation<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<p>Prepare a dot matrix module and connect it to any available GPIO port on the Raspberry Pi expansion board using a 4-Pin cable. The wiring setup is shown below:</p>
+<img src="../_static/media/chapter_10/section_5/image2.png" class="common_img" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Avoid applying force when inserting the 4-pin cable—its anti-reverse design ensures correct orientation.</p>
+</div>
+</section>
+<section id="id12">
+<h3>10.5.2 Module Usage<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<p>The dot matrix module used in this lesson is composed of two red 8×8 LED dot matrix screens. The dot matrix screen can be controlled by driving the control chip. It features high display brightness, no flash during display and simple wiring, and can display number, text, pattern and other contents.</p>
+<img src="../_static/media/chapter_10/section_5/image3.jpeg" class="common_img" />
+</section>
+<section id="id13">
+<h3>10.5.3 Operation Steps<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<p>(1) Open the terminal and input the following command. Press Enter to come to the directory of the game program.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_example</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(2) Enter the following command, and then press Enter to start the game.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">lattice_display</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(3) If want to close this program, press <strong>“Ctrl+C”</strong>. You can try multiple time if fail to close.</p>
+</section>
+<section id="id14">
+<h3>10.5.4 Project Outcome<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<p>After the program is started, the dot matrix screen will display the text <strong>“Hello”</strong>. When the program is closed, the screen will turn off completely.</p>
+</section>
+<section id="id15">
+<h3>10.5.5 Function Extension<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p>The default content displayed in this section of the program is <strong>“Hello”</strong> in dot matrix. If you want to modify the displayed text, for example, changing it to <strong>“Love”</strong>, you can follow these steps:</p>
+<p>Before making modifications, we need to obtain the address symbols of the letters in the dot matrix display. Here, we can use modulus software to obtain them.</p>
+<p>(1) Double-click to open the modulus software located in the same directory as this section.</p>
+<img src="../_static/media/chapter_10/section_5/image6.png" class="common_img" />
+<p>(2) First, click on <strong>“New Image”</strong>, then in the popup settings box, set the size parameters of the dot matrix module to <strong>“16*8”</strong>. Once set, click <strong>“OK”</strong> to confirm.</p>
+<img src="../_static/media/chapter_10/section_5/image7.png" class="common_img" />
+<p>(3) Click <strong>“Simulated Animation”</strong> and <strong>“Enlarge Grid Points”</strong> in turn to enlarge the dot matrix simulation area on the right side.</p>
+<img src="../_static/media/chapter_10/section_5/image8.png" class="common_img" />
+<p>(4) Next, use the mouse to click and draw the displayed content in the right area.</p>
+<img src="../_static/media/chapter_10/section_5/image9.png" class="common_img" />
+<p>(5) After finishing the drawing, click on <strong>“Modulation Mode”</strong> and then <strong>“51 Format”</strong> in turn to obtain the address symbols.</p>
+<img src="../_static/media/chapter_10/section_5/image10.png" class="common_img" />
+<p>(6) Open terminal and input the following command. Press Enter to locate to the content of the game program.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_example</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(7) Input the command below and press Enter to open game program file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vim</span> <span class="n">lattice_display</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(8) Locate the following code in the interface.</p>
+<img src="../_static/media/chapter_10/section_5/image12.png" class="common_img" />
+<p>(9) Press <strong>“i”</strong> key on the keyboard to proceed to the edition mode.</p>
+<p>(10) Replace the default address symbols in the program with the address symbols obtained from the modulus software, as shown in the following image:</p>
+<img src="../_static/media/chapter_10/section_5/image14.png" class="common_img" />
+<p>(11) After completing the modifications, press the <strong>“Esc”</strong> key once, then type <strong>“:wq”</strong> (note the colon before wq), and press Enter to save the changes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">wq</span>
+</pre></div>
+</div>
+</section>
+<section id="id16">
+<h3>10.5.6 Working Principle<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<p><a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">Source Code</span></a></p>
+<p>In this project, we control the display module of the dot matrix module through a set of hexadecimal data. A set of data contains 16 data in total, and each data control one column of the LED screen.</p>
+<p>The source code of program is located in: <a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">/home/pi/TonyPi/Extend/sensor_course/sensor_example/lattice_display.py</span></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="c1"># coding=utf8</span>
+<span class="c1"># 4.拓展课程学习\7.拓展课程之传感器基础开发课程\第5课 点阵模块实验(4.Advanced Lessons\7.Sensor Development Course\Lesson5 Dot Matrix Module)</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">hiwonder</span> <span class="kn">import</span> <span class="n">dot_matrix_sensor</span>
+
+<span class="n">dms</span> <span class="o">=</span> <span class="n">dot_matrix_sensor</span><span class="o">.</span><span class="n">TM1640</span><span class="p">(</span><span class="n">dio</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">clk</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">display_buf</span><span class="o">=</span><span class="p">(</span><span class="mh">0x7f</span><span class="p">,</span> <span class="mh">0x08</span><span class="p">,</span> <span class="mh">0x7f</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x7c</span><span class="p">,</span> <span class="mh">0x54</span><span class="p">,</span> <span class="mh">0x5c</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span>
+                              <span class="mh">0x7c</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span><span class="mh">0x7c</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">,</span> <span class="mh">0x38</span><span class="p">,</span> <span class="mh">0x44</span><span class="p">,</span> <span class="mh">0x38</span><span class="p">)</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">update_display</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">display_buf</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">16</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">update_display</span><span class="p">()</span>
+            <span class="k">break</span>
+</pre></div></td></tr></table></div>
+</div>
+<ul class="simple">
+<li><p><strong>Display Control and Configuration</strong></p></li>
+</ul>
+<p>① <code class="docutils literal notranslate"><span class="pre">dms</span> <span class="pre">=</span> <span class="pre">dot_matrix_sensor.TM1640(dio=7,</span> <span class="pre">clk=8)</span></code>: Creates an instance of the dot matrix sensor object named <code class="docutils literal notranslate"><span class="pre">dms</span></code>, with the data pin (<strong>dio</strong>) assigned to GPIO 7 and the clock pin (<strong>clk</strong>) to GPIO 8.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">dms</span> <span class="o">=</span> <span class="n">dot_matrix_sensor</span><span class="o">.</span><span class="n">TM1640</span><span class="p">(</span><span class="n">dio</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">clk</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>② <code class="docutils literal notranslate"><span class="pre">dms.display_buf</span> <span class="pre">=</span> <span class="pre">(0x7f,</span> <span class="pre">0x08,</span> <span class="pre">0x7f,</span> <span class="pre">0x00,</span> <span class="pre">0x7c,</span> <span class="pre">0x54,</span> <span class="pre">0x5c,</span> <span class="pre">0x00,</span> <span class="pre">0x7c,</span> <span class="pre">0x40,</span> <span class="pre">0x00,</span> <span class="pre">0x7c,</span> <span class="pre">0x40,</span> <span class="pre">0x38,</span> <span class="pre">0x44,</span> <span class="pre">0x38)</span></code>: Sets the display buffer with a sequence of hexadecimal values that correspond to a specific pattern to be shown on the dot matrix display.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span>            <span class="n">dms</span><span class="o">.</span><span class="n">display_buf</span><span class="o">=</span><span class="p">(</span><span class="mh">0x7f</span><span class="p">,</span> <span class="mh">0x08</span><span class="p">,</span> <span class="mh">0x7f</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x7c</span><span class="p">,</span> <span class="mh">0x54</span><span class="p">,</span> <span class="mh">0x5c</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span>
+                              <span class="mh">0x7c</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span><span class="mh">0x7c</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">,</span> <span class="mh">0x38</span><span class="p">,</span> <span class="mh">0x44</span><span class="p">,</span> <span class="mh">0x38</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>③ <code class="docutils literal notranslate"><span class="pre">dms.update_display()</span></code>: Updates the display to reflect the contents of the current display buffer.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span>            <span class="n">dms</span><span class="o">.</span><span class="n">update_display</span><span class="p">()</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>④ <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">KeyboardInterrupt</span></code>: Captures a keyboard interrupt event (such as pressing Ctrl+C) to allow the program to exit cleanly.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span>        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">display_buf</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">16</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">update_display</span><span class="p">()</span>
+            <span class="k">break</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>⑤ <code class="docutils literal notranslate"><span class="pre">dms.display_buf</span> <span class="pre">=</span> <span class="pre">[0]*16</span></code>: Clears the display buffer by setting all 16 positions to 0.</p>
+<p>⑥ <code class="docutils literal notranslate"><span class="pre">dms.update_display()</span></code>: Refreshes the display to show the cleared (blank) screen.</p>
+</section>
+</section>
+<section id="light-sensor">
+<h2>10.6 Light Sensor<a class="headerlink" href="#light-sensor" title="Link to this heading"></a></h2>
+<section id="id17">
+<h3>10.6.1 Preparation<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<p>Prepare a light sensor and connect it to any one of GPIO ports on Raspberry Pi expansion board through 4PIN cable. The wiring effect is as follow:</p>
+<img src="../_static/media/chapter_10/section_1/image6.png" class="common_img" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please do not insert forcefully because 4PIN cable uses anti-reverse plugging design.</p>
+</div>
+</section>
+<section id="id18">
+<h3>10.6.2 Module Usage<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<p>The light sensor mainly includes a QTH23C (photodiode) and LM358chi (voltage comparator).</p>
+<p>We can set a threshold by adjusting the potentiometer on sensor. When the external brightness is greater than the threshold, LED1 on module will light up and the signal terminal OUT will output a low level.</p>
+<p>When the external brightness is less than the threshold, LED1 on module will light off and the signal terminal OUT will output a high level.</p>
+</section>
+<section id="id19">
+<h3>10.6.3 Operation Steps<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<p>(1) Click the icon on the upper left corner of the desktop to open the command line terminal.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_example</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(2) Input the command below and press Enter to go to the directory of game program.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">photo_sensitive_control</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(3) If want to close this program, press <strong>“Ctrl+C”</strong>. You can try multiple time if fail to close.</p>
+</section>
+<section id="id20">
+<h3>10.6.4 Project Outcome<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<p>After the program is started, the buzzer will sound once when the external brightness is higher than the threshold set by the light sensor.</p>
+</section>
+<section id="id21">
+<h3>10.6.5 Working Principle<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<p><a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">Source Code</span></a></p>
+<p>When the external brightness is higher than the threshold set by the module, the signal terminal OUT outputs a low level, otherwise it output a high level. We can judge the current status of the sensor according to the level change of the signal terminal OUT.</p>
+<p>The source code of the program is located in: <a class="reference download internal" download="" href="../_downloads/5ac75c73441819ea94c53e2a0c072d43/sensor_example.zip"><span class="xref download myst">/home/pi/TonyPi/Extend/sensor_course/sensor_example/photo_sensitive_control.py</span></a></p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><span class="ch">#!/usr/bin/python3</span>
+<span class="c1"># coding=utf8</span>
+<span class="c1"># 4.拓展课程学习\7.拓展课程之传感器基础开发课程\第6课 光线传感器模块实验(4.Advanced Lessons\7.Sensor Development Course\Lesson6 Light Sensor Module)</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">gpiod</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ros_robot_controller_sdk</span> <span class="k">as</span> <span class="nn">rrc</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Please run this program with python3!&#39;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="n">board</span> <span class="o">=</span> <span class="n">rrc</span><span class="o">.</span><span class="n">Board</span><span class="p">()</span>
+    
+<span class="n">st</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">chip</span> <span class="o">=</span> <span class="n">gpiod</span><span class="o">.</span><span class="n">Chip</span><span class="p">(</span><span class="s1">&#39;gpiochip4&#39;</span><span class="p">)</span>
+<span class="n">light</span> <span class="o">=</span> <span class="n">chip</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">light</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">consumer</span><span class="o">=</span><span class="s2">&quot;light&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_DIR_IN</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_FLAG_BIAS_PULL_UP</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">light</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>  <span class="c1">#读取引脚数字值(read pin numerical value)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">st</span> <span class="p">:</span>            <span class="c1">#这里做一个判断，防止反复响(make a judgement to prevent repeated ringing here)</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 以1900Hz的频率，持续响0.1秒，关闭0.9秒，重复1次(at a frequency of 1900Hz, sound for 0.1 seconds, then pause for 0.9 seconds, repeat once)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 关闭(close)</span>
+            
+        <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 关闭(close)</span>
+</pre></div></td></tr></table></div>
+</div>
+<ul class="simple">
+<li><p><strong>Light Detection and Control Logic</strong></p></li>
+</ul>
+<p>① The program initializes a variable <code class="docutils literal notranslate"><span class="pre">st</span></code> and sets its value to 0.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">st</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>② It creates a GPIO object using <code class="docutils literal notranslate"><span class="pre">gpiod.Chip('gpiochip4')</span></code>, then obtains GPIO pin 7 with <strong>get_line(7).</strong> The pin is configured as an input using the <strong>request()</strong> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">chip</span> <span class="o">=</span> <span class="n">gpiod</span><span class="o">.</span><span class="n">Chip</span><span class="p">(</span><span class="s1">&#39;gpiochip4&#39;</span><span class="p">)</span>
+<span class="n">light</span> <span class="o">=</span> <span class="n">chip</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">light</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">consumer</span><span class="o">=</span><span class="s2">&quot;light&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_DIR_IN</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_FLAG_BIAS_PULL_UP</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>③ The program enters an infinite loop, continuously performing the following steps:</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">light</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>  <span class="c1">#读取引脚数字值(read pin numerical value)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>④ Reads the pin state using <code class="docutils literal notranslate"><span class="pre">light.get_value()</span></code> to retrieve the digital signal (0 or 1) from GPIO pin 7.</p>
+<p>⑤ Checks the pin state: if the value is 0 (LOW) and the variable <strong>st</strong> is true (non-zero), it proceeds with the following actions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span>        <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">st</span> <span class="p">:</span>            <span class="c1">#这里做一个判断，防止反复响(make a judgement to prevent repeated ringing here)</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 以1900Hz的频率，持续响0.1秒，关闭0.9秒，重复1次(at a frequency of 1900Hz, sound for 0.1 seconds, then pause for 0.9 seconds, repeat once)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>⑥ Sets <code class="docutils literal notranslate"><span class="pre">st</span></code> to 0, indicating that a trigger has already been handled.</p>
+<p>⑦ Calls <code class="docutils literal notranslate"><span class="pre">board.set_buzzer(1900,</span> <span class="pre">0.1,</span> <span class="pre">0.9,</span> <span class="pre">1)</span></code> to activate the buzzer at 1900 Hz for 0.1 seconds, pause for 0.9 seconds, and repeat once.</p>
+<p>⑧ Introduces a 1-second delay.</p>
+<p>⑨ If the pin state is 1 (HIGH), it performs the following actions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span>        <span class="k">else</span><span class="p">:</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 关闭(close)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>⑩ Sets <code class="docutils literal notranslate"><span class="pre">st</span></code> to 1, indicating that the pin is currently in a HIGH state.</p>
+<p>⑪ Calls <code class="docutils literal notranslate"><span class="pre">board.set_buzzer(1000,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">1)</span></code> to ensure the buzzer is turned off.</p>
+<p>⑫ Regardless of the pin state, the program finally calls <code class="docutils literal notranslate"><span class="pre">board.set_buzzer(1000,</span> <span class="pre">0.0,</span> <span class="pre">0.0,</span> <span class="pre">1)</span></code> to confirm the buzzer remains off.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span>        <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># 关闭(close)</span>
+</pre></div></td></tr></table></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="9_athletics_sport_lessons.html" class="btn btn-neutral float-left" title="9. Athletics Sport Lessons" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="11_sensor_integration_and_application_development_courses.html" class="btn btn-neutral float-right" title="11. Sensor Integration and Application Development Courses" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Hiwonder.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

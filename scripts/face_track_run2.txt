@@ -1,0 +1,92 @@
+16:17:37.933 INFO start mode=human face_mode=full pose=lite arms=True duration=25.0 gui=False
+16:17:39.168 INFO head_init yaw0=1509 pitch0=1500 P=0.050 dead=(60,80) ema=0.22 interval=0.15 max_d=(6,6)
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+16:17:39.304 INFO human_init face=full pose=lite arms=True
+16:17:39.403 INFO arm_cmd side=L ang=(75,8,-88,-8) pul=(6:533 7:812 14:466 15:150) Δ=(533,812,466,150)
+16:17:41.223 INFO head_move err=(-30.9,-82.8) d=(+0,+4) -> yaw=1509 pitch=1504 dur=40ms
+16:17:41.306 INFO arm_cmd side=R ang=(74,34,-77,0) pul=(6:622 7:812 14:466 15:150) Δ=(89,0,0,0)
+16:17:41.411 INFO head_move err=(-25.8,-99.7) d=(+0,+5) -> yaw=1509 pitch=1509 dur=40ms
+16:17:41.558 INFO heartbeat fps=11.8 frames=30 face_lock=26/87% head={'moves': 2, 'holds': 11, 'recenters': 0}
+16:17:41.890 INFO head_recenter yaw=1509 pitch=1500
+16:17:42.010 INFO heartbeat fps=11.8 frames=60 face_lock=26/43% head={'moves': 2, 'holds': 11, 'recenters': 1}
+16:17:42.284 INFO head_recenter yaw=1509 pitch=1500
+16:17:42.465 INFO heartbeat fps=11.8 frames=90 face_lock=26/29% head={'moves': 2, 'holds': 11, 'recenters': 2}
+16:17:42.573 INFO head_move err=(+95.0,+108.0) d=(-4,-5) -> yaw=1505 pitch=1495 dur=40ms
+16:17:42.954 INFO heartbeat fps=66.2 frames=120 face_lock=27/22% head={'moves': 3, 'holds': 11, 'recenters': 2}
+16:17:42.972 INFO head_recenter yaw=1509 pitch=1500
+16:17:43.362 INFO head_recenter yaw=1509 pitch=1500
+16:17:43.407 INFO heartbeat fps=66.2 frames=150 face_lock=27/18% head={'moves': 3, 'holds': 11, 'recenters': 4}
+16:17:43.752 INFO head_recenter yaw=1509 pitch=1500
+16:17:43.857 INFO heartbeat fps=64.0 frames=180 face_lock=27/15% head={'moves': 3, 'holds': 11, 'recenters': 5}
+16:17:44.144 INFO head_recenter yaw=1509 pitch=1500
+16:17:44.305 INFO heartbeat fps=64.0 frames=210 face_lock=27/13% head={'moves': 3, 'holds': 11, 'recenters': 6}
+16:17:44.523 INFO head_recenter yaw=1509 pitch=1500
+16:17:44.752 INFO heartbeat fps=67.1 frames=240 face_lock=27/11% head={'moves': 3, 'holds': 11, 'recenters': 7}
+16:17:44.918 INFO head_recenter yaw=1509 pitch=1500
+16:17:45.199 INFO heartbeat fps=67.1 frames=270 face_lock=27/10% head={'moves': 3, 'holds': 11, 'recenters': 8}
+16:17:45.302 INFO head_recenter yaw=1509 pitch=1500
+16:17:45.658 INFO heartbeat fps=66.8 frames=300 face_lock=27/9% head={'moves': 3, 'holds': 11, 'recenters': 9}
+16:17:45.715 INFO head_recenter yaw=1509 pitch=1500
+16:17:46.105 INFO head_recenter yaw=1509 pitch=1500
+16:17:46.119 INFO heartbeat fps=66.8 frames=330 face_lock=27/8% head={'moves': 3, 'holds': 11, 'recenters': 11}
+16:17:46.489 INFO head_recenter yaw=1509 pitch=1500
+16:17:46.565 INFO heartbeat fps=65.5 frames=360 face_lock=27/8% head={'moves': 3, 'holds': 11, 'recenters': 12}
+16:17:46.877 INFO head_recenter yaw=1509 pitch=1500
+16:17:47.008 INFO heartbeat fps=65.5 frames=390 face_lock=27/7% head={'moves': 3, 'holds': 11, 'recenters': 13}
+16:17:47.259 INFO head_recenter yaw=1509 pitch=1500
+16:17:47.454 INFO heartbeat fps=65.5 frames=420 face_lock=27/6% head={'moves': 3, 'holds': 11, 'recenters': 14}
+16:17:47.652 INFO head_recenter yaw=1509 pitch=1500
+16:17:47.906 INFO heartbeat fps=67.3 frames=450 face_lock=27/6% head={'moves': 3, 'holds': 11, 'recenters': 15}
+16:17:48.035 INFO head_recenter yaw=1509 pitch=1500
+16:17:48.339 INFO heartbeat fps=67.3 frames=480 face_lock=27/6% head={'moves': 3, 'holds': 11, 'recenters': 16}
+16:17:48.414 INFO head_recenter yaw=1509 pitch=1500
+16:17:48.803 INFO heartbeat fps=67.0 frames=510 face_lock=27/5% head={'moves': 3, 'holds': 11, 'recenters': 17}
+16:17:48.819 INFO head_recenter yaw=1509 pitch=1500
+16:17:49.209 INFO head_recenter yaw=1509 pitch=1500
+16:17:49.307 INFO head_move err=(-41.0,-181.0) d=(+0,+6) -> yaw=1509 pitch=1506 dur=40ms
+16:17:49.391 INFO heartbeat fps=67.0 frames=540 face_lock=29/5% head={'moves': 4, 'holds': 11, 'recenters': 19}
+16:17:49.476 INFO head_move err=(-46.6,-164.4) d=(+0,+6) -> yaw=1509 pitch=1512 dur=40ms
+16:17:49.641 INFO head_move err=(-53.6,-141.1) d=(+0,+6) -> yaw=1509 pitch=1518 dur=40ms
+16:17:49.806 INFO head_move err=(-59.1,-127.5) d=(+0,+6) -> yaw=1509 pitch=1524 dur=40ms
+16:17:49.970 INFO head_move err=(-63.8,-117.9) d=(+3,+5) -> yaw=1512 pitch=1529 dur=40ms
+16:17:50.134 INFO head_move err=(-67.0,-108.5) d=(+3,+5) -> yaw=1515 pitch=1534 dur=40ms
+16:17:50.298 INFO head_move err=(-69.0,-99.8) d=(+3,+4) -> yaw=1518 pitch=1538 dur=40ms
+16:17:50.462 INFO head_move err=(-69.0,-88.2) d=(+3,+4) -> yaw=1521 pitch=1542 dur=40ms
+16:17:50.629 INFO head_move err=(-61.9,-76.8) d=(+3,+0) -> yaw=1524 pitch=1542 dur=40ms
+16:17:51.928 INFO heartbeat fps=11.6 frames=570 face_lock=59/10% head={'moves': 12, 'holds': 18, 'recenters': 19}
+16:17:52.009 INFO arm_cmd side=both ang=(50,3,-46,10) pul=(6:622 7:812 14:466 15:211) Δ=(0,0,0,61)
+16:17:52.334 INFO arm_cmd side=both ang=(40,-27,-33,23) pul=(6:562 7:762 14:466 15:211) Δ=(-60,-50,0,0)
+16:17:52.655 INFO arm_cmd side=both ang=(20,-45,-26,40) pul=(6:467 7:694 14:544 15:281) Δ=(-95,-68,78,70)
+16:17:52.977 INFO arm_cmd side=both ang=(22,-31,-34,42) pul=(6:417 7:694 14:594 15:281) Δ=(-50,0,50,0)
+16:17:53.468 INFO arm_cmd side=both ang=(20,-24,-28,47) pul=(6:417 7:638 14:646 15:281) Δ=(0,-56,52,0)
+16:17:53.795 INFO arm_cmd side=both ang=(9,-34,-12,30) pul=(6:417 7:638 14:646 15:338) Δ=(0,0,0,57)
+16:17:54.140 INFO arm_cmd side=both ang=(3,-29,-7,26) pul=(6:417 7:638 14:646 15:389) Δ=(0,0,0,51)
+16:17:54.390 INFO heartbeat fps=12.3 frames=600 face_lock=89/15% head={'moves': 12, 'holds': 33, 'recenters': 19}
+16:17:54.472 INFO arm_cmd side=both ang=(0,-47,3,26) pul=(6:417 7:583 14:646 15:389) Δ=(0,-55,0,0)
+16:17:54.801 INFO arm_cmd side=both ang=(-3,-44,6,25) pul=(6:417 7:583 14:646 15:443) Δ=(0,0,0,54)
+16:17:55.289 INFO arm_cmd side=both ang=(-4,-32,6,26) pul=(6:417 7:531 14:646 15:443) Δ=(0,-52,0,0)
+16:17:55.863 INFO arm_cmd side=both ang=(-8,-50,12,26) pul=(6:417 7:531 14:646 15:499) Δ=(0,0,0,56)
+16:17:56.242 INFO arm_cmd side=both ang=(-8,-54,12,27) pul=(6:360 7:531 14:646 15:499) Δ=(-57,0,0,0)
+16:17:56.910 INFO heartbeat fps=11.5 frames=630 face_lock=119/19% head={'moves': 12, 'holds': 48, 'recenters': 19}
+16:17:57.242 INFO arm_cmd side=both ang=(27,-36,-37,22) pul=(6:360 7:531 14:646 15:442) Δ=(0,0,0,-57)
+16:17:57.568 INFO arm_cmd side=both ang=(44,-13,-45,16) pul=(6:360 7:584 14:646 15:442) Δ=(0,53,0,0)
+16:17:57.895 INFO arm_cmd side=both ang=(48,-10,-48,14) pul=(6:360 7:584 14:646 15:385) Δ=(0,0,0,-57)
+16:17:58.220 INFO arm_cmd side=both ang=(55,-6,-54,3) pul=(6:360 7:637 14:646 15:385) Δ=(0,53,0,0)
+16:17:58.548 INFO arm_cmd side=both ang=(58,-1,-59,-4) pul=(6:413 7:637 14:582 15:334) Δ=(53,0,-64,-51)
+16:17:58.956 INFO arm_cmd side=both ang=(59,14,-63,-2) pul=(6:470 7:689 14:582 15:334) Δ=(57,52,0,0)
+16:17:59.364 INFO heartbeat fps=12.2 frames=660 face_lock=149/23% head={'moves': 12, 'holds': 63, 'recenters': 19}
+16:17:59.446 INFO arm_cmd side=both ang=(60,18,-63,-2) pul=(6:521 7:689 14:582 15:283) Δ=(51,0,0,-51)
+16:17:59.967 INFO arm_cmd side=both ang=(60,28,-63,-8) pul=(6:521 7:689 14:527 15:283) Δ=(0,0,-55,0)
+16:18:00.372 INFO arm_cmd side=both ang=(61,33,-66,-10) pul=(6:573 7:689 14:527 15:283) Δ=(52,0,0,0)
+16:18:00.864 INFO arm_cmd side=both ang=(60,44,-65,-8) pul=(6:624 7:689 14:527 15:283) Δ=(51,0,0,0)
+16:18:01.480 INFO arm_cmd side=R ang=(68,51,-77,-18) pul=(6:624 7:689 14:477 15:283) Δ=(0,0,-50,0)
+16:18:01.889 INFO heartbeat fps=12.1 frames=690 face_lock=179/26% head={'moves': 12, 'holds': 78, 'recenters': 19}
+16:18:02.957 INFO arm_cmd side=R ang=(65,55,-70,-22) pul=(6:713 7:767 14:477 15:201) Δ=(89,78,0,-82)
+16:18:03.384 INFO arm_cmd side=both ang=(35,23,-36,8) pul=(6:713 7:767 14:477 15:251) Δ=(0,0,0,50)
+16:18:03.714 INFO arm_cmd side=both ang=(22,-20,-29,20) pul=(6:617 7:702 14:477 15:301) Δ=(-96,-65,0,50)
+16:18:04.044 INFO arm_cmd side=both ang=(23,-20,-32,21) pul=(6:536 7:702 14:477 15:301) Δ=(-81,0,0,0)
+16:18:04.368 INFO heartbeat fps=12.2 frames=720 face_lock=209/29% head={'moves': 12, 'holds': 93, 'recenters': 19}
+16:18:04.368 INFO duration reached (25.0s) — stopping
+16:18:04.368 INFO summary elapsed=25.1s frames=720 face_lock=209 (29%) head_stats={'updates': 105, 'holds': 93, 'moves': 12, 'sum_abs_dyaw': 19, 'sum_abs_dpitch': 56, 'max_abs_err_x': 95.0, 'max_abs_err_y': 181.0, 'recenters': 19}
+16:18:04.620 INFO human_stats {'face_hits': 209, 'face_misses': 511, 'pose_hits': 208, 'arm_cmds': 29, 'arm_skips_delta': 103, 'arm_skips_rate': 70}
+16:18:04.623 INFO stopped — log written to /home/pi/tonypro/scripts/face_track.log

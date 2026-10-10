@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2. Quick User Experience &mdash; TonyPi &amp; TonyPi Pro v2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=31ac2de9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=731f67d5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/custom.js?v=fd93d8dd"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Remote Desktop Tool Installation and Connection" href="3_remote_desktop_tool_installation_and_connection.html" />
+    <link rel="prev" title="1. Getting Ready" href="1_getting_ready.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tonypi-pro" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/docs/2_quick_user_experience.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #f98800" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TonyPi & TonyPi Pro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">TonyPi &amp; TonyPi Pro</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_getting_ready.html">1. Getting Ready</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Quick User Experience</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#app-installation-and-connection">2.1 App Installation and Connection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#app-installation">2.1.1 App Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#device-connection">2.1.2 Device Connection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#large-model-api-key-setup">2.2 Large Model API Key Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#openai-account-registration-and-deployment">2.2.1 OpenAI Account Registration and Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openrouter-account-registration-and-deployment">2.2.2 OpenRouter Account Registration and Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#api-configuration">2.2.3 API Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#app-control">2.3 App Control</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preparation">2.3.1 Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operation-steps">2.3.2 Operation Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#large-ai-model-features">2.4 Large AI Model Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">2.4.1 Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">2.4.2 Operation Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#color-threshold-adjustment">2.3 Color Threshold Adjustment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">2.3.1 Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interface-description">2.3.2 Interface Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adjust-color-threshold">2.3.3 Adjust Color Threshold</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">2.1.1 App Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">2.1.2 Device Connection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">2.2 Large Model API Key Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">2.2.1 OpenAI Account Registration and Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">2.2.2 OpenRouter Account Registration and Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">2.2.3 API Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">2.3 App Control</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id11">2.3.1 Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">2.3.2 Operation Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id13">2.4 Large AI Model Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id14">2.4.1 Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">2.4.2 Operation Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id16">2.3 Color Threshold Adjustment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id17">2.3.1 Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">2.3.2 Interface Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">2.3.3 Adjust Color Threshold</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="3_remote_desktop_tool_installation_and_connection.html">3. Remote Desktop Tool Installation and Connection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_pc_software_action_control_courses.html">4. PC Software Action Control Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_ai_vision_course.html">5. AI Vision Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ai_voice_interaction_course.html">6. AI Voice Interaction Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_pc_software_control.html">7. PC Software Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_vision_gripping_lessons.html">8. Vision Gripping Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9_athletics_sport_lessons.html">9. Athletics Sport Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_sensor_development_basics_courses.html">10. Sensor Development Basics Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_sensor_integration_and_application_development_courses.html">11. Sensor Integration and Application Development Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_aI_large_model_course.html">12. AI Large Model Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_group_control_lessons.html">13. Group Control Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14_network_configuration.html">14. Raspberry Pi Series Robot Network Configuration Instruction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_Group%20Control%20Course.html">15 Group Control Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources_download.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1EJppBKT0G0KF8uXjyMVlsAD1MwwAzq_2?usp=sharing">TonyPi Download</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1HsYi21H4fkIuNB8lpkcdnTRUkJyE4ObE?usp=sharing">TonyPi Pro Download</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #f98800" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TonyPi & TonyPi Pro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">2. Quick User Experience</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/docs/2_quick_user_experience.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="quick-user-experience">
+<h1>2. Quick User Experience<a class="headerlink" href="#quick-user-experience" title="Link to this heading"></a></h1>
+<p id="anchor_2_1"></p>
+<section id="app-installation-and-connection">
+<h2>2.1 App Installation and Connection<a class="headerlink" href="#app-installation-and-connection" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This section takes the TonyPi version as an example, but the instructions equally apply to TonyPi Pro.</strong></p>
+</div>
+<p>(1) When installing the app, please allow all necessary permissions to ensure it works smoothly.</p>
+<p>(2) Before opening the app, make sure the phone’s <strong>GPS</strong> and <strong>Wi-Fi</strong> service are enabled.</p>
+<section id="app-installation">
+<h3>2.1.1 App Installation<a class="headerlink" href="#app-installation" title="Link to this heading"></a></h3>
+<p>The app installation package is located in the folder <strong>2.1.2 App Installation Pack</strong>. Please transfer this package to a phone to install the app.</p>
+<img src="../_static/media/chapter_2/section_1/image2.png" class="common_img" style="width:500px"/>
+<p><strong><a class="reference external" href="https://play.google.com/store/apps/details?id=com.Wonder.Pi">APP Installation Pack (Android)</a></strong></p>
+<p><strong><a class="reference external" href="https://apps.apple.com/cn/app/wonderpi/id1477946178">APP Installation Pack (iOS)</a></strong></p>
+<p>This section explains how to connect TonyPi to the app.</p>
+</section>
+<section id="device-connection">
+<h3>2.1.2 Device Connection<a class="headerlink" href="#device-connection" title="Link to this heading"></a></h3>
+<p>Upon successful startup, the robot will automatically generate a hotspot with a name beginning with <strong>HW</strong>. Connect the phone’s app to this hotspot to access and activate additional features.</p>
+<ul class="simple">
+<li><p><strong>Connection Mode Overview</strong></p></li>
+</ul>
+<p>The robot supports two network modes:</p>
+<p>(1) <strong>AP Direct Connection Mode:</strong> The development board creates a hotspot that the phone can connect to.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This mode does not provide access to external networks.</strong></p>
+</div>
+<p>(2) <strong>STA Local Area Network (LAN) Mode:</strong> The development board connects to a specified Wi-Fi hotspot, allowing access to external networks.</p>
+<p>These two modes cannot be used simultaneously. By default, the robot operates in AP Direct Connection Mode. Regardless of which mode is chosen, the available features and functions remain the same.</p>
+<p>It is recommended to start with the AP Direct Connection Mode for initial setup and experience. It can be switched to LAN Mode later if needed.</p>
+<ul class="simple">
+<li><p><strong>Direct Connection Mode (MUST READ)</strong></p></li>
+</ul>
+<p>This section uses the Android version as an example, but the steps also apply to iOS.</p>
+<p>(1) Open the mobile app and, on the home interface, select <strong>Advanced Platform</strong>, then choose <strong>TonyPi</strong>.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_1/image3.png" style="width:500px"/>
+<p>(2) On the product selection screen, tap the <strong>TonyPi</strong> icon.</p>
+<img src="../_static/media/chapter_2/section_1/image4.png" class="common_img" style="width:500px"/>
+<p>(3) Back on the home interface, select <strong>TonyPi</strong> again, then tap the <strong>+</strong> button at the bottom right and choose <strong>Direct Connection Mode</strong>.</p>
+<img src="../_static/media/chapter_2/section_1/image5.png" class="common_img" style="width:500px"/>
+<p>(4) Follow the on-screen instructions to open the phone’s settings and connect to the hotspot starting with <strong>“HW”</strong>.Password: <strong>hiwonder</strong></p>
+<img src="../_static/media/chapter_2/section_1/image6.png" class="common_img" style="width:500px"/>
+<img src="../_static/media/chapter_2/section_1/image7.png" style="width:300px" class="common_img"/>
+<p>(5) Once connected, return to the app. The app will automatically connect to the device. Wait a moment until the robot icon appears, indicating a successful connection.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>If using an iOS device, please ensure the Wi-Fi connection icon appears at the top of the screen before returning to the app. Otherwise, the device may not be detected. If this occurs, try refreshing the search several times <img src="../_static/media/chapter_2/section_1/image8.png" /> —it usually resolves the issue.</strong></p>
+</div>
+<img src="../_static/media/chapter_2/section_1/image9.png" class="common_img" style="width:500px"/>
+<p>If prompted with a message like <strong>“Network may not be available, do you want to stay connected?”</strong>, please select <strong>Keep Connected</strong>.</p>
+<ul class="simple">
+<li><p><strong>LAN Mode Connection Method (Optional)</strong></p></li>
+</ul>
+<p>(1) Starting from having connected via AP Direct Mode, open the WonderPi app. Tap the <strong>+</strong> button at the bottom right and choose <strong>LAN Mode</strong>. Follow the prompts to open the phone’s Wi-Fi settings and connect to the desired Wi-Fi network.</p>
+<img src="../_static/media/chapter_2/section_1/image11.png" class="common_img" style="width:500px"/>
+<img src="../_static/media/chapter_2/section_1/image12.png" class="common_img" style="width:500px"/>
+<p>(2) Select the Wi-Fi network to connect to, for example, <strong>Hiwonder</strong>.</p>
+<img src="../_static/media/chapter_2/section_1/image13.png" style="width:300px" class="common_img" />
+<p>(3) Once connected, return to the app and tap the <strong>+</strong> button again. Select <strong>LAN Mode</strong> once more.</p>
+<p>(4) The app will ask for the Wi-Fi password. If the prompt doesn’t appear automatically, tap <strong>LAN Mode</strong> again. Enter the correct password and tap <strong>Next</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Make sure the password is accurate to avoid connection issues.</strong></p>
+</div>
+<img src="../_static/media/chapter_2/section_1/image14.png" class="common_img" style="width:500px"/>
+<p>(5) Next, follow the app’s instructions to connect to the robot’s hotspot, which starts with <strong>“HW”</strong>, in the phone’s Wi-Fi settings.</p>
+<img src="../_static/media/chapter_2/section_1/image15.png" class="common_img" style="width:500px"/>
+<p>(6) After connecting to the hotspot, return to the app. It will automatically attempt to connect to the robot. If prompted to join the network, tap <strong>Join</strong>.</p>
+<img src="../_static/media/chapter_2/section_1/image16.png" class="common_img" style="width:500px"/>
+<img src="../_static/media/chapter_2/section_1/image17.png" class="common_img" style="width:500px"/>
+<p>(7) Wait a moment for the connection to complete. The app will switch back to the main screen automatically. The LED2 light on the Raspberry Pi expansion board will stop flashing and remain steadily lit, indicating a successful network connection.</p>
+<img src="../_static/media/chapter_2/section_1/image9.png" class="common_img" style="width:500px"/>
+<p>(8) Press and hold the robot icon in the app to view the robot’s IP address and ID. Note down the IP address, as it is needed for the next steps.</p>
+<img src="../_static/media/chapter_2/section_1/image18.png" class="common_img" style="width:500px"/>
+<p>(9) Next, proceed to the <a class="reference internal" href="3_remote_desktop_tool_installation_and_connection.html"><span class="std std-doc"><strong>3. Remote Desktop Tool Installation and Connection</strong></span></a> section. Follow the instructions to install the VNC remote desktop tool. Open the tool and enter the robot’s IP address in the address bar, then press Enter.</p>
+<img src="../_static/media/chapter_2/section_1/image19.png" class="common_img" />
+<p>(10) When prompted, enter the login credentials:</p>
+<ul class="simple">
+<li><p>Username: <code class="docutils literal notranslate"><span class="pre">pi</span></code></p></li>
+<li><p>Password: <code class="docutils literal notranslate"><span class="pre">raspberrypi</span></code></p></li>
+</ul>
+<p>Optionally, check <strong>Remember password</strong>, then click <strong>OK</strong>. The Raspberry Pi desktop can be viewed remotely now.</p>
+<img src="../_static/media/chapter_2/section_1/image20.png" class="common_img" />
+<p id ="p2-2"></p>
+</section>
+</section>
+<section id="large-model-api-key-setup">
+<h2>2.2 Large Model API Key Setup<a class="headerlink" href="#large-model-api-key-setup" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This section requires registering on the official OpenAI website and obtaining an API key for accessing large language models.</strong></p>
+</div>
+<section id="openai-account-registration-and-deployment">
+<h3>2.2.1 OpenAI Account Registration and Deployment<a class="headerlink" href="#openai-account-registration-and-deployment" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Copy and open the following URL: https://platform.openai.com/docs/overview, then click the <strong>Sign Up</strong> button in the upper-right corner.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image1.png"  />
+<ol class="arabic simple" start="2">
+<li><p>Register and log in using a Google, Microsoft, or Apple account, as prompted.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image2.png" style="width:500px" />
+<ol class="arabic simple" start="3">
+<li><p>After logging in, click the Settings button, then go to <strong>Billing</strong>, and click <strong>Payment Methods</strong> to add a payment method. The payment is used to purchase <strong>tokens</strong>.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image3.png"  style="width:500px"/>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image4.png" style="width:700px" />
+<ol class="arabic simple" start="4">
+<li><p>After completing the preparation steps, click <strong>API Keys</strong> and create a new key. Follow the prompts to fill in the required information, then save the key for later use.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image5.png" style="width:200px" />
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image6.png" style="width:1000px" />
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image7.png" style="width:300px" />
+<ol class="arabic simple" start="5">
+<li><p>The creation and deployment of the large model have been completed, and this API will be used in the following sections.</p></li>
+</ol>
+</section>
+<section id="openrouter-account-registration-and-deployment">
+<h3>2.2.2 OpenRouter Account Registration and Deployment<a class="headerlink" href="#openrouter-account-registration-and-deployment" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Copy the URL https://openrouter.ai/ into a browser and open the webpage. Click <strong>Sign in</strong> and register or sign in using a Google account or another available account.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image8.png" style="width:500px" />
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image9.png" style="width:300px" />
+<ol class="arabic simple" start="2">
+<li><p>After logging in, click the icon in the top-right corner, then select <strong>Credits</strong> to add a payment method.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image10.png" style="width:500px" />
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image11.png" style="width:600px" />
+<ol class="arabic simple" start="3">
+<li><p>Create an API key. Go to <strong>API Keys</strong>, then click <strong>Create Key</strong>. Follow the prompts to generate a key. Save the API key securely for later use.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image12.png" style="width:500px" />
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image13.png" style="width:500px" />
+<p>The creation and deployment of the large model have been completed, and this API will be used in the following sections.</p>
+</section>
+<section id="api-configuration">
+<h3>2.2.3 API Configuration<a class="headerlink" href="#api-configuration" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Click <img src="../_static/media/chapter_2/section_2.2/image14.png"  style="width:30px" style="5display:inline;vertical-align:middle;"/> to open a terminal and enter the following command to open the configuration file. Press the i key to enter input mode.</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vim<span class="w"> </span>/home/pi/embodied_intelligence/common/config.py
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Fill in the obtained large model API Key in the corresponding parameter, as shown in the red box in the figure below.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image15.png" style="width:500px"  />
+<ol class="arabic simple" start="3">
+<li><p>Press <strong>Esc</strong>, then enter the command and press <strong>Enter</strong> to save and exit the configuration file.</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>:wq
+</pre></div>
+</div>
+</section>
+</section>
+<section id="app-control">
+<h2>2.3 App Control<a class="headerlink" href="#app-control" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This section uses TonyPi Pro as an example. The information provided also applies to other versions of TonyPi.</strong></p>
+</div>
+<section id="preparation">
+<h3>2.3.1 Preparation<a class="headerlink" href="#preparation" title="Link to this heading"></a></h3>
+<p>Refer to the tutorial <a class="reference internal" href="#anchor_2_1"><span class="xref myst">2.1 App Installation and Connection</span></a> to install the application and establish a connection with the TonyPi Pro.</p>
+</section>
+<section id="operation-steps">
+<h3>2.3.2 Operation Steps<a class="headerlink" href="#operation-steps" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>The Cross Hurdle and the Up And Down Stair features are exclusive to the TonyPi Pro.</strong></p>
+</div>
+<ol class="arabic">
+<li><p>Tap the robot icon to open the main feature selection menu.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image1.png" style="width:500px"  />
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image2.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Robot Control</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Robot Control</strong> icon to access the operational interface. The robot will immediately reset to its default standing posture.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image3.png" style="width:500px"  />
+</li>
+<li><p>Select the mode options in the upper-right corner to switch the operation to <strong>General Mode</strong>.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image4.png" style="width:500px"  />
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image5.png" style="width:300px"  />
+<p><strong>General Mode</strong></p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image3.png" style="width:500px"  />
+<p>The <strong>Remote Control - General Mode</strong> interface consists of two primary sections. The joystick handles robot movement controls. The specific assignments for other interface icons are detailed in the table below.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: center;"><strong>Functionality</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image6.png" style="width:200px" /></td>
+<td style="text-align: center;">Manipulating the joystick controls the robot's movement.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image7.png" style="width:200px" /></td>
+<td style="text-align: center;">Commands the chassis to sidestep left, sidestep right, or reset to a stable standing position.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image8.png" style="width:200px" /></td>
+<td style="text-align: center;">Triggers pre-programmed actions, dance routines, and autonomous fall-recovery sequences.</td>
+</tr>
+</tbody>
+</table>
+<p>The right section of the interface displays the real-time video stream from the onboard camera. Swiping across this area adjusts the camera tilt and pan rotation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>The camera pan-tilt servos feature built-in hardware limit protection. The mobile device provides haptic vibration feedback once a rotation boundary is reached. Avoid further panning or tilting inputs past this threshold.</strong></p>
+</div>
+<ol class="arabic" start="2">
+<li><p>The <strong>Instruction</strong> button in the lower-right corner of the interface provides a helpful reference, and the specific details are illustrated in the figure below.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image9.png" style="width:500px"  />
+</li>
+</ol>
+<p>The robot resets to its initial stance whenever a different function is selected.</p>
+<ol class="arabic simple" start="3">
+<li><p>To return to the main feature menu, tap any blank area to call up the header navigation bar, then select the left arrow icon <img src="../_static/media/chapter_2/section_2.3/media/image10.png" style="width:50px" />.</p></li>
+</ol>
+<p><strong>Transport Mode</strong></p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image11.png" style="width:500px"  />
+<p>The <strong>Remote Control - Transport Mode</strong> interface is divided into two sections. The left joystick directs robot movement. Additional control icons are described in the table below.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: center;"><strong>Functionality</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image6.png" style="width:200px" /></td>
+<td style="text-align: center;">Manipulating the joystick controls the robot's movement.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image7.png" style="width:200px" /></td>
+<td style="text-align: center;">Commands the chassis to sidestep left, sidestep right, or reset to a stable standing position.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image12.png" style="width:200px" /></td>
+<td style="text-align: center;">Executes object transport and placement routines.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Soccer Mode</strong></p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image13.png" style="width:500px"  />
+<p>The <strong>Remote Control - Soccer Mode</strong> interface is divided into two sections. The left joystick manages robot movement. Refer to the table below for other integrated control icons.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: center;"><strong>Functionality</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image6.png" style="width:200px" /></td>
+<td style="text-align: center;">Manipulating the joystick controls the robot's movement.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image7.png" style="width:200px" /></td>
+<td style="text-align: center;">Commands the chassis to sidestep left, sidestep right, or reset to a stable standing position.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image14.png" style="width:200px" /></td>
+<td style="text-align: center;">Triggers left-foot or right-foot soccer kick sequences.</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><strong>Auto Shooting</strong></p></li>
+</ul>
+<p>This feature enables target detection for a ball of any specified color. TonyPi Pro autonomously adjusts its alignment, approaches the target, and kicks it forward.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>Conduct operations in a well-lit indoor environment while avoiding direct exposure to intense glare or sunlight.</strong></p></li>
+<li><p><strong>Ensure that the camera field of view remains clear of background clutter sharing matching or similar colors to minimize target detection interference.</strong></p></li>
+<li><p><strong>Tap “Auto Shooting” to open the feature control panel.</strong></p></li>
+</ul>
+</div>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image15.png" style="width:500px"  />
+<ol class="arabic">
+<li><p>Upon entering the interface, select the <strong>Pick</strong> button, using a red ball as a reference scenario. Drag the red calibration ring on the live video stream over the target object to sample the color data, then tap <strong>OK</strong>.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image16.png" style="width:500px"  />
+</li>
+<li><p>The active target color configuration appears within the <strong>Selected color</strong> display box.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image17.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button to launch the routine. The robot tracks the target object and automatically executes a kick upon reaching optimal proximity.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image18.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Line Following</strong></p></li>
+</ul>
+<p>This vision routine tracks lines of any selected color, allowing TonyPi to continuously adjust its steering and follow the layout.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>Conduct operations in a well-lit indoor environment while avoiding direct exposure to intense glare or sunlight.</strong></p></li>
+<li><p><strong>Ensure that the camera field of view remains clear of background clutter, sharing matching or similar colors to minimize target detection interference.</strong></p></li>
+<li><p><strong>The tracking circuit can be constructed using colored adhesive tape.</strong></p></li>
+<li><p><strong>Select “Line Following” from the main menu to open the interface, then tap the “Pick” button using a red tape track as an example.</strong></p></li>
+</ul>
+</div>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image19.png" style="width:500px"  />
+<ol class="arabic">
+<li><p>Drag the red calibration ring on the live video stream over the tape track to sample the color data, then tap <strong>OK</strong>.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image20.png" style="width:500px"  />
+</li>
+<li><p>The active target color configuration appears within the <strong>Selected color</strong> display box.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image21.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button to initialize the operation. The robot will autonomously navigate along the path.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image22.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Object Tracking</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>Conduct operations in a well-lit indoor environment while avoiding direct exposure to intense glare or sunlight.</strong></p></li>
+<li><p><strong>Ensure that the camera field of view remains clear of background clutter, sharing matching or similar colors to minimize target detection interference.</strong></p></li>
+<li><p><strong>Select “Object Tracking” from the main menu to open the interface, then tap the Pick button using a red ball as an example.</strong></p></li>
+</ul>
+</div>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image23.png" style="width:500px"  />
+<ol class="arabic">
+<li><p>Drag the red calibration ring on the live video stream over the target object to sample the color data, then tap <strong>OK</strong>.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image24.png" style="width:500px"  />
+</li>
+<li><p>The active target color configuration appears within the <strong>Selected color</strong> display box.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image25.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button to launch the routine. Moving the target object prompts the robot to follow its trajectory dynamically.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image26.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Tag Recognition</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>The maximum effective detection range is approximately 50 cm.</strong></p></li>
+<li><p><strong>Ensure the tag cards remain completely intact. Wrinkles or physical damage will degrade target recognition accuracy.</strong></p></li>
+</ul>
+</div>
+<p>Tap <strong>Tag Recognition</strong> to open the operational panel, then toggle the <strong>Start</strong> button to launch the routine. Once active, present the included tag cards to the camera module sequentially. The robot automatically executes predefined kinematic actions upon identifying each tag pattern.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image27.png" style="width:500px"  />
+<ul class="simple">
+<li><p><strong>Face Detection</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>The maximum effective detection range is approximately 100 cm.</strong></p></li>
+<li><p><strong>Avoid placing faces too close to the robot chassis to prevent tracking failures or accidental physical contact injuries.</strong></p></li>
+</ul>
+</div>
+<p>Tap <strong>Face Detection</strong> to open the interface, then toggle the <strong>Start</strong> button to initialize. The robot head will automatically pan left and right to scan the area. Upon locking onto a human face, the tracking rotation stops, and the robot triggers a waving gesture animation.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image29.png" style="width:500px"  />
+<ul class="simple">
+<li><p><strong>Gesture Control</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>This feature supports right-hand inputs exclusively.</strong></p></li>
+<li><p><strong>Extend the index finger while keeping the remaining digits closed during detection.</strong></p></li>
+<li><p><strong>Maintain a moderate movement speed to ensure robust gesture tracking.</strong></p></li>
+</ul>
+</div>
+<p>Select <strong>Gesture Control</strong> from the feature menu to enter the interface. Toggle the <strong>Start</strong> button and follow the visual prompts displayed in the lower-left corner. The robot executes corresponding directional movements after tracking the hand trajectory.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image30.png" style="width:500px"  />
+<ul class="simple">
+<li><p><strong>Cross Hurdle</strong></p></li>
+</ul>
+<p>Tap <strong>Cross Hurdle</strong> to launch the interface. The camera processes and recognizes the blue segments on the hurdle prop, commanding the robot to execute an autonomous clearance step.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image31.png" style="width:500px"  />
+<ul class="simple">
+<li><p><strong>Up And Down Stair</strong></p></li>
+</ul>
+<p>Toggle the <strong>Start</strong> button to open the feature interface. The camera identifies the red sections of the step prop, allowing the robot to successfully complete autonomous ascent and descent routines.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image32.png" style="width:500px"  />
+</section>
+</section>
+<section id="large-ai-model-features">
+<h2>2.4 Large AI Model Features<a class="headerlink" href="#large-ai-model-features" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This section uses TonyPi Pro as an example. The information provided also applies to other versions of TonyPi.</strong></p>
+</div>
+<section id="id1">
+<h3>2.4.1 Preparation<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>Refer to section <a class="reference internal" href="#anchor_2_1"><span class="xref myst">2.1 App Installation and Connection</span></a> to install the app and configure the robot to Local Area Network (LAN) mode.</p>
+<p>Follow the documentation <a class="reference internal" href="#p2-2"><span class="xref myst">2.2 Large Model API Key Setup</span></a> to complete the credential setup.</p>
+</section>
+<section id="id2">
+<h3>2.4.2 Operation Steps<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>The robot must operate in LAN mode or be connected directly via an Ethernet cable to execute large AI model features.</strong></p>
+</div>
+<ol class="arabic">
+<li><p>Select the <strong>Large Model</strong> mode.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image1.png" style="width:500px"  />
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image2.png" style="width:500px"  />
+</li>
+<li><p>Tap the key icon indicated by the arrow indicator.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image3.png" style="width:500px"  />
+</li>
+<li><p>Input the previously acquired credential into the <strong>Large Model Key</strong> field, tap <strong>Set</strong>, and reboot the robot.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image4.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Smart Chat</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Smart Chat</strong> icon to open the corresponding control panel.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image5.png" style="width:500px"  />
+</li>
+<li><p>Tap the <strong>Instruction</strong> button to review the feature description, then tap <strong>OK</strong> to dismiss the prompt.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image6.png" style="width:500px"/>
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to broadcast the voice prompt <strong>I’m ready</strong>. Activate the system using the wake word <strong>Hello Hiwonder</strong> to chat with the robot. Toggle the <strong>Start</strong> button again to terminate the session.</p></li>
+</ol>
+<ul class="simple">
+<li><p><strong>Voice Control</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Voice Control</strong> icon to enter the interface.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image7.png" style="width:500px"  />
+</li>
+<li><p>Tap the <strong>Instruction</strong> button to view the overview, then tap <strong>OK</strong> to dismiss the window.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image8.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to say <strong>I’m ready</strong>. Say the wake word <strong>Hello Hiwonder</strong> to enable voice interactions. Issue verbal instructions to control robot movements. Tap <strong>Start</strong> again to disable the mode.</p></li>
+</ol>
+<ul class="simple">
+<li><p><strong>Auto Shooting</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Auto Shooting</strong> icon to open the corresponding panel.</p></li>
+<li><p>Tap the <strong>Instruction</strong> button to view the overview, then tap <strong>OK</strong> to dismiss the window.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image10.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to say <strong>I’m ready</strong>. Wake up the robot using the wake word <strong>Hello Hiwonder</strong> to launch the voice-controlled tracking and kicking routine. Issue verbal commands to direct ball tracking and kick execution. Tap <strong>Start</strong> again to exit.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image11.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Real-Time Tracking</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Real-Time Tracking</strong> icon to access the interface.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image12.png" style="width:500px"  />
+</li>
+<li><p>Tap the <strong>Instruction</strong> button to view the overview, then tap <strong>OK</strong> to close the prompt.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image13.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to say <strong>I’m ready</strong>. Activate the robot using the wake word <strong>Hello Hiwonder</strong> to initialize real-time tracking. Direct target tracking behavior via verbal inputs. Tap <strong>Start</strong> again to deactivate.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image14.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Scene Understanding</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Scene Understanding</strong> icon to access the interface.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image15.png" style="width:500px"  />
+</li>
+<li><p>Tap the <strong>Instruction</strong> button to view the overview, then tap <strong>OK</strong> to close the prompt.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image16.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to say <strong>I’m ready</strong>. Say the wake word <strong>Hello Hiwonder</strong> to initiate scene analysis. Prompt the robot verbally to generate a description of its environment. Tap <strong>Start</strong> again to deactivate.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image17.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Weather Query</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Weather Query</strong> icon to open the interface.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image18.png" style="width:500px"  />
+</li>
+<li><p>Tap the <strong>Instruction</strong> button to view the overview, then tap <strong>OK</strong> to close the window.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image19.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to say <strong>I’m ready</strong>. Say the wake word <strong>Hello Hiwonder</strong> to activate weather querying. Request weather information for a specific state or city via vocal prompts. Tap <strong>Start</strong> again to close the feature.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image20.png" style="width:500px"  />
+</li>
+</ol>
+</section>
+</section>
+<section id="color-threshold-adjustment">
+<h2>2.3 Color Threshold Adjustment<a class="headerlink" href="#color-threshold-adjustment" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This lesson is applicable to all Raspberry Pi 4B and Pi 5 series products.</strong></p>
+</div>
+<p>Please be aware that lighting conditions can significantly affect the appearance of colors, which may impact the performance of color recognition features.</p>
+<p>To address this, this section shows how to use the WonderPi app to adjust color threshold settings for optimal recognition.</p>
+<section id="id3">
+<h3>2.3.1 Preparation<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>Refer to the tutorial <a class="reference internal" href="#anchor_2_1"><span class="xref myst"><strong>2.1 App Installation and Connection</strong></span></a> to install the mobile app and connect to the robot.</p>
+</section>
+<section id="interface-description">
+<h3>2.3.2 Interface Description<a class="headerlink" href="#interface-description" title="Link to this heading"></a></h3>
+<p>Once enter the mode selection screen, tap the button shown below to access the color threshold adjustment interface.</p>
+<img src="../_static/media/chapter_2/section_3/image2.png" class="common_img" style="width:500px"/>
+<img src="../_static/media/chapter_2/section_3/image3.png" class="common_img" style="width:500px"/>
+<p>The table below provides a description of the functions in the color threshold adjustment interface:</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: left;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image4.png" class="common_img" style="width:200px"/></td>
+<td style="text-align: left;">Processed image from the camera feed. In the image, the colored object areas are shown in white, while the rest is shown in black.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image4.png" class="common_img" style="width:200px"/></td>
+<td style="text-align: left;">Original image from the camera feed.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image5.png" /></td>
+<td style="text-align: left;">Currently selected color for adjustment.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image6.png" style="width:200px" /><img src="../_static/media/chapter_2/section_3/image7.png" style="width:200px" /></td>
+<td style="text-align: left;">Adjust the L component (lightness) range of the camera feed image. <code>L_min</code> is the lower limit, and <code>L_max</code> is the upper limit. Click the button <img src="../_static/media/chapter_2/section_3/image8.png" style="width:30px" /> to decrease the corresponding value. Click the button <img src="../_static/media/chapter_2/section_3/image9.png" style="width:30px"/> to increase it.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image10.png"  style="width:200px"/><img src="../_static/media/chapter_2/section_3/image11.png"  style="width:200px"/></td>
+<td style="text-align: left;">Adjust the A component (green to red) range of the camera feed image. <code>a_min</code> is the lower limit, and <code>a_max</code> is the upper limit. Click the button <img src="../_static/media/chapter_2/section_3/image8.png" style="width:30px"/> to decrease the corresponding value. Click the button <img src="../_static/media/chapter_2/section_3/image9.png" style="width:30px"/> to increase it.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image12.png"  style="width:200px"/><img src="../_static/media/chapter_2/section_3/image13.png" style="width:200px" /></td>
+<td style="text-align: left;">Adjust the B component (yellow to blue) range of the camera feed image. <code>b_min</code> is the lower limit, and <code>b_max</code> is the upper limit. Click the button <img src="../_static/media/chapter_2/section_3/image8.png" style="width:30px"/> to decrease the corresponding value. Click the button <img src="../_static/media/chapter_2/section_3/image9.png" style="width:30px"/> to increase it.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image14.png" class="common_img" style="width:100px"/></td>
+<td style="text-align: left;">Open the instruction window to view the method for adjusting color thresholds.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image15.png" style="width:100px"/></td>
+<td style="text-align: left;">Save the adjusted threshold values.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image16.png" style="width:50px"/></td>
+<td style="text-align: left;">Return to the mode selection screen.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image17.png" style="width:50px"/></td>
+<td style="text-align: left;">Hide the navigation bar.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image18.png" style="width:50px"/></td>
+<td style="text-align: left;">Display the information window for Hiwonder</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="adjust-color-threshold">
+<h3>2.3.3 Adjust Color Threshold<a class="headerlink" href="#adjust-color-threshold" title="Link to this heading"></a></h3>
+<p>(1) Open the color threshold adjustment screen and select the color needed to adjust—for example, red.</p>
+<img src="../_static/media/chapter_2/section_3/image19.png" class="common_img" style="width:500px"/>
+<p>(2) Place the red object within the camera’s view. Set the minimum values of L, A, and B components to 0, and the maximum values to 255.</p>
+<img src="../_static/media/chapter_2/section_3/image20.png" class="common_img" style="width:500px"/>
+<p>(3) Click the <strong>Instruction</strong> button to see how to adjust the color thresholds.</p>
+<img src="../_static/media/chapter_2/section_3/image21.png" class="common_img" style="width:500px"/>
+<img src="../_static/media/chapter_2/section_3/image22.png" class="common_img" style="width:500px"/>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>To close the instructions window, click OK.</strong></p>
+</div>
+<p>(4) Since red is closer to the positive side of the A component in the LAB color space, start by adjusting the A values.</p>
+<img src="../_static/media/chapter_2/section_3/image23.png" class="common_img" style="width:300px"/>
+<p>(5) Leave <code class="docutils literal notranslate"><span class="pre">a_max</span></code> unchanged and gradually increase <code class="docutils literal notranslate"><span class="pre">a_min</span></code> until the red object appears white in the processed image while the background turns black.</p>
+<img src="../_static/media/chapter_2/section_3/image24.png" class="common_img" style="width:500px"/>
+<p>(6) Adjust the L (lightness) and B (chroma) values depending on the lighting conditions:</p>
+<ul class="simple">
+<li><p>If the red looks too light, raise the minimum brightness (<code class="docutils literal notranslate"><span class="pre">L_min</span></code>).</p></li>
+<li><p>If it looks too dark, lower the maximum brightness (<code class="docutils literal notranslate"><span class="pre">L_max</span></code>).</p></li>
+<li><p>If the red appears too warm, increase the minimum chroma (<code class="docutils literal notranslate"><span class="pre">b_min</span></code>).</p></li>
+<li><p>If it looks too cool, decrease the maximum chroma (<code class="docutils literal notranslate"><span class="pre">b_max</span></code>).</p></li>
+</ul>
+<img src="../_static/media/chapter_2/section_3/image25.png" class="common_img" style="width:500px"/>
+<p>(7) When the settings are down, click <strong>Save</strong> to keep the new threshold values.</p>
+<img src="../_static/media/chapter_2/section_3/image26.png" class="common_img" style="width:500px"/>
+(1) When installing the app, please allow all necessary permissions to ensure it works smoothly.
+<p>(2) Before opening the app, make sure the phone’s <strong>GPS</strong> and <strong>Wi-Fi</strong> service are enabled.</p>
+</section>
+<section id="id4">
+<h3>2.1.1 App Installation<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>The app installation package is located in the folder <strong>2.1.2 App Installation Pack</strong>. Please transfer this package to a phone to install the app.</p>
+<img src="../_static/media/chapter_2/section_1/image2.png" class="common_img" style="width:500px"/>
+<p><strong><a class="reference external" href="https://play.google.com/store/apps/details?id=com.Wonder.Pi">APP Installation Pack (Android)</a></strong></p>
+<p><strong><a class="reference external" href="https://apps.apple.com/cn/app/wonderpi/id1477946178">APP Installation Pack (iOS)</a></strong></p>
+<p>This section explains how to connect TonyPi to the app.</p>
+</section>
+<section id="id5">
+<h3>2.1.2 Device Connection<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p>Upon successful startup, the robot will automatically generate a hotspot with a name beginning with <strong>HW</strong>. Connect the phone’s app to this hotspot to access and activate additional features.</p>
+<ul class="simple">
+<li><p><strong>Connection Mode Overview</strong></p></li>
+</ul>
+<p>The robot supports two network modes:</p>
+<p>(1) <strong>AP Direct Connection Mode:</strong> The development board creates a hotspot that the phone can connect to.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This mode does not provide access to external networks.</strong></p>
+</div>
+<p>(2) <strong>STA Local Area Network (LAN) Mode:</strong> The development board connects to a specified Wi-Fi hotspot, allowing access to external networks.</p>
+<p>These two modes cannot be used simultaneously. By default, the robot operates in AP Direct Connection Mode. Regardless of which mode is chosen, the available features and functions remain the same.</p>
+<p>It is recommended to start with the AP Direct Connection Mode for initial setup and experience. It can be switched to LAN Mode later if needed.</p>
+<ul class="simple">
+<li><p><strong>Direct Connection Mode (MUST READ)</strong></p></li>
+</ul>
+<p>This section uses the Android version as an example, but the steps also apply to iOS.</p>
+<p>(1) Open the mobile app and, on the home interface, select <strong>Advanced Platform</strong>, then choose <strong>TonyPi</strong>.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_1/image3.png" style="width:500px"/>
+<p>(2) On the product selection screen, tap the <strong>TonyPi</strong> icon.</p>
+<img src="../_static/media/chapter_2/section_1/image4.png" class="common_img" style="width:500px"/>
+<p>(3) Back on the home interface, select <strong>TonyPi</strong> again, then tap the <strong>+</strong> button at the bottom right and choose <strong>Direct Connection Mode</strong>.</p>
+<img src="../_static/media/chapter_2/section_1/image5.png" class="common_img" style="width:500px"/>
+<p>(4) Follow the on-screen instructions to open the phone’s settings and connect to the hotspot starting with <strong>“HW”</strong>.Password: <strong>hiwonder</strong></p>
+<img src="../_static/media/chapter_2/section_1/image6.png" class="common_img" style="width:500px"/>
+<img src="../_static/media/chapter_2/section_1/image7.png" style="width:300px" class="common_img"/>
+<p>(5) Once connected, return to the app. The app will automatically connect to the device. Wait a moment until the robot icon appears, indicating a successful connection.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>If using an iOS device, please ensure the Wi-Fi connection icon appears at the top of the screen before returning to the app. Otherwise, the device may not be detected. If this occurs, try refreshing the search several times <img src="../_static/media/chapter_2/section_1/image8.png" /> —it usually resolves the issue.</strong></p>
+</div>
+<img src="../_static/media/chapter_2/section_1/image9.png" class="common_img" style="width:500px"/>
+<p>If prompted with a message like <strong>“Network may not be available, do you want to stay connected?”</strong>, please select <strong>Keep Connected</strong>.</p>
+<ul class="simple">
+<li><p><strong>LAN Mode Connection Method (Optional)</strong></p></li>
+</ul>
+<p>(1) Starting from having connected via AP Direct Mode, open the WonderPi app. Tap the <strong>+</strong> button at the bottom right and choose <strong>LAN Mode</strong>. Follow the prompts to open the phone’s Wi-Fi settings and connect to the desired Wi-Fi network.</p>
+<img src="../_static/media/chapter_2/section_1/image11.png" class="common_img" style="width:500px"/>
+<img src="../_static/media/chapter_2/section_1/image12.png" class="common_img" style="width:500px"/>
+<p>(2) Select the Wi-Fi network to connect to, for example, <strong>Hiwonder</strong>.</p>
+<img src="../_static/media/chapter_2/section_1/image13.png" style="width:300px" class="common_img" />
+<p>(3) Once connected, return to the app and tap the <strong>+</strong> button again. Select <strong>LAN Mode</strong> once more.</p>
+<p>(4) The app will ask for the Wi-Fi password. If the prompt doesn’t appear automatically, tap <strong>LAN Mode</strong> again. Enter the correct password and tap <strong>Next</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Make sure the password is accurate to avoid connection issues.</strong></p>
+</div>
+<img src="../_static/media/chapter_2/section_1/image14.png" class="common_img" style="width:500px"/>
+<p>(5) Next, follow the app’s instructions to connect to the robot’s hotspot, which starts with <strong>“HW”</strong>, in the phone’s Wi-Fi settings.</p>
+<img src="../_static/media/chapter_2/section_1/image15.png" class="common_img" style="width:500px"/>
+<p>(6) After connecting to the hotspot, return to the app. It will automatically attempt to connect to the robot. If prompted to join the network, tap <strong>Join</strong>.</p>
+<img src="../_static/media/chapter_2/section_1/image16.png" class="common_img" style="width:500px"/>
+<img src="../_static/media/chapter_2/section_1/image17.png" class="common_img" style="width:500px"/>
+<p>(7) Wait a moment for the connection to complete. The app will switch back to the main screen automatically. The LED2 light on the Raspberry Pi expansion board will stop flashing and remain steadily lit, indicating a successful network connection.</p>
+<img src="../_static/media/chapter_2/section_1/image9.png" class="common_img" style="width:500px"/>
+<p>(8) Press and hold the robot icon in the app to view the robot’s IP address and ID. Note down the IP address, as it is needed for the next steps.</p>
+<img src="../_static/media/chapter_2/section_1/image18.png" class="common_img" style="width:500px"/>
+<p>(9) Next, proceed to the <a class="reference internal" href="3_remote_desktop_tool_installation_and_connection.html"><span class="std std-doc"><strong>3. Remote Desktop Tool Installation and Connection</strong></span></a> section. Follow the instructions to install the VNC remote desktop tool. Open the tool and enter the robot’s IP address in the address bar, then press Enter.</p>
+<img src="../_static/media/chapter_2/section_1/image19.png" class="common_img" />
+<p>(10) When prompted, enter the login credentials:</p>
+<ul class="simple">
+<li><p>Username: <code class="docutils literal notranslate"><span class="pre">pi</span></code></p></li>
+<li><p>Password: <code class="docutils literal notranslate"><span class="pre">raspberrypi</span></code></p></li>
+</ul>
+<p>Optionally, check <strong>Remember password</strong>, then click <strong>OK</strong>. The Raspberry Pi desktop can be viewed remotely now.</p>
+<img src="../_static/media/chapter_2/section_1/image20.png" class="common_img" />
+</section>
+</section>
+<section id="id6">
+<h2>2.2 Large Model API Key Setup<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This section requires registering on the official OpenAI website and obtaining an API key for accessing large language models.</strong></p>
+</div>
+<section id="id7">
+<h3>2.2.1 OpenAI Account Registration and Deployment<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Copy and open the following URL: https://platform.openai.com/docs/overview, then click the <strong>Sign Up</strong> button in the upper-right corner.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image1.png"  />
+<ol class="arabic simple" start="2">
+<li><p>Register and log in using a Google, Microsoft, or Apple account, as prompted.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image2.png" style="width:500px" />
+<ol class="arabic simple" start="3">
+<li><p>After logging in, click the Settings button, then go to <strong>Billing</strong>, and click <strong>Payment Methods</strong> to add a payment method. The payment is used to purchase <strong>tokens</strong>.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image3.png"  style="width:500px"/>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image4.png" style="width:700px" />
+<ol class="arabic simple" start="4">
+<li><p>After completing the preparation steps, click <strong>API Keys</strong> and create a new key. Follow the prompts to fill in the required information, then save the key for later use.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image5.png" style="width:200px" />
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image6.png" style="width:1000px" />
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image7.png" style="width:300px" />
+<ol class="arabic simple" start="5">
+<li><p>The creation and deployment of the large model have been completed, and this API will be used in the following sections.</p></li>
+</ol>
+</section>
+<section id="id8">
+<h3>2.2.2 OpenRouter Account Registration and Deployment<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Copy the URL https://openrouter.ai/ into a browser and open the webpage. Click <strong>Sign in</strong> and register or sign in using a Google account or another available account.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image8.png" style="width:500px" />
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image9.png" style="width:300px" />
+<ol class="arabic simple" start="2">
+<li><p>After logging in, click the icon in the top-right corner, then select <strong>Credits</strong> to add a payment method.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image10.png" style="width:500px" />
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image11.png" style="width:600px" />
+<ol class="arabic simple" start="3">
+<li><p>Create an API key. Go to <strong>API Keys</strong>, then click <strong>Create Key</strong>. Follow the prompts to generate a key. Save the API key securely for later use.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image12.png" style="width:500px" />
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image13.png" style="width:500px" />
+<p>The creation and deployment of the large model have been completed, and this API will be used in the following sections.</p>
+</section>
+<section id="id9">
+<h3>2.2.3 API Configuration<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Click <img src="../_static/media/chapter_2/section_2.2/image14.png"  style="width:30px" style="5display:inline;vertical-align:middle;"/> to open a terminal and enter the following command to open the configuration file. Press the i key to enter input mode.</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>vim<span class="w"> </span>/home/pi/embodied_intelligence/common/config.py
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Fill in the obtained large model API Key in the corresponding parameter, as shown in the red box in the figure below.</p></li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.2/image15.png" style="width:500px"  />
+<ol class="arabic simple" start="3">
+<li><p>Press <strong>Esc</strong>, then enter the command and press <strong>Enter</strong> to save and exit the configuration file.</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>:wq
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id10">
+<h2>2.3 App Control<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This section uses TonyPi Pro as an example. The information provided also applies to other versions of TonyPi.</strong></p>
+</div>
+<section id="id11">
+<h3>2.3.1 Preparation<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<p>Refer to the tutorial <a class="reference internal" href="#anchor_2_1"><span class="xref myst">2.1 App Installation and Connection</span></a> to install the application and establish a connection with the TonyPi Pro.</p>
+</section>
+<section id="id12">
+<h3>2.3.2 Operation Steps<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>The Cross Hurdle and the Up And Down Stair features are exclusive to the TonyPi Pro.</strong></p>
+</div>
+<ol class="arabic">
+<li><p>Tap the robot icon to open the main feature selection menu.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image1.png" style="width:500px"  />
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image2.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Robot Control</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Robot Control</strong> icon to access the operational interface. The robot will immediately reset to its default standing posture.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image3.png" style="width:500px"  />
+</li>
+<li><p>Select the mode options in the upper-right corner to switch the operation to <strong>General Mode</strong>.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image4.png" style="width:500px"  />
+</li>
+</ol>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image5.png" style="width:300px"  />
+<p><strong>General Mode</strong></p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image3.png" style="width:500px"  />
+<p>The <strong>Remote Control - General Mode</strong> interface consists of two primary sections. The joystick handles robot movement controls. The specific assignments for other interface icons are detailed in the table below.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: center;"><strong>Functionality</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image6.png" style="width:200px" /></td>
+<td style="text-align: center;">Manipulating the joystick controls the robot's movement.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image7.png" style="width:200px" /></td>
+<td style="text-align: center;">Commands the chassis to sidestep left, sidestep right, or reset to a stable standing position.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image8.png" style="width:200px" /></td>
+<td style="text-align: center;">Triggers pre-programmed actions, dance routines, and autonomous fall-recovery sequences.</td>
+</tr>
+</tbody>
+</table>
+<p>The right section of the interface displays the real-time video stream from the onboard camera. Swiping across this area adjusts the camera tilt and pan rotation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>The camera pan-tilt servos feature built-in hardware limit protection. The mobile device provides haptic vibration feedback once a rotation boundary is reached. Avoid further panning or tilting inputs past this threshold.</strong></p>
+</div>
+<ol class="arabic" start="2">
+<li><p>The <strong>Instruction</strong> button in the lower-right corner of the interface provides a helpful reference, and the specific details are illustrated in the figure below.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image9.png" style="width:500px"  />
+</li>
+</ol>
+<p>The robot resets to its initial stance whenever a different function is selected.</p>
+<ol class="arabic simple" start="3">
+<li><p>To return to the main feature menu, tap any blank area to call up the header navigation bar, then select the left arrow icon <img src="../_static/media/chapter_2/section_2.3/media/image10.png" style="width:50px" />.</p></li>
+</ol>
+<p><strong>Transport Mode</strong></p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image11.png" style="width:500px"  />
+<p>The <strong>Remote Control - Transport Mode</strong> interface is divided into two sections. The left joystick directs robot movement. Additional control icons are described in the table below.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: center;"><strong>Functionality</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image6.png" style="width:200px" /></td>
+<td style="text-align: center;">Manipulating the joystick controls the robot's movement.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image7.png" style="width:200px" /></td>
+<td style="text-align: center;">Commands the chassis to sidestep left, sidestep right, or reset to a stable standing position.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image12.png" style="width:200px" /></td>
+<td style="text-align: center;">Executes object transport and placement routines.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Soccer Mode</strong></p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image13.png" style="width:500px"  />
+<p>The <strong>Remote Control - Soccer Mode</strong> interface is divided into two sections. The left joystick manages robot movement. Refer to the table below for other integrated control icons.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: center;"><strong>Functionality</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image6.png" style="width:200px" /></td>
+<td style="text-align: center;">Manipulating the joystick controls the robot's movement.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image7.png" style="width:200px" /></td>
+<td style="text-align: center;">Commands the chassis to sidestep left, sidestep right, or reset to a stable standing position.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_2.3/media/image14.png" style="width:200px" /></td>
+<td style="text-align: center;">Triggers left-foot or right-foot soccer kick sequences.</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><strong>Auto Shooting</strong></p></li>
+</ul>
+<p>This feature enables target detection for a ball of any specified color. TonyPi Pro autonomously adjusts its alignment, approaches the target, and kicks it forward.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>Conduct operations in a well-lit indoor environment while avoiding direct exposure to intense glare or sunlight.</strong></p></li>
+<li><p><strong>Ensure that the camera field of view remains clear of background clutter sharing matching or similar colors to minimize target detection interference.</strong></p></li>
+<li><p><strong>Tap “Auto Shooting” to open the feature control panel.</strong></p></li>
+</ul>
+</div>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image15.png" style="width:500px"  />
+<ol class="arabic">
+<li><p>Upon entering the interface, select the <strong>Pick</strong> button, using a red ball as a reference scenario. Drag the red calibration ring on the live video stream over the target object to sample the color data, then tap <strong>OK</strong>.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image16.png" style="width:500px"  />
+</li>
+<li><p>The active target color configuration appears within the <strong>Selected color</strong> display box.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image17.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button to launch the routine. The robot tracks the target object and automatically executes a kick upon reaching optimal proximity.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image18.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Line Following</strong></p></li>
+</ul>
+<p>This vision routine tracks lines of any selected color, allowing TonyPi to continuously adjust its steering and follow the layout.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>Conduct operations in a well-lit indoor environment while avoiding direct exposure to intense glare or sunlight.</strong></p></li>
+<li><p><strong>Ensure that the camera field of view remains clear of background clutter, sharing matching or similar colors to minimize target detection interference.</strong></p></li>
+<li><p><strong>The tracking circuit can be constructed using colored adhesive tape.</strong></p></li>
+<li><p><strong>Select “Line Following” from the main menu to open the interface, then tap the “Pick” button using a red tape track as an example.</strong></p></li>
+</ul>
+</div>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image19.png" style="width:500px"  />
+<ol class="arabic">
+<li><p>Drag the red calibration ring on the live video stream over the tape track to sample the color data, then tap <strong>OK</strong>.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image20.png" style="width:500px"  />
+</li>
+<li><p>The active target color configuration appears within the <strong>Selected color</strong> display box.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image21.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button to initialize the operation. The robot will autonomously navigate along the path.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image22.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Object Tracking</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>Conduct operations in a well-lit indoor environment while avoiding direct exposure to intense glare or sunlight.</strong></p></li>
+<li><p><strong>Ensure that the camera field of view remains clear of background clutter, sharing matching or similar colors to minimize target detection interference.</strong></p></li>
+<li><p><strong>Select “Object Tracking” from the main menu to open the interface, then tap the Pick button using a red ball as an example.</strong></p></li>
+</ul>
+</div>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image23.png" style="width:500px"  />
+<ol class="arabic">
+<li><p>Drag the red calibration ring on the live video stream over the target object to sample the color data, then tap <strong>OK</strong>.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image24.png" style="width:500px"  />
+</li>
+<li><p>The active target color configuration appears within the <strong>Selected color</strong> display box.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image25.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button to launch the routine. Moving the target object prompts the robot to follow its trajectory dynamically.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image26.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Tag Recognition</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>The maximum effective detection range is approximately 50 cm.</strong></p></li>
+<li><p><strong>Ensure the tag cards remain completely intact. Wrinkles or physical damage will degrade target recognition accuracy.</strong></p></li>
+</ul>
+</div>
+<p>Tap <strong>Tag Recognition</strong> to open the operational panel, then toggle the <strong>Start</strong> button to launch the routine. Once active, present the included tag cards to the camera module sequentially. The robot automatically executes predefined kinematic actions upon identifying each tag pattern.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image27.png" style="width:500px"  />
+<ul class="simple">
+<li><p><strong>Face Detection</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>The maximum effective detection range is approximately 100 cm.</strong></p></li>
+<li><p><strong>Avoid placing faces too close to the robot chassis to prevent tracking failures or accidental physical contact injuries.</strong></p></li>
+</ul>
+</div>
+<p>Tap <strong>Face Detection</strong> to open the interface, then toggle the <strong>Start</strong> button to initialize. The robot head will automatically pan left and right to scan the area. Upon locking onto a human face, the tracking rotation stops, and the robot triggers a waving gesture animation.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image29.png" style="width:500px"  />
+<ul class="simple">
+<li><p><strong>Gesture Control</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>This feature supports right-hand inputs exclusively.</strong></p></li>
+<li><p><strong>Extend the index finger while keeping the remaining digits closed during detection.</strong></p></li>
+<li><p><strong>Maintain a moderate movement speed to ensure robust gesture tracking.</strong></p></li>
+</ul>
+</div>
+<p>Select <strong>Gesture Control</strong> from the feature menu to enter the interface. Toggle the <strong>Start</strong> button and follow the visual prompts displayed in the lower-left corner. The robot executes corresponding directional movements after tracking the hand trajectory.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image30.png" style="width:500px"  />
+<ul class="simple">
+<li><p><strong>Cross Hurdle</strong></p></li>
+</ul>
+<p>Tap <strong>Cross Hurdle</strong> to launch the interface. The camera processes and recognizes the blue segments on the hurdle prop, commanding the robot to execute an autonomous clearance step.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image31.png" style="width:500px"  />
+<ul class="simple">
+<li><p><strong>Up And Down Stair</strong></p></li>
+</ul>
+<p>Toggle the <strong>Start</strong> button to open the feature interface. The camera identifies the red sections of the step prop, allowing the robot to successfully complete autonomous ascent and descent routines.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.3/media/image32.png" style="width:500px"  />
+</section>
+</section>
+<section id="id13">
+<h2>2.4 Large AI Model Features<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This section uses TonyPi Pro as an example. The information provided also applies to other versions of TonyPi.</strong></p>
+</div>
+<section id="id14">
+<h3>2.4.1 Preparation<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<p>Refer to section <a class="reference internal" href="#anchor_2_1"><span class="xref myst">2.1 App Installation and Connection</span></a> to install the app and configure the robot to Local Area Network (LAN) mode.</p>
+<p>Follow the documentation <a class="reference internal" href="#p2-2"><span class="xref myst">2.2 Large Model API Key Setup</span></a> to complete the credential setup.</p>
+</section>
+<section id="id15">
+<h3>2.4.2 Operation Steps<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>The robot must operate in LAN mode or be connected directly via an Ethernet cable to execute large AI model features.</strong></p>
+</div>
+<ol class="arabic">
+<li><p>Select the <strong>Large Model</strong> mode.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image1.png" style="width:500px"  />
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image2.png" style="width:500px"  />
+</li>
+<li><p>Tap the key icon indicated by the arrow indicator.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image3.png" style="width:500px"  />
+</li>
+<li><p>Input the previously acquired credential into the <strong>Large Model Key</strong> field, tap <strong>Set</strong>, and reboot the robot.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image4.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Smart Chat</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Smart Chat</strong> icon to open the corresponding control panel.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image5.png" style="width:500px"  />
+</li>
+<li><p>Tap the <strong>Instruction</strong> button to review the feature description, then tap <strong>OK</strong> to dismiss the prompt.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image6.png" style="width:500px"/>
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to broadcast the voice prompt <strong>I’m ready</strong>. Activate the system using the wake word <strong>Hello Hiwonder</strong> to chat with the robot. Toggle the <strong>Start</strong> button again to terminate the session.</p></li>
+</ol>
+<ul class="simple">
+<li><p><strong>Voice Control</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Voice Control</strong> icon to enter the interface.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image7.png" style="width:500px"  />
+</li>
+<li><p>Tap the <strong>Instruction</strong> button to view the overview, then tap <strong>OK</strong> to dismiss the window.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image8.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to say <strong>I’m ready</strong>. Say the wake word <strong>Hello Hiwonder</strong> to enable voice interactions. Issue verbal instructions to control robot movements. Tap <strong>Start</strong> again to disable the mode.</p></li>
+</ol>
+<ul class="simple">
+<li><p><strong>Auto Shooting</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Auto Shooting</strong> icon to open the corresponding panel.</p></li>
+<li><p>Tap the <strong>Instruction</strong> button to view the overview, then tap <strong>OK</strong> to dismiss the window.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image10.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to say <strong>I’m ready</strong>. Wake up the robot using the wake word <strong>Hello Hiwonder</strong> to launch the voice-controlled tracking and kicking routine. Issue verbal commands to direct ball tracking and kick execution. Tap <strong>Start</strong> again to exit.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image11.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Real-Time Tracking</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Real-Time Tracking</strong> icon to access the interface.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image12.png" style="width:500px"  />
+</li>
+<li><p>Tap the <strong>Instruction</strong> button to view the overview, then tap <strong>OK</strong> to close the prompt.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image13.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to say <strong>I’m ready</strong>. Activate the robot using the wake word <strong>Hello Hiwonder</strong> to initialize real-time tracking. Direct target tracking behavior via verbal inputs. Tap <strong>Start</strong> again to deactivate.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image14.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Scene Understanding</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Scene Understanding</strong> icon to access the interface.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image15.png" style="width:500px"  />
+</li>
+<li><p>Tap the <strong>Instruction</strong> button to view the overview, then tap <strong>OK</strong> to close the prompt.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image16.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to say <strong>I’m ready</strong>. Say the wake word <strong>Hello Hiwonder</strong> to initiate scene analysis. Prompt the robot verbally to generate a description of its environment. Tap <strong>Start</strong> again to deactivate.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image17.png" style="width:500px"  />
+</li>
+</ol>
+<ul class="simple">
+<li><p><strong>Weather Query</strong></p></li>
+</ul>
+<ol class="arabic">
+<li><p>Tap the <strong>Weather Query</strong> icon to open the interface.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image18.png" style="width:500px"  />
+</li>
+<li><p>Tap the <strong>Instruction</strong> button to view the overview, then tap <strong>OK</strong> to close the window.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image19.png" style="width:500px"  />
+</li>
+<li><p>Toggle the <strong>Start</strong> button and wait for the robot to say <strong>I’m ready</strong>. Say the wake word <strong>Hello Hiwonder</strong> to activate weather querying. Request weather information for a specific state or city via vocal prompts. Tap <strong>Start</strong> again to close the feature.</p>
+<img class="common_img" src="../_static/media/chapter_2/section_2.4/media/image20.png" style="width:500px"  />
+</li>
+</ol>
+</section>
+</section>
+<section id="id16">
+<h2>2.3 Color Threshold Adjustment<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>This lesson is applicable to all Raspberry Pi 4B and Pi 5 series products.</strong></p>
+</div>
+<p>Please be aware that lighting conditions can significantly affect the appearance of colors, which may impact the performance of color recognition features.</p>
+<p>To address this, this section shows how to use the WonderPi app to adjust color threshold settings for optimal recognition.</p>
+<section id="id17">
+<h3>2.3.1 Preparation<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<p>Refer to the tutorial <a class="reference internal" href="#anchor_2_1"><span class="xref myst"><strong>2.1 App Installation and Connection</strong></span></a> to install the mobile app and connect to the robot.</p>
+</section>
+<section id="id18">
+<h3>2.3.2 Interface Description<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<p>Once enter the mode selection screen, tap the button shown below to access the color threshold adjustment interface.</p>
+<img src="../_static/media/chapter_2/section_3/image2.png" class="common_img" style="width:500px"/>
+<img src="../_static/media/chapter_2/section_3/image3.png" class="common_img" style="width:500px"/>
+<p>The table below provides a description of the functions in the color threshold adjustment interface:</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: left;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image4.png" class="common_img" style="width:200px"/></td>
+<td style="text-align: left;">Processed image from the camera feed. In the image, the colored object areas are shown in white, while the rest is shown in black.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image4.png" class="common_img" style="width:200px"/></td>
+<td style="text-align: left;">Original image from the camera feed.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image5.png" /></td>
+<td style="text-align: left;">Currently selected color for adjustment.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image6.png" style="width:200px" /><img src="../_static/media/chapter_2/section_3/image7.png" style="width:200px" /></td>
+<td style="text-align: left;">Adjust the L component (lightness) range of the camera feed image. <code>L_min</code> is the lower limit, and <code>L_max</code> is the upper limit. Click the button <img src="../_static/media/chapter_2/section_3/image8.png" style="width:30px" /> to decrease the corresponding value. Click the button <img src="../_static/media/chapter_2/section_3/image9.png" style="width:30px"/> to increase it.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image10.png"  style="width:200px"/><img src="../_static/media/chapter_2/section_3/image11.png"  style="width:200px"/></td>
+<td style="text-align: left;">Adjust the A component (green to red) range of the camera feed image. <code>a_min</code> is the lower limit, and <code>a_max</code> is the upper limit. Click the button <img src="../_static/media/chapter_2/section_3/image8.png" style="width:30px"/> to decrease the corresponding value. Click the button <img src="../_static/media/chapter_2/section_3/image9.png" style="width:30px"/> to increase it.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image12.png"  style="width:200px"/><img src="../_static/media/chapter_2/section_3/image13.png" style="width:200px" /></td>
+<td style="text-align: left;">Adjust the B component (yellow to blue) range of the camera feed image. <code>b_min</code> is the lower limit, and <code>b_max</code> is the upper limit. Click the button <img src="../_static/media/chapter_2/section_3/image8.png" style="width:30px"/> to decrease the corresponding value. Click the button <img src="../_static/media/chapter_2/section_3/image9.png" style="width:30px"/> to increase it.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image14.png" class="common_img" style="width:100px"/></td>
+<td style="text-align: left;">Open the instruction window to view the method for adjusting color thresholds.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image15.png" style="width:100px"/></td>
+<td style="text-align: left;">Save the adjusted threshold values.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image16.png" style="width:50px"/></td>
+<td style="text-align: left;">Return to the mode selection screen.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image17.png" style="width:50px"/></td>
+<td style="text-align: left;">Hide the navigation bar.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_2/section_3/image18.png" style="width:50px"/></td>
+<td style="text-align: left;">Display the information window for Hiwonder</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id19">
+<h3>2.3.3 Adjust Color Threshold<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<p>(1) Open the color threshold adjustment screen and select the color needed to adjust—for example, red.</p>
+<img src="../_static/media/chapter_2/section_3/image19.png" class="common_img" style="width:500px"/>
+<p>(2) Place the red object within the camera’s view. Set the minimum values of L, A, and B components to 0, and the maximum values to 255.</p>
+<img src="../_static/media/chapter_2/section_3/image20.png" class="common_img" style="width:500px"/>
+<p>(3) Click the <strong>Instruction</strong> button to see how to adjust the color thresholds.</p>
+<img src="../_static/media/chapter_2/section_3/image21.png" class="common_img" style="width:500px"/>
+<img src="../_static/media/chapter_2/section_3/image22.png" class="common_img" style="width:500px"/>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>To close the instructions window, click OK.</strong></p>
+</div>
+<p>(4) Since red is closer to the positive side of the A component in the LAB color space, start by adjusting the A values.</p>
+<img src="../_static/media/chapter_2/section_3/image23.png" class="common_img" style="width:300px"/>
+<p>(5) Leave <code class="docutils literal notranslate"><span class="pre">a_max</span></code> unchanged and gradually increase <code class="docutils literal notranslate"><span class="pre">a_min</span></code> until the red object appears white in the processed image while the background turns black.</p>
+<img src="../_static/media/chapter_2/section_3/image24.png" class="common_img" style="width:500px"/>
+<p>(6) Adjust the L (lightness) and B (chroma) values depending on the lighting conditions:</p>
+<ul class="simple">
+<li><p>If the red looks too light, raise the minimum brightness (<code class="docutils literal notranslate"><span class="pre">L_min</span></code>).</p></li>
+<li><p>If it looks too dark, lower the maximum brightness (<code class="docutils literal notranslate"><span class="pre">L_max</span></code>).</p></li>
+<li><p>If the red appears too warm, increase the minimum chroma (<code class="docutils literal notranslate"><span class="pre">b_min</span></code>).</p></li>
+<li><p>If it looks too cool, decrease the maximum chroma (<code class="docutils literal notranslate"><span class="pre">b_max</span></code>).</p></li>
+</ul>
+<img src="../_static/media/chapter_2/section_3/image25.png" class="common_img" style="width:500px"/>
+<p>(7) When the settings are down, click <strong>Save</strong> to keep the new threshold values.</p>
+<img src="../_static/media/chapter_2/section_3/image26.png" class="common_img" style="width:500px"/>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="1_getting_ready.html" class="btn btn-neutral float-left" title="1. Getting Ready" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="3_remote_desktop_tool_installation_and_connection.html" class="btn btn-neutral float-right" title="3. Remote Desktop Tool Installation and Connection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Hiwonder.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

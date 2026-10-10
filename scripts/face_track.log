@@ -1,0 +1,213 @@
+04:46:51.715 INFO start mode=full face_mode=full pose=lite arms=True space=3d duration=inf gui=True
+04:46:52.957 INFO head_init yaw0=1509 pitch0=1500 P=0.100 dead=(45,55) ema=0.35 interval=0.08 max_d=(12,15)
+04:46:55.516 INFO heartbeat fps=0.4 frames=30 face_lock=0/0% head={'moves': 0, 'holds': 0, 'recenters': 0}
+04:46:56.332 INFO heartbeat fps=36.0 frames=60 face_lock=0/0% head={'moves': 0, 'holds': 0, 'recenters': 0}
+04:46:57.187 INFO heartbeat fps=36.5 frames=90 face_lock=0/0% head={'moves': 0, 'holds': 0, 'recenters': 0}
+04:46:57.214 INFO head_recenter yaw=1509 pitch=1500
+04:46:57.214 INFO face_lost for 2.5s — recenter (cooldown 3.0s)
+04:46:57.470 INFO head_move err=(+280.0,-134.5) d=(-12,+13) -> yaw=1497 pitch=1513 dur=40ms
+04:46:58.025 INFO heartbeat fps=34.6 frames=120 face_lock=1/1% head={'moves': 1, 'holds': 0, 'recenters': 1}
+04:46:58.742 INFO head_move err=(+280.5,-157.6) d=(-12,+15) -> yaw=1485 pitch=1528 dur=40ms
+04:46:58.822 INFO heartbeat fps=37.6 frames=150 face_lock=3/2% head={'moves': 2, 'holds': 0, 'recenters': 1}
+04:46:59.254 INFO head_move err=(+271.1,-171.6) d=(-12,+15) -> yaw=1473 pitch=1543 dur=40ms
+04:46:59.662 INFO heartbeat fps=37.6 frames=180 face_lock=4/2% head={'moves': 3, 'holds': 0, 'recenters': 1}
+04:47:00.283 INFO head_move err=(+268.6,-157.4) d=(-12,+15) -> yaw=1461 pitch=1558 dur=40ms
+04:47:00.439 INFO head_move err=(+266.1,-144.3) d=(-12,+14) -> yaw=1449 pitch=1572 dur=40ms
+04:47:00.469 INFO heartbeat fps=35.9 frames=210 face_lock=6/3% head={'moves': 5, 'holds': 0, 'recenters': 1}
+04:47:01.163 INFO head_move err=(+264.0,-126.7) d=(-12,+12) -> yaw=1437 pitch=1584 dur=40ms
+04:47:01.334 INFO heartbeat fps=37.0 frames=240 face_lock=7/3% head={'moves': 6, 'holds': 0, 'recenters': 1}
+04:47:01.397 INFO head_move err=(+263.3,-110.0) d=(-12,+10) -> yaw=1425 pitch=1594 dur=40ms
+04:47:02.163 INFO heartbeat fps=34.6 frames=270 face_lock=8/3% head={'moves': 7, 'holds': 0, 'recenters': 1}
+04:47:02.980 INFO heartbeat fps=36.6 frames=300 face_lock=8/3% head={'moves': 7, 'holds': 0, 'recenters': 1}
+04:47:03.830 INFO heartbeat fps=35.6 frames=330 face_lock=8/2% head={'moves': 7, 'holds': 0, 'recenters': 1}
+04:47:03.915 INFO head_recenter yaw=1509 pitch=1500
+04:47:03.916 INFO face_lost for 2.5s — recenter (cooldown 3.0s)
+04:47:03.944 INFO head_move err=(+225.5,-81.5) d=(-12,+8) -> yaw=1497 pitch=1508 dur=40ms
+04:47:04.051 INFO head_move err=(+225.0,-81.7) d=(-12,+8) -> yaw=1485 pitch=1516 dur=40ms
+04:47:04.134 INFO head_move err=(+236.9,-94.7) d=(-12,+9) -> yaw=1473 pitch=1525 dur=40ms
+04:47:04.220 INFO head_move err=(+246.0,-108.3) d=(-12,+10) -> yaw=1461 pitch=1535 dur=40ms
+04:47:04.301 INFO head_move err=(+248.1,-119.0) d=(-12,+11) -> yaw=1449 pitch=1546 dur=40ms
+04:47:04.433 INFO head_move err=(+244.2,-123.6) d=(-12,+12) -> yaw=1437 pitch=1558 dur=40ms
+04:47:04.516 INFO head_move err=(+234.5,-124.6) d=(-12,+12) -> yaw=1425 pitch=1570 dur=40ms
+04:47:04.628 INFO head_move err=(+226.5,-125.6) d=(-12,+12) -> yaw=1413 pitch=1582 dur=40ms
+04:47:04.655 INFO heartbeat fps=35.6 frames=360 face_lock=25/7% head={'moves': 15, 'holds': 0, 'recenters': 2}
+04:47:04.714 INFO head_move err=(+217.7,-123.1) d=(-12,+12) -> yaw=1401 pitch=1594 dur=40ms
+04:47:04.808 INFO head_move err=(+207.1,-119.1) d=(-12,+11) -> yaw=1389 pitch=1605 dur=40ms
+04:47:04.894 INFO head_move err=(+196.2,-113.8) d=(-12,+11) -> yaw=1377 pitch=1616 dur=40ms
+04:47:05.003 INFO head_move err=(+185.0,-105.5) d=(-12,+10) -> yaw=1365 pitch=1626 dur=40ms
+04:47:05.092 INFO head_move err=(+174.3,-96.0) d=(-12,+9) -> yaw=1353 pitch=1635 dur=40ms
+04:47:05.181 INFO head_move err=(+163.9,-88.1) d=(-12,+8) -> yaw=1341 pitch=1643 dur=40ms
+04:47:05.286 INFO head_move err=(+153.4,-82.5) d=(-12,+8) -> yaw=1329 pitch=1651 dur=40ms
+04:47:05.372 INFO head_move err=(+145.7,-76.2) d=(-12,+7) -> yaw=1317 pitch=1658 dur=40ms
+04:47:05.458 INFO head_move err=(+137.1,-72.3) d=(-12,+7) -> yaw=1305 pitch=1665 dur=40ms
+04:47:05.514 INFO heartbeat fps=35.9 frames=390 face_lock=51/13% head={'moves': 24, 'holds': 0, 'recenters': 2}
+04:47:05.543 INFO head_move err=(+126.9,-68.0) d=(-12,+6) -> yaw=1293 pitch=1671 dur=40ms
+04:47:05.631 INFO head_move err=(+118.7,-62.9) d=(-11,+6) -> yaw=1282 pitch=1677 dur=40ms
+04:47:05.756 INFO head_move err=(+108.0,-59.1) d=(-10,+5) -> yaw=1272 pitch=1682 dur=40ms
+04:47:05.851 INFO head_move err=(+102.6,-56.4) d=(-10,+5) -> yaw=1262 pitch=1687 dur=40ms
+04:47:05.940 INFO head_move err=(+94.7,-50.3) d=(-9,+0) -> yaw=1253 pitch=1687 dur=40ms
+04:47:06.027 INFO head_move err=(+85.7,-46.0) d=(-8,+0) -> yaw=1245 pitch=1687 dur=40ms
+04:47:06.121 INFO head_move err=(+77.0,-43.2) d=(-7,+0) -> yaw=1238 pitch=1687 dur=40ms
+04:47:06.224 INFO head_move err=(+68.6,-41.4) d=(-6,+0) -> yaw=1232 pitch=1687 dur=40ms
+04:47:06.312 INFO head_move err=(+62.6,-40.7) d=(-6,+0) -> yaw=1226 pitch=1687 dur=40ms
+04:47:06.391 INFO heartbeat fps=34.5 frames=420 face_lock=76/18% head={'moves': 33, 'holds': 0, 'recenters': 2}
+04:47:06.416 INFO head_move err=(+55.6,-39.9) d=(-5,+0) -> yaw=1221 pitch=1687 dur=40ms
+04:47:06.499 INFO head_move err=(+49.4,-39.6) d=(-4,+0) -> yaw=1217 pitch=1687 dur=40ms
+04:47:07.209 INFO heartbeat fps=35.8 frames=450 face_lock=106/24% head={'moves': 35, 'holds': 8, 'recenters': 2}
+04:47:08.076 INFO head_move err=(+39.7,-56.6) d=(+0,+5) -> yaw=1217 pitch=1692 dur=40ms
+04:47:08.076 INFO heartbeat fps=36.9 frames=480 face_lock=135/28% head={'moves': 36, 'holds': 16, 'recenters': 2}
+04:47:08.158 INFO head_move err=(+43.5,-62.5) d=(+0,+6) -> yaw=1217 pitch=1698 dur=40ms
+04:47:08.242 INFO head_move err=(+47.0,-63.9) d=(-4,+6) -> yaw=1213 pitch=1704 dur=40ms
+04:47:08.326 INFO head_move err=(+50.5,-64.6) d=(-5,+6) -> yaw=1208 pitch=1710 dur=40ms
+04:47:08.409 INFO head_move err=(+53.6,-65.3) d=(-5,+6) -> yaw=1203 pitch=1716 dur=40ms
+04:47:08.497 INFO head_move err=(+54.8,-63.1) d=(-5,+6) -> yaw=1198 pitch=1722 dur=40ms
+04:47:08.604 INFO head_move err=(+54.5,-59.6) d=(-5,+5) -> yaw=1193 pitch=1727 dur=40ms
+04:47:08.690 INFO head_move err=(+53.5,-55.0) d=(-5,+0) -> yaw=1188 pitch=1727 dur=40ms
+04:47:08.774 INFO head_move err=(+49.3,-49.6) d=(-4,+0) -> yaw=1184 pitch=1727 dur=40ms
+04:47:08.915 INFO heartbeat fps=34.0 frames=510 face_lock=162/32% head={'moves': 44, 'holds': 17, 'recenters': 2}
+04:47:09.655 INFO head_move err=(-46.1,-37.5) d=(+4,+0) -> yaw=1188 pitch=1727 dur=40ms
+04:47:09.741 INFO head_move err=(-62.2,-42.2) d=(+6,+0) -> yaw=1194 pitch=1727 dur=40ms
+04:47:09.741 INFO heartbeat fps=34.0 frames=540 face_lock=183/34% head={'moves': 46, 'holds': 24, 'recenters': 2}
+04:47:09.826 INFO head_move err=(-77.3,-41.3) d=(+7,+0) -> yaw=1201 pitch=1727 dur=40ms
+04:47:10.000 INFO head_move err=(-91.7,-43.1) d=(+9,+0) -> yaw=1210 pitch=1727 dur=40ms
+04:47:10.085 INFO head_move err=(-102.0,-42.0) d=(+10,+0) -> yaw=1220 pitch=1727 dur=40ms
+04:47:10.208 INFO head_move err=(-108.5,-41.5) d=(+10,+0) -> yaw=1230 pitch=1727 dur=40ms
+04:47:10.333 INFO head_move err=(-112.5,-41.3) d=(+11,+0) -> yaw=1241 pitch=1727 dur=40ms
+04:47:10.435 INFO head_move err=(-114.4,-43.3) d=(+11,+0) -> yaw=1252 pitch=1727 dur=40ms
+04:47:10.535 INFO head_move err=(-111.0,-44.4) d=(+11,+0) -> yaw=1263 pitch=1727 dur=40ms
+04:47:10.588 INFO heartbeat fps=36.3 frames=570 face_lock=199/35% head={'moves': 53, 'holds': 24, 'recenters': 2}
+04:47:10.669 INFO head_move err=(-104.1,-46.9) d=(+10,+0) -> yaw=1273 pitch=1727 dur=40ms
+04:47:10.750 INFO head_move err=(-96.0,-46.6) d=(+9,+0) -> yaw=1282 pitch=1727 dur=40ms
+04:47:10.860 INFO head_move err=(-86.1,-46.2) d=(+8,+0) -> yaw=1290 pitch=1727 dur=40ms
+04:47:10.943 INFO head_move err=(-74.1,-46.1) d=(+7,+0) -> yaw=1297 pitch=1727 dur=40ms
+04:47:11.049 INFO head_move err=(-58.3,-48.9) d=(+5,+0) -> yaw=1302 pitch=1727 dur=40ms
+04:47:11.408 INFO heartbeat fps=35.8 frames=600 face_lock=224/37% head={'moves': 58, 'holds': 27, 'recenters': 2}
+04:47:11.573 INFO head_move err=(+54.6,-56.0) d=(-5,+5) -> yaw=1297 pitch=1732 dur=40ms
+04:47:11.657 INFO head_move err=(+77.8,-58.8) d=(-7,+5) -> yaw=1290 pitch=1737 dur=40ms
+04:47:11.820 INFO head_move err=(+102.6,-56.2) d=(-10,+5) -> yaw=1280 pitch=1742 dur=40ms
+04:47:11.962 INFO head_move err=(+123.4,-54.4) d=(-12,+0) -> yaw=1268 pitch=1742 dur=40ms
+04:47:12.141 INFO head_move err=(+135.8,-49.4) d=(-12,+0) -> yaw=1256 pitch=1742 dur=40ms
+04:47:12.220 INFO head_move err=(+144.1,-45.9) d=(-12,+0) -> yaw=1244 pitch=1742 dur=40ms
+04:47:12.221 INFO heartbeat fps=36.5 frames=630 face_lock=236/37% head={'moves': 64, 'holds': 28, 'recenters': 2}
+04:47:12.313 INFO head_move err=(+149.7,-44.2) d=(-12,+0) -> yaw=1232 pitch=1742 dur=40ms
+04:47:12.409 INFO head_move err=(+149.1,-40.3) d=(-12,+0) -> yaw=1220 pitch=1742 dur=40ms
+04:47:12.505 INFO head_move err=(+144.7,-39.3) d=(-12,+0) -> yaw=1208 pitch=1742 dur=40ms
+04:47:12.588 INFO head_move err=(+140.8,-37.3) d=(-12,+0) -> yaw=1196 pitch=1742 dur=40ms
+04:47:12.719 INFO head_move err=(+138.1,-33.7) d=(-12,+0) -> yaw=1184 pitch=1742 dur=40ms
+04:47:12.800 INFO head_move err=(+132.8,-31.3) d=(-12,+0) -> yaw=1172 pitch=1742 dur=40ms
+04:47:12.881 INFO head_move err=(+124.6,-29.3) d=(-12,+0) -> yaw=1160 pitch=1742 dur=40ms
+04:47:12.970 INFO head_move err=(+114.4,-23.4) d=(-11,+0) -> yaw=1149 pitch=1742 dur=40ms
+04:47:13.080 INFO head_move err=(+106.9,-24.3) d=(-10,+0) -> yaw=1139 pitch=1742 dur=40ms
+04:47:13.081 INFO heartbeat fps=35.8 frames=660 face_lock=256/39% head={'moves': 73, 'holds': 28, 'recenters': 2}
+04:47:13.168 INFO head_move err=(+98.0,-23.0) d=(-9,+0) -> yaw=1130 pitch=1742 dur=40ms
+04:47:13.270 INFO head_move err=(+87.9,-19.1) d=(-8,+0) -> yaw=1122 pitch=1742 dur=40ms
+04:47:13.409 INFO head_move err=(+75.7,-16.6) d=(-7,+0) -> yaw=1115 pitch=1742 dur=40ms
+04:47:13.504 INFO head_move err=(+67.0,-15.4) d=(-6,+0) -> yaw=1109 pitch=1742 dur=40ms
+04:47:13.639 INFO head_move err=(+52.8,-14.4) d=(-5,+0) -> yaw=1104 pitch=1742 dur=40ms
+04:47:13.905 INFO heartbeat fps=36.1 frames=690 face_lock=271/39% head={'moves': 78, 'holds': 29, 'recenters': 2}
+04:47:13.995 INFO head_move err=(+60.4,-14.3) d=(-6,+0) -> yaw=1098 pitch=1742 dur=40ms
+04:47:14.080 INFO head_move err=(+71.5,-14.5) d=(-7,+0) -> yaw=1091 pitch=1742 dur=40ms
+04:47:14.168 INFO head_move err=(+80.1,-14.3) d=(-8,+0) -> yaw=1083 pitch=1742 dur=40ms
+04:47:14.301 INFO head_move err=(+82.7,-13.7) d=(-8,+0) -> yaw=1075 pitch=1742 dur=40ms
+04:47:14.497 INFO head_move err=(+147.7,+45.5) d=(-12,+0) -> yaw=1063 pitch=1742 dur=40ms
+04:47:14.627 INFO head_move err=(+189.3,+84.7) d=(-12,-8) -> yaw=1051 pitch=1734 dur=40ms
+04:47:14.729 INFO head_move err=(+216.3,+110.5) d=(-12,-11) -> yaw=1039 pitch=1723 dur=40ms
+04:47:14.784 INFO heartbeat fps=36.1 frames=720 face_lock=289/40% head={'moves': 85, 'holds': 29, 'recenters': 2}
+04:47:14.815 INFO head_move err=(+227.2,+128.0) d=(-12,-12) -> yaw=1027 pitch=1711 dur=40ms
+04:47:14.899 INFO head_move err=(+157.3,+79.5) d=(-12,-7) -> yaw=1015 pitch=1704 dur=40ms
+04:47:14.988 INFO head_move err=(+110.0,+47.9) d=(-10,+0) -> yaw=1005 pitch=1704 dur=40ms
+04:47:15.089 INFO head_move err=(+145.8,+86.9) d=(-12,-8) -> yaw=993 pitch=1696 dur=40ms
+04:47:15.170 INFO head_move err=(+97.3,+48.1) d=(-9,+0) -> yaw=984 pitch=1696 dur=40ms
+04:47:15.252 INFO head_move err=(+136.5,+86.7) d=(-12,-8) -> yaw=972 pitch=1688 dur=40ms
+04:47:15.364 INFO head_move err=(+88.2,+42.9) d=(-8,+0) -> yaw=964 pitch=1688 dur=40ms
+04:47:15.449 INFO head_move err=(+122.6,+80.2) d=(-12,-8) -> yaw=952 pitch=1680 dur=40ms
+04:47:15.531 INFO head_move err=(+73.2,+38.3) d=(-7,+0) -> yaw=945 pitch=1680 dur=40ms
+04:47:15.609 INFO heartbeat fps=34.2 frames=750 face_lock=317/42% head={'moves': 94, 'holds': 29, 'recenters': 2}
+04:47:15.637 INFO head_move err=(+109.4,+74.1) d=(-11,-7) -> yaw=934 pitch=1673 dur=40ms
+04:47:15.723 INFO head_move err=(+131.8,+97.3) d=(-12,-9) -> yaw=922 pitch=1664 dur=40ms
+04:47:15.830 INFO head_move err=(+76.6,+40.2) d=(-7,+0) -> yaw=915 pitch=1664 dur=40ms
+04:47:15.998 INFO head_move err=(+102.1,+72.1) d=(-10,-7) -> yaw=905 pitch=1657 dur=40ms
+04:47:16.080 INFO head_move err=(+62.7,+14.7) d=(-6,+0) -> yaw=899 pitch=1657 dur=40ms
+04:47:16.162 INFO head_move err=(+91.7,+55.2) d=(-9,-5) -> yaw=890 pitch=1652 dur=40ms
+04:47:16.253 INFO head_move err=(+110.2,+82.3) d=(-11,-8) -> yaw=879 pitch=1644 dur=40ms
+04:47:16.337 INFO head_move err=(+71.1,+16.5) d=(-6,+0) -> yaw=873 pitch=1644 dur=40ms
+04:47:16.426 INFO head_move err=(+88.9,+52.4) d=(-8,+0) -> yaw=865 pitch=1644 dur=40ms
+04:47:16.457 INFO heartbeat fps=36.5 frames=780 face_lock=338/43% head={'moves': 103, 'holds': 29, 'recenters': 2}
+04:47:16.515 INFO head_move err=(+95.9,+73.6) d=(-9,-7) -> yaw=856 pitch=1637 dur=40ms
+04:47:16.595 INFO head_move err=(+98.6,+88.6) d=(-9,-8) -> yaw=847 pitch=1629 dur=40ms
+04:47:16.679 INFO head_move err=(+55.3,+11.4) d=(-5,+0) -> yaw=842 pitch=1629 dur=40ms
+04:47:16.786 INFO head_move err=(+68.0,+45.0) d=(-6,+0) -> yaw=836 pitch=1629 dur=40ms
+04:47:16.873 INFO head_move err=(+76.0,+66.7) d=(-7,-6) -> yaw=829 pitch=1623 dur=40ms
+04:47:16.964 INFO head_move err=(+76.9,+81.3) d=(-7,-8) -> yaw=822 pitch=1615 dur=40ms
+04:47:17.048 INFO head_move err=(+76.2,+90.7) d=(-7,-9) -> yaw=815 pitch=1606 dur=40ms
+04:47:17.133 INFO head_move err=(+74.2,+92.0) d=(-7,-9) -> yaw=808 pitch=1597 dur=40ms
+04:47:17.213 INFO head_move err=(+70.5,+92.5) d=(-7,-9) -> yaw=801 pitch=1588 dur=40ms
+04:47:17.299 INFO head_move err=(+65.9,+92.5) d=(-6,-9) -> yaw=795 pitch=1579 dur=40ms
+04:47:17.327 INFO heartbeat fps=34.2 frames=810 face_lock=367/45% head={'moves': 113, 'holds': 29, 'recenters': 2}
+04:47:17.380 INFO head_move err=(+59.7,+88.8) d=(-5,-8) -> yaw=790 pitch=1571 dur=40ms
+04:47:17.487 INFO head_move err=(+55.1,+81.4) d=(-5,-8) -> yaw=785 pitch=1563 dur=40ms
+04:47:17.570 INFO head_move err=(+49.8,+74.9) d=(-4,-7) -> yaw=781 pitch=1556 dur=40ms
+04:47:17.653 INFO head_move err=(+45.7,+69.7) d=(-4,-6) -> yaw=777 pitch=1550 dur=40ms
+04:47:17.735 INFO head_move err=(+40.4,+66.5) d=(+0,-6) -> yaw=777 pitch=1544 dur=40ms
+04:47:17.821 INFO head_move err=(+37.8,+62.1) d=(+0,-6) -> yaw=777 pitch=1538 dur=40ms
+04:47:17.924 INFO head_move err=(+35.1,+58.6) d=(+0,-5) -> yaw=777 pitch=1533 dur=40ms
+04:47:18.138 INFO heartbeat fps=36.3 frames=840 face_lock=395/47% head={'moves': 120, 'holds': 31, 'recenters': 2}
+04:47:18.979 INFO heartbeat fps=36.3 frames=870 face_lock=424/49% head={'moves': 120, 'holds': 41, 'recenters': 2}
+04:47:19.818 INFO heartbeat fps=35.9 frames=900 face_lock=454/50% head={'moves': 120, 'holds': 49, 'recenters': 2}
+04:47:20.652 INFO heartbeat fps=35.9 frames=930 face_lock=477/51% head={'moves': 120, 'holds': 57, 'recenters': 2}
+04:47:21.531 INFO heartbeat fps=35.8 frames=960 face_lock=499/52% head={'moves': 120, 'holds': 67, 'recenters': 2}
+04:47:22.338 INFO heartbeat fps=35.5 frames=990 face_lock=528/53% head={'moves': 120, 'holds': 75, 'recenters': 2}
+04:47:23.169 INFO heartbeat fps=36.3 frames=1020 face_lock=547/54% head={'moves': 120, 'holds': 82, 'recenters': 2}
+04:47:24.027 INFO heartbeat fps=36.3 frames=1050 face_lock=563/54% head={'moves': 120, 'holds': 90, 'recenters': 2}
+04:47:24.857 INFO heartbeat fps=34.9 frames=1080 face_lock=580/54% head={'moves': 120, 'holds': 98, 'recenters': 2}
+04:47:25.697 INFO heartbeat fps=36.5 frames=1110 face_lock=599/54% head={'moves': 120, 'holds': 104, 'recenters': 2}
+04:47:25.725 INFO head_move err=(+46.7,+14.1) d=(-4,+0) -> yaw=773 pitch=1533 dur=40ms
+04:47:25.820 INFO head_move err=(+48.9,+10.2) d=(-4,+0) -> yaw=769 pitch=1533 dur=40ms
+04:47:25.936 INFO head_move err=(+46.7,+7.2) d=(-4,+0) -> yaw=765 pitch=1533 dur=40ms
+04:47:26.565 INFO heartbeat fps=34.8 frames=1140 face_lock=623/55% head={'moves': 123, 'holds': 111, 'recenters': 2}
+04:47:27.366 INFO heartbeat fps=36.4 frames=1170 face_lock=651/56% head={'moves': 123, 'holds': 120, 'recenters': 2}
+04:47:28.234 INFO heartbeat fps=35.1 frames=1200 face_lock=670/56% head={'moves': 123, 'holds': 128, 'recenters': 2}
+04:47:29.072 INFO head_move err=(-53.7,+15.4) d=(+5,+0) -> yaw=770 pitch=1533 dur=40ms
+04:47:29.072 INFO heartbeat fps=35.1 frames=1230 face_lock=697/57% head={'moves': 124, 'holds': 137, 'recenters': 2}
+04:47:29.158 INFO head_move err=(-73.9,+15.5) d=(+7,+0) -> yaw=777 pitch=1533 dur=40ms
+04:47:29.244 INFO head_move err=(-91.4,+15.7) d=(+9,+0) -> yaw=786 pitch=1533 dur=40ms
+04:47:29.332 INFO head_move err=(-106.9,+16.6) d=(+10,+0) -> yaw=796 pitch=1533 dur=40ms
+04:47:29.418 INFO head_move err=(-115.3,+18.2) d=(+11,+0) -> yaw=807 pitch=1533 dur=40ms
+04:47:29.523 INFO head_move err=(-118.4,+18.1) d=(+11,+0) -> yaw=818 pitch=1533 dur=40ms
+04:47:29.612 INFO head_move err=(-114.9,+19.6) d=(+11,+0) -> yaw=829 pitch=1533 dur=40ms
+04:47:29.696 INFO head_move err=(-110.9,+21.7) d=(+11,+0) -> yaw=840 pitch=1533 dur=40ms
+04:47:29.784 INFO head_move err=(-101.0,+23.4) d=(+10,+0) -> yaw=850 pitch=1533 dur=40ms
+04:47:29.868 INFO head_move err=(-92.9,+22.2) d=(+9,+0) -> yaw=859 pitch=1533 dur=40ms
+04:47:29.925 INFO heartbeat fps=35.7 frames=1260 face_lock=727/58% head={'moves': 133, 'holds': 137, 'recenters': 2}
+04:47:29.952 INFO head_move err=(-83.7,+22.3) d=(+8,+0) -> yaw=867 pitch=1533 dur=40ms
+04:47:30.036 INFO head_move err=(-73.8,+23.4) d=(+7,+0) -> yaw=874 pitch=1533 dur=40ms
+04:47:30.124 INFO head_move err=(-67.9,+21.9) d=(+6,+0) -> yaw=880 pitch=1533 dur=40ms
+04:47:30.220 INFO head_move err=(-61.7,+19.8) d=(+6,+0) -> yaw=886 pitch=1533 dur=40ms
+04:47:30.318 INFO head_move err=(-51.6,+20.2) d=(+5,+0) -> yaw=891 pitch=1533 dur=40ms
+04:47:30.793 INFO heartbeat fps=34.9 frames=1290 face_lock=757/59% head={'moves': 138, 'holds': 142, 'recenters': 2}
+04:47:31.603 INFO heartbeat fps=35.9 frames=1320 face_lock=787/60% head={'moves': 138, 'holds': 151, 'recenters': 2}
+04:47:32.435 INFO heartbeat fps=36.8 frames=1350 face_lock=817/61% head={'moves': 138, 'holds': 160, 'recenters': 2}
+04:47:32.839 INFO head_move err=(+47.5,+4.7) d=(-4,+0) -> yaw=887 pitch=1533 dur=40ms
+04:47:32.921 INFO head_move err=(+51.0,+3.9) d=(-5,+0) -> yaw=882 pitch=1533 dur=40ms
+04:47:33.007 INFO head_move err=(+54.0,+4.8) d=(-5,+0) -> yaw=877 pitch=1533 dur=40ms
+04:47:33.096 INFO head_move err=(+55.9,+4.0) d=(-5,+0) -> yaw=872 pitch=1533 dur=40ms
+04:47:33.185 INFO head_move err=(+53.8,+6.8) d=(-5,+0) -> yaw=867 pitch=1533 dur=40ms
+04:47:33.266 INFO head_move err=(+49.5,+6.7) d=(-4,+0) -> yaw=863 pitch=1533 dur=40ms
+04:47:33.293 INFO heartbeat fps=34.7 frames=1380 face_lock=847/61% head={'moves': 144, 'holds': 164, 'recenters': 2}
+04:47:33.354 INFO head_move err=(+45.1,+7.2) d=(-4,+0) -> yaw=859 pitch=1533 dur=40ms
+04:47:34.118 INFO head_move err=(+45.8,+14.1) d=(-4,+0) -> yaw=855 pitch=1533 dur=40ms
+04:47:34.118 INFO heartbeat fps=34.7 frames=1410 face_lock=876/62% head={'moves': 146, 'holds': 171, 'recenters': 2}
+04:47:34.225 INFO head_move err=(+52.3,+18.1) d=(-5,+0) -> yaw=850 pitch=1533 dur=40ms
+04:47:34.356 INFO head_move err=(+55.2,+20.7) d=(-5,+0) -> yaw=845 pitch=1533 dur=40ms
+04:47:34.439 INFO head_move err=(+56.7,+22.7) d=(-5,+0) -> yaw=840 pitch=1533 dur=40ms
+04:47:34.537 INFO head_move err=(+55.8,+24.2) d=(-5,+0) -> yaw=835 pitch=1533 dur=40ms
+04:47:34.655 INFO head_move err=(+54.8,+25.5) d=(-5,+0) -> yaw=830 pitch=1533 dur=40ms
+04:47:34.760 INFO head_move err=(+49.8,+26.6) d=(-4,+0) -> yaw=826 pitch=1533 dur=40ms
+04:47:34.842 INFO head_move err=(+46.2,+27.6) d=(-4,+0) -> yaw=822 pitch=1533 dur=40ms
+04:47:35.062 INFO heartbeat fps=36.4 frames=1440 face_lock=902/63% head={'moves': 153, 'holds': 173, 'recenters': 2}
+04:47:35.916 INFO heartbeat fps=32.2 frames=1470 face_lock=922/63% head={'moves': 153, 'holds': 182, 'recenters': 2}
+04:47:36.748 INFO heartbeat fps=35.2 frames=1500 face_lock=947/63% head={'moves': 153, 'holds': 191, 'recenters': 2}
+04:47:37.478 INFO heartbeat fps=38.4 frames=1530 face_lock=975/64% head={'moves': 153, 'holds': 199, 'recenters': 2}
+04:47:38.137 INFO heartbeat fps=38.4 frames=1560 face_lock=1003/64% head={'moves': 153, 'holds': 206, 'recenters': 2}
+04:47:38.466 INFO summary elapsed=43.8s frames=1574 face_lock=1016 (65%) head_stats={'updates': 363, 'holds': 210, 'moves': 153, 'sum_abs_dyaw': 1259, 'sum_abs_dpitch': 545, 'max_abs_err_x': 280.525, 'max_abs_err_y': 171.565, 'recenters': 2}
+04:47:38.720 INFO stopped — log written to /home/pi/tonypro/scripts/face_track.log

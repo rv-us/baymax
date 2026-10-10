@@ -1,0 +1,296 @@
+# 15 Group Control Course
+
+## 15.1 Wireless Controller Control
+
+### 15.1.1 Getting Ready
+
+Step 1: Plug the controller receiver into one of USB ports of TonyPi.
+
+> [!NOTE]
+>
+> **Note: The controller receiver must be inserted before the robot is turned on.**
+
+Step 2: Prepare two AAA batteries. Take off the back cover of the handle and insert them into the battery slot. Please pay attention to the direction of the positive and negative poles.
+
+<img class="common_img" src="../_static/media/chapter_15\section_1/media/image3.png" style="width:500px" />
+
+### 15.1.2 Device Connection
+
+If you do not connect the robot within 30 seconds after turning on the handle switch, or if you do not operate the handle within 5 minutes after connecting it, the handle will enter
+
+sleep mode. If you need to turn on the handle again, press the "**START**" button.
+
+Step 1: Turn on the robot.
+
+Step 2: Switch on the handle, and then the two LED lights (red and green) on handle will flash simultaneously.
+
+Step 3: Wait for a few seconds, pair the handle with the robot. After pairing, the
+
+green light will keep on.
+
+### 15.1.3 Mode Introduction
+
+The handle has two modes: single green light mode and green and red lights mode (The red and green lights will turn on simultaneously ).
+
+**Single green light mode:** all the buttons can be used.
+
+**Red and green lights mode:** the four buttons “**↑** 、**↓**、**←**、**→**” are locked and can not be used. The function of the remaining buttons is the same as that of the green and red lights mode.
+
+Two modes switching method: press “**MODE**” button to switch the mode from the green light mode to another mode, and press the button again to switch to the green light mode.
+
+### 15.1.4 Button Instruction
+
+The corresponding relation between the button and the action is as the following table:
+
+|            Button            |                 Function                 |
+| :--------------------------: | :--------------------------------------: |
+|            START             | the robot returns to the initial posture |
+|              L1              |    right tilt and lift the left foot     |
+|              R1              |      left tilt and lift right foot       |
+|              ↑               |               move forward               |
+|              ↓               |              move backward               |
+|         ←          |               move to left               |
+|         →          |              move to right               |
+|         △          |                   wave                   |
+|         ×          |                   bow                    |
+| <img class="common_img" src="../_static/media/chapter_15\section_1/media/image4.png" style="width:40px" /> |               twist waist                |
+|         ○          |            right-footed shot             |
+|   Push up the left slider    |               move forward               |
+|  Push down the left slider   |              move backward               |
+| Push the left slider to left |               move to left               |
+|          select+L1           |                 Dance 1                  |
+|          select+L2           |                 Dance 2                  |
+|          select+R1           |                 Dance 3                  |
+|          select+R2           |                 Dance 4                  |
+|      select+△      |                 Dance 5                  |
+|      select+<img class="common_img" src="../_static/media/chapter_15\section_1/media/image4.png" style="width:40px" />      |                 Dance 6                  |
+|      select+○      |                 Dance 7                  |
+|         select+start         |          Activate athlete mode           |
+
+## 15.2 Group Control
+
+### 15.2.1 Getting Started
+
+1)  Prepare at least two TonyPi Pro robots. In this lesson, two TonyPi Pro robots are used for demonstrating.
+
+2)  Set up the development environment. Refer to “**[Remote Desktop Tool Installation and Connection \ Remote Tool Installation and Connection](https://drive.google.com/drive/folders/1aEXEUxJD5vHFtTVFyGs2Dt8q5HPY-cGk?usp=sharing)**” to download and install the VNC remote connection tool.
+
+### 15.2.2 Introduction
+
+By configuring the master and slave robots on the same network, the master can send action commands to the slave robots through the group control program, enabling control of the slave robots.
+
+### 15.2.3 Group Control Setup
+
+There are two ways to perform group control: LAN mode and master-slave mode.
+
+* **LAN Mode**
+
+**1. Network Configuration**
+
+First, connect all robots that need group control to the same local network using a Wi-Fi router with a strong signal.
+
+1. Open the command line terminal and navigate to the Wi-Fi configuration directory. Enter the following command and press **Enter**.
+
+   ```py
+   cd hiwonder-toolbox
+   ```
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image1.png" style="width:500px" />
+
+2. Open the Wi-Fi configuration file using the vi editor by entering:
+
+   ```py
+   sudo vim wifi_conf.py
+   ```
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image2.png" style="width:500px" />
+
+3)  Press the **i** key to enter edit mode.
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image3.png" style="width:500px" />
+
+4)  Modify the value of HW_WIFI_MODE to 2, and change the values of WIFI_SSID and PASSWORD fields to match your Wi-Fi network name and password.
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image4.png" style="width:500px" />
+
+> [!NOTE]
+>
+> **The password must be at least 8 characters long.**
+
+5. After modifying, press **Esc** to exit edit mode, then save and exit by entering:
+
+   ```py
+   :wq
+   ```
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image5.png" style="width:500px" />
+
+6. Finally, reboot the device by entering the following command. **Do not skip this step.**
+
+   ```py
+   sudo reboot
+   ```
+
+7. Repeat the above steps for all robots, ensuring they are all configured on the same local network.
+
+**2. IP Address Configuration**
+
+1. On any TonyPi Pro, open the command line terminal and enter the following command to check the device’s IP address. Remember this IP address, as it will be used as the server IP for forwarding:
+
+   ```py
+   ifconfig
+   ```
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image6.png" style="width:500px" />
+
+2. Insert the wireless controller's receiver into this TonyPi Pro, which will act as the master device.
+
+3. Edit the local forwarding address in the wireless controller’s control program by entering:
+
+   ```py
+   vim ~/TonyPi/Joystick.py
+   ```
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image7.png" style="width:500px" />
+
+4. Next, remotely connect to the other robots that need to be controlled, and configure the client IP address by entering:
+
+   ```py
+   vim ~/TonyPi/Extend/multi_control/multi_control_client.py
+   ```
+
+5. Modify the relevant section to the server IP address you checked. After changing it, press **Esc** and enter :wq to save and exit.
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image8.png" style="width:500px" />
+
+6. Finally, reboot the device by entering the following command. **Do not skip this step.**
+
+   ```py
+   sudo reboot
+   ```
+
+7. Repeat the above IP configuration steps for all other robots.
+
+**3. Group Control**
+
+> [!NOTE]
+>
+> **Note:** When using group control, first power on the robot with the wireless controller receiver, then start the other robots.
+
+1)  Place all robots on a flat, open surface, keeping a reasonable distance between each robot.
+
+2)  During group control, only single commands can be sent. To perform actions such as continuously moving forward, **press the controller buttons multiple times** instead of holding the stick.
+
+* **Master-Slave Mode**
+
+**1. Master Robot Configuration**
+
+1)  First, power on one robot to serve as the master and establish a remote desktop connection. In this example, the robot with the hotspot named **HW-F199CEEE** is used.
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image9.png" style="width:500px" alt="QQ图片20211213152528" />
+
+> [!NOTE]
+>
+> **Remember the master robot’s hotspot name, as it will be used in the following steps.**
+
+2. Open the command line terminal and navigate to the Wi-Fi configuration directory. Enter the following command and press **Enter**.
+
+   ```py
+   cd hiwonder-toolbox
+   ```
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image1.png" style="width:500px" />
+
+3. Open the Wi-Fi configuration file using the vi editor by entering:
+
+   ```py
+   sudo vim wifi_conf.py
+   ```
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image2.png" style="width:500px" />
+
+4)  Press the **i** key to enter edit mode.
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image3.png" style="width:500px" />
+
+5)  Change the master hotspot’s Wi-Fi password to **123456789** and then uncomment the corresponding line. As shown in the figure below:
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image10.png" style="width:500px" />
+
+> [!NOTE]
+>
+> **The password must be at least 8 characters long.**
+
+6. After modifying, press **Esc** to exit edit mode, then save and exit by entering:
+
+   ```py
+   :wq
+   ```
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image5.png" style="width:500px" />
+
+7. Finally, reboot the device by entering the following command. **Do not skip this step.**
+
+   ```py
+   sudo reboot
+   ```
+
+**2. Slave Robot Configuration**
+
+> [!NOTE]
+>
+> **This example demonstrates the configuration using a single slave robot. The same method can be applied to multiple slave robots.**
+
+1. Open the command line terminal and navigate to the Wi-Fi configuration directory. Enter the following command and press **Enter**.
+
+   ```py
+   cd hiwonder-toolbox
+   ```
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image1.png" style="width:500px" />
+
+2. Open the Wi-Fi configuration file using the vi editor by entering:
+
+   ```py
+   sudo vim wifi_conf.py
+   ```
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image2.png" style="width:500px" />
+
+Press the **i** key to enter edit mode.
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image11.png" style="width:500px" />
+
+3)  Set the hotspot name and password to match the master robot, using the default ID **HW-F119CEEE** in this lesson, then uncomment the corresponding lines in the code. As shown in the figure below:
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image12.png" style="width:500px" />
+
+4. After modifying, press **Esc** to exit edit mode, then save and exit by entering:
+
+   ```py
+   :wq
+   ```
+
+<img class="common_img" src="../_static/media/chapter_15\section_2\media\image13.png" style="width:500px" />
+
+5. Finally, reboot the device by entering the following command. **Do not skip this step.**
+
+   ```py
+   sudo reboot
+   ```
+
+**3. Group Control**
+
+> [!NOTE]
+>
+> **When using group control, slave robots must be powered on only after the master robot is fully operational.c**
+
+1)  Place all robots on a flat, open surface, keeping a reasonable distance between each robot.
+
+2)  Insert the PS2 wireless controller’s receiver into the master robot’s USB port and turn it on to control the robot group.
+
+3)  During group control, only single commands can be sent. To perform actions such as continuously moving forward, press the controller buttons multiple times instead of holding the stick.
+
+### 15.2.4 Project Outcome
+
+After the program starts, the slave robots execute the same set of actions simultaneously with the master robot.

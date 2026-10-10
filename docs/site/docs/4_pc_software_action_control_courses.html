@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4. PC Software Action Control Courses &mdash; TonyPi &amp; TonyPi Pro v2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=31ac2de9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=731f67d5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/custom.js?v=fd93d8dd"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5. AI Vision Course" href="5_ai_vision_course.html" />
+    <link rel="prev" title="3. Remote Desktop Tool Installation and Connection" href="3_remote_desktop_tool_installation_and_connection.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tonypi-pro" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/docs/4_pc_software_action_control_courses.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #f98800" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TonyPi & TonyPi Pro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">TonyPi &amp; TonyPi Pro</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_getting_ready.html">1. Getting Ready</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_quick_user_experience.html">2. Quick User Experience</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_remote_desktop_tool_installation_and_connection.html">3. Remote Desktop Tool Installation and Connection</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. PC Software Action Control Courses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction-to-pc-software">4.1 Introduction to PC Software</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#servo-control-area">4.1.1 Servo Control Area</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#open-close-hand-settings">4.1.2 Open-Close Hand Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#action-list">4.1.3 Action List</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#action-group-setting">4.1.4 Action Group Setting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#servo-deviation-setting-area">4.1.5 Servo Deviation Setting Area</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#action-calling">4.2 Action Calling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#goal">4.2.1 Goal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#action-group-calling">4.2.2 Action Group Calling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#action-group-programming">4.3 Action Group Programming</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#project-purpose">4.3.1 Project Purpose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#program-outcome">4.3.2 Program Outcome</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#integrate-action-groups">4.4 Integrate Action Groups</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">4.4.1 Project Purpose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#complete-program">4.4.2 Complete Program</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#app-custom">4.5 App Custom</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#purpose">4.5.1 Purpose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getting-ready">4.5.2 Getting Ready</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#operation-steps">4.5.3 Operation Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#call-action-group-via-command-line">4.6 Call Action Group via Command Line</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">4.6.1 Project Purpose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#call-action-group">4.6.2 Call Action Group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modify-called-action-group">4.6.3 Modify Called Action Group</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="5_ai_vision_course.html">5. AI Vision Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ai_voice_interaction_course.html">6. AI Voice Interaction Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_pc_software_control.html">7. PC Software Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_vision_gripping_lessons.html">8. Vision Gripping Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9_athletics_sport_lessons.html">9. Athletics Sport Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_sensor_development_basics_courses.html">10. Sensor Development Basics Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_sensor_integration_and_application_development_courses.html">11. Sensor Integration and Application Development Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_aI_large_model_course.html">12. AI Large Model Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_group_control_lessons.html">13. Group Control Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14_network_configuration.html">14. Raspberry Pi Series Robot Network Configuration Instruction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_Group%20Control%20Course.html">15 Group Control Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources_download.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1EJppBKT0G0KF8uXjyMVlsAD1MwwAzq_2?usp=sharing">TonyPi Download</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1HsYi21H4fkIuNB8lpkcdnTRUkJyE4ObE?usp=sharing">TonyPi Pro Download</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #f98800" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TonyPi & TonyPi Pro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">4. PC Software Action Control Courses</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/docs/4_pc_software_action_control_courses.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="pc-software-action-control-courses">
+<h1>4. PC Software Action Control Courses<a class="headerlink" href="#pc-software-action-control-courses" title="Link to this heading"></a></h1>
+<section id="introduction-to-pc-software">
+<h2>4.1 Introduction to PC Software<a class="headerlink" href="#introduction-to-pc-software" title="Link to this heading"></a></h2>
+<p>In this section, you will quickly learn how to use the TonyPi PC software.
+First, connect to the VNC remote desktop, then double-click the <strong>“TonyPi”</strong> icon to launch the program.
+If a pop-up window appears, click <strong>“Run”</strong> to proceed.</p>
+<img src="../_static/media/chapter_4/section_1/image2.png" class="common_img" style="width:70px" />
+<p>The main interface of the TonyPi PC software can be divided into the following areas:</p>
+<img src="../_static/media/chapter_4/section_1/image3.jpeg" class="common_img" />
+<section id="servo-control-area">
+<h3>4.1.1 Servo Control Area<a class="headerlink" href="#servo-control-area" title="Link to this heading"></a></h3>
+<p>Drag the corresponding slider to adjust the servo position:</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: center;"><strong>Function</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image4.png" style="width:100px" /></td>
+<td style="text-align: center;">ID number. Take NO.1 servo as example</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image5.png" style="width:100px"  /></td>
+<td style="text-align: center;">Adjust servo position from 0 to 1000.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image6.png" style="width:100px"  /></td>
+<td style="text-align: center;">Adjust servo deviation from -125 to 125.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="open-close-hand-settings">
+<h3>4.1.2 Open-Close Hand Settings<a class="headerlink" href="#open-close-hand-settings" title="Link to this heading"></a></h3>
+<p>Selecting the checkbox in the top-left corner <img src="../_static/media/chapter_4/section_1/image7.png"  /> will bring up the control interface for the left and right open-close hands, identified by IDs 17 and 18 respectively.</p>
+<img src="../_static/media/chapter_4/section_1/image8.png" class="common_img" />
+</section>
+<section id="action-list">
+<h3>4.1.3 Action List<a class="headerlink" href="#action-list" title="Link to this heading"></a></h3>
+<p>The action details list shows the execution time of each action within the current action group, as well as the corresponding servo values for each action.</p>
+<img src="../_static/media/chapter_4/section_1/image9.png" class="common_img" />
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: center;"><strong>Function</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image10.png"  /></td>
+<td style="text-align: center;">Action group NO.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image11.png"  /></td>
+<td style="text-align: center;">Running time of the action.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image12.png"  /></td>
+<td style="text-align: center;">Action data of the corresponding servo. Double click the figure<img src="../_static/media/chapter_4/section_1/image13.png"  />to revise.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="action-group-setting">
+<h3>4.1.4 Action Group Setting<a class="headerlink" href="#action-group-setting" title="Link to this heading"></a></h3>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: center;"><strong>Function</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image14.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Action Duration:</strong> Displays the duration for the current action. Click the value to edit. Note: Changes take effect only after clicking the <strong>"Update Action"</strong> button. Valid range: 20–9999 ms.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image15.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Total Duration:</strong> Shows the total time needed to complete all actions in the group.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image16.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Relax Joints:</strong> Clicking this button relaxes the robot's joints, allowing you to manually pose it.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image17.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Read Pose:</strong> Captures the current servo angles from the manually posed robot. <em>(Use together with the </em><em>"Manual"</em><em> button.)</em></td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image18.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Add Action:</strong> Adds the current servo values from the control panel as a new action at the end of the action list.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image19.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Delete Action:</strong> Removes the selected action(s) from the list.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image20.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Replace Action:</strong> Replaces the selected action's angles with the current servo values and updates its duration to the time set in <strong>"Duration."</strong></td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image21.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Insert Action:</strong> Inserts a new action above the selected one, using current servo values and the duration specified in <strong>"Duration."</strong></td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image22.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Move Up:</strong> Moves the selected action one step up in the list, swapping positions with the previous action.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image23.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Move Down:</strong> Moves the selected action one step down in the list, swapping positions with the next action.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image24.png"  style="width:150px" /></td>
+<td style="text-align: center;"><strong>Play Once:</strong> Executes all actions in the list once.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image25.png"  style="width:150px" /></td>
+<td style="text-align: center;"><strong>Loop Play:</strong> When checked, the robot repeats the action sequence continuously.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image26.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Load Action Group:</strong> Opens and loads an action group file into the action list.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image27.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Save Action Group:</strong> Saves the current action list to a specified location.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image28.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Merge Action Groups:</strong> After opening one action group, use this to load another and merge both into a new combined group.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image29.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>View Saved Groups:</strong> Displays all saved action groups in the software.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image30.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Delete Selected Group:</strong> Deletes the currently selected action group file.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image31.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Delete All Groups:</strong> <em>(Use with caution)</em> Deletes all saved action group files.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image32.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Execute Group:</strong> Runs the selected action group once.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image33.png" style="width:150px" /></td>
+<td style="text-align: center;"><strong>Stop Execution:</strong> Stops the currently running action group.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="servo-deviation-setting-area">
+<h3>4.1.5 Servo Deviation Setting Area<a class="headerlink" href="#servo-deviation-setting-area" title="Link to this heading"></a></h3>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th style="text-align: center;"><strong>Icon</strong></th>
+<th style="text-align: center;"><strong>Function</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image34.png" style="width:150px" /></td>
+<td style="text-align: center;">Click to read the save the servo deviation.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image35.png" style="width:150px" /></td>
+<td style="text-align: center;">Click to download the deviation adjustment in the PC software.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><img src="../_static/media/chapter_4/section_1/image36.png" style="width:150px" /></td>
+<td style="text-align: center;">Click to return all the servos the middle position(500).</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="action-calling">
+<h2>4.2 Action Calling<a class="headerlink" href="#action-calling" title="Link to this heading"></a></h2>
+<section id="goal">
+<h3>4.2.1 Goal<a class="headerlink" href="#goal" title="Link to this heading"></a></h3>
+<p>This section focuses on how to call the built-in action group via TonyPi PC software.</p>
+</section>
+<section id="action-group-calling">
+<h3>4.2.2 Action Group Calling<a class="headerlink" href="#action-group-calling" title="Link to this heading"></a></h3>
+<p>(1) Power on the robot. Refer to the relevant tutorial in <a class="reference internal" href="3_remote_desktop_tool_installation_and_connection.html"><span class="std std-doc"><strong>3. Remote Desktop Tool Installation and Connection</strong></span></a> to connect it to system desktop via the VNC.</p>
+<img src="../_static/media/chapter_4/section_2/image2.png" class="common_img" />
+<p>(2) Click <img src="../_static/media/chapter_4/section_2/image3.png" style="width:70px" />, and select <strong>“Execute”</strong> to open the PC software.</p>
+<img src="../_static/media/chapter_4/section_2/image4.png" class="common_img" />
+<img src="../_static/media/chapter_4/section_2/image5.png" class="common_img" />
+<p>(3) Click <strong>“Open action file”</strong> to open the action group file located in the same directory as this lesson.</p>
+<img src="../_static/media/chapter_4/section_2/image6.png" class="common_img" />
+<p>(4) The action data list will display the opened action group.</p>
+<img src="../_static/media/chapter_4/section_2/image7.png" class="common_img" />
+<p>(5) Click <strong>“Run”</strong> button.</p>
+<img src="../_static/media/chapter_4/section_2/image8.png" class="common_img" />
+<p>(6) You can click the dropdown button of the action group, and select the action group to be run. Then, click <strong>“Run action group”</strong>.</p>
+<img src="../_static/media/chapter_4/section_2/image9.png" class="common_img" />
+<img src="../_static/media/chapter_4/section_2/image10.png" class="common_img" />
+<img src="../_static/media/chapter_4/section_2/image11.png" class="common_img" />
+<p id="anchor_4_3"></p>
+</section>
+</section>
+<section id="action-group-programming">
+<h2>4.3 Action Group Programming<a class="headerlink" href="#action-group-programming" title="Link to this heading"></a></h2>
+<section id="project-purpose">
+<h3>4.3.1 Project Purpose<a class="headerlink" href="#project-purpose" title="Link to this heading"></a></h3>
+<p>Program an action group consisting of 8 actions to allow the TonyPi to <strong>“Bow”</strong>.</p>
+</section>
+<section id="program-outcome">
+<h3>4.3.2 Program Outcome<a class="headerlink" href="#program-outcome" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Action Programming</strong></p></li>
+</ul>
+<p>(1) After the TonyPi robot is started, revise action data of the 16 servos according to figure below. Click the <strong>“Add action”</strong> button to save the first action.</p>
+<img src="../_static/media/chapter_4/section_3/image2.jpeg" class="common_img" />
+<p>(2) Program to straighten the robot arms and knees. Take the data in below picture for reference. Then click <strong>“Add action”</strong> button to add the action as No.2. Do not forget to add each single action into the list.</p>
+<img src="../_static/media/chapter_4/section_3/image3.jpeg" class="common_img" />
+<p>(3) Modify the servo data as shown in the figure below to raise the arm as the No.3 action.</p>
+<img src="../_static/media/chapter_4/section_3/image4.jpeg" class="common_img" />
+<p>(4) Adjust the arm for the <strong>“Bow”</strong> post.</p>
+<img src="../_static/media/chapter_4/section_3/image5.jpeg" class="common_img" />
+<p>(5) Allow the robot <strong>“Bow”</strong>, and according to the servo value shown in the figure below to adjust, make it the No.5 action.</p>
+<img src="../_static/media/chapter_4/section_3/image6.jpeg" class="common_img" />
+<p>(6) To make the action more natural, the No.6 action is the same as No.5 action. Here we continue to click <strong>“Add action”</strong>.</p>
+<img src="../_static/media/chapter_4/section_3/image7.jpeg" class="common_img" />
+<p>(7) Then make the robot straighten its body, but keep its arms in a bowing position. According to the servo value shown in the figure below.</p>
+<img src="../_static/media/chapter_4/section_3/image8.png" class="common_img" />
+<p>(8) Finally, allow the robot recover its initial posture, and modify each servo data to be consistent with the action No.1, then click <strong>“Add action”</strong>, As shown in the figure below:</p>
+<img src="../_static/media/chapter_4/section_3/image9.jpeg" class="common_img" />
+<p>The all parameter of the action groups as shown in table below: The red value is the servo data needed to be adjusted.</p>
+<img src="../_static/media/chapter_4/section_3/image12.png" class="common_img" />
+<ul class="simple">
+<li><p><strong>Save Action Group</strong></p></li>
+</ul>
+<p>After programming, please save the action group for future debugging. Click <strong>“Save action file”</strong>, choose the path <strong>/home/pi/TonyPi/ActionGroups</strong>, name it (such as <strong>“1_bow”</strong>) and then click <strong>“Save”</strong> button.</p>
+<img src="../_static/media/chapter_4/section_3/image11.png" class="common_img" />
+</section>
+</section>
+<section id="integrate-action-groups">
+<h2>4.4 Integrate Action Groups<a class="headerlink" href="#integrate-action-groups" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>4.4.1 Project Purpose<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>Integrate the provided basic actions to become a new action group. This section takes the integrate No.1 action and No.2 action as an example.</p>
+</section>
+<section id="complete-program">
+<h3>4.4.2 Complete Program<a class="headerlink" href="#complete-program" title="Link to this heading"></a></h3>
+<p>(1) Connect VNC and open TonyPi PC software.</p>
+<img src="../_static/media/chapter_4/section_4/image2.png" class="common_img" />
+<p>(2) Click <strong>“Integrate file”</strong>, choose and double click <strong>“1.d6a”</strong> to open.</p>
+<img src="../_static/media/chapter_4/section_4/image3.png" class="common_img" />
+<p>(3) Then the action list will display the data of No.1 action group.</p>
+<img src="../_static/media/chapter_4/section_4/image4.png" class="common_img" />
+<p>(4) Click <strong>“Integrate file”</strong> again, choose <strong>“2.d6a”</strong> and double click to select it.</p>
+<p>At this point, Action Group 2 has already been linked in.</p>
+<img src="../_static/media/chapter_4/section_4/image5.png" class="common_img" />
+<p>(5) Click <strong>“Run”</strong> to execute the new integrated actions online.</p>
+<img src="../_static/media/chapter_4/section_4/image6.png" class="common_img" />
+<p>(6) Click <strong>“Save action file”</strong> button and enter new action group name (such as <strong>“3”</strong>) to save the new integrated action group for the future debugging</p>
+<img src="../_static/media/chapter_4/section_4/image7.png" class="common_img" />
+</section>
+</section>
+<section id="app-custom">
+<h2>4.5 App Custom<a class="headerlink" href="#app-custom" title="Link to this heading"></a></h2>
+<section id="purpose">
+<h3>4.5.1 Purpose<a class="headerlink" href="#purpose" title="Link to this heading"></a></h3>
+<p>Execute the action group in the folder <a class="reference internal" href="#anchor_4_3"><span class="xref myst"><strong>“4.3 Action Group Programming”</strong></span></a> through mobile APP custom function. Here, we will use executing weightlifting movements as an example.</p>
+</section>
+<section id="getting-ready">
+<h3>4.5.2 Getting Ready<a class="headerlink" href="#getting-ready" title="Link to this heading"></a></h3>
+<p>(1) After connecting VNC, open the file manager of the system desktop.</p>
+<img src="../_static/media/chapter_4/section_5/image2.png" class="common_img" />
+<p>(2) Go to folder <strong>/home/pi/TonyPi</strong> path and open <code class="docutils literal notranslate"><span class="pre">ActionGroupDict.py</span></code>. Take the example of Text Editor:</p>
+<img src="../_static/media/chapter_4/section_5/image3.png" class="common_img" />
+<p>(3) Right-click or press <strong>“Ctrl+C”</strong> to copy the No. 24 action.</p>
+<img src="../_static/media/chapter_4/section_5/image4.png" class="common_img" />
+<p>(4) Paste the program to a new line and set the number to 35. Name as <strong>“weightlifting”</strong> (refer to the action group file name in <strong>/home/pi/TonyPi/ActionGroups</strong>)</p>
+<img src="../_static/media/chapter_4/section_5/image5.png" class="common_img" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Do not use the defined number and No.255. The name of the action group should be consistent with the name in the storage directory (<strong>/home/pi/TonyPi/ActionGroups</strong>).</p>
+</div>
+<p>(5) Press Ctrl+S to save and exit it.</p>
+<p>(6) Enter the command to restart the Raspberry Pi:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">reboot</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This step must be done.</p>
+</div>
+</section>
+<section id="operation-steps">
+<h3>4.5.3 Operation Steps<a class="headerlink" href="#operation-steps" title="Link to this heading"></a></h3>
+<p>(1) Open mobile app and enter <strong>“Model Control”</strong>.</p>
+<img src="../_static/media/chapter_4/section_5/image6.png" class="common_img" />
+<p>(2) Click <strong>“action”</strong> button, select <strong>“custom”</strong> in the pop-up interface, and long press to enter.</p>
+<p class="common_img" style="text-align:center;">
+<img src="../_static/media/chapter_4/section_5/image7.png" style="width:300px;" />
+<img src="../_static/media/chapter_4/section_5/image8.png" style="width:300px;" />
+</p>
+<p>(3) Enter the name and number of the saved action group in the pop-up interface. Click <strong>“ok”</strong> to save it.</p>
+<img src="../_static/media/chapter_4/section_5/image9.png" class="common_img"  style="width:350px;" />
+<p>The action group name can be filled in arbitrarily, but the action group number must be filled in correctly, otherwise it cannot be realized.</p>
+<p>(4) After adding, click the action group name to execute it once.</p>
+<img src="../_static/media/chapter_4/section_5/image10.png" class="common_img"  style="width:350px;" />
+<p>(5) If you need to modify or delete action group, please long press the action name button to modify the action group name as the default <strong>“Custom”</strong>. Set the number as <strong>“255”</strong>.</p>
+</section>
+</section>
+<section id="call-action-group-via-command-line">
+<h2>4.6 Call Action Group via Command Line<a class="headerlink" href="#call-action-group-via-command-line" title="Link to this heading"></a></h2>
+<section id="id2">
+<h3>4.6.1 Project Purpose<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>In addition to invoking TonyPi’s action groups through the upper computer, users can also run action groups by executing commands in the terminal.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Action group files must be saved in the directory <strong>/home/pi/TonyPi/ActionGroups</strong>.</p>
+</div>
+<p>Click the icon <img src="../_static/media/chapter_4/section_6/image2.png"  /> on the system status bar to open the file manager, then go to the directory <strong>/home/pi/TonyPi/ActionGroups</strong> to check if the required action group files are available.</p>
+<img src="../_static/media/chapter_4/section_6/image3.png" class="common_img" />
+<p id="anchor_4_6_2"></p>
+</section>
+<section id="call-action-group">
+<h3>4.6.2 Call Action Group<a class="headerlink" href="#call-action-group" title="Link to this heading"></a></h3>
+<p>(1) Double-click <strong>“Terminator”</strong> icon <img src="../_static/media/chapter_4/section_6/image4.png" style="width:70px" /> in the Raspberry Pi desktop and open command line.</p>
+<p>(2) Input and press Enter to switch to the directory where the program is stored:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">TonyPi</span><span class="o">/</span><span class="n">Example</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(3) Input command and press Enter to start the game:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">ActionGroupControlDemo</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>At this time, the robot will first execute the <code class="docutils literal notranslate"><span class="pre">stand</span></code> action group, then execute the <code class="docutils literal notranslate"><span class="pre">go_forward</span></code> action group twice. After the execution is completed, the terminal will automatically close the program.</p>
+</section>
+<section id="modify-called-action-group">
+<h3>4.6.3 Modify Called Action Group<a class="headerlink" href="#modify-called-action-group" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Call Single Action Group</strong></p></li>
+</ul>
+<p>Users can modify the program to make the robot execute only a single action group. The specific steps are as follows:</p>
+<p>(1) Double-click <strong>“Terminator”</strong> icon <img src="../_static/media/chapter_4/section_6/image4.png" style="width:70px" /> in the Raspberry Pi desktop and open command line.</p>
+<p>(2) Input and press Enter to locate to the directory where the program is stored:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">TonyPi</span><span class="o">/</span><span class="n">Example</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(3) Input command and press Enter to open the program file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vim</span> <span class="n">ActionGroupControlDemo</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(4) Press <strong>“I”</strong> key on the keyboard to enter program editing mode.</p>
+<img src="../_static/media/chapter_4/section_6/image8.png" class="common_img" />
+<p>(5) Find the code as pictured:</p>
+<img src="../_static/media/chapter_4/section_6/image9.png" class="common_img" />
+<p>(6) Add the symbol <strong>“#”</strong> at the beginning of line 28 of the code to comment out this line, leaving only the code to execute action group 1. At this point, with only 15 lines of code retained, the action group can only be run once. If you want to run the action group multiple times, you can comment out line 15 and keep line 16.</p>
+<img src="../_static/media/chapter_4/section_6/image10.png" class="common_img" />
+<p>(7) Then, you can input the desired action group within the single quotes on line 15 of the code. Below is an example of executing the <strong>back</strong> action group.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Action group files must be saved in the directory <strong>/home/pi/TonyPi/ActionGroups</strong>.</p></li>
+<li><p>If you want to call a custom action group, you can first refer to <a class="reference internal" href="#anchor_4_3"><span class="xref myst"><strong>“4.3 Action Group Programming”</strong></span></a> to edit the action.</p></li>
+</ul>
+</div>
+<img src="../_static/media/chapter_4/section_6/image11.png" class="common_img" />
+<p>(8) After making the modifications, press the <strong>“Esc”</strong> key on the keyboard to exit editing mode. Then, type and press Enter to save and exit the program file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">wq</span>
+</pre></div>
+</div>
+<p>(9) Input command and press Enter to start game. Then the robot will execute <code class="docutils literal notranslate"><span class="pre">back</span></code> action group again:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">ActionGroupControlDemo</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Call Multiple Action Groups</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following operations are based on <a class="reference internal" href="#anchor_4_6_2"><span class="xref myst"><strong>“4.6.2 Call Action Group”</strong></span></a>.</p>
+</div>
+<p>Users can use the copy-paste method to call multiple lines of code, enabling the robot to execute multiple action groups sequentially. In this section, calling the “<strong>go</strong>” and  “<strong>move_up</strong>” action groups as example, the specific steps are as follows:</p>
+<p>(1) Refer to steps 1-3 of <a class="reference internal" href="#anchor_4_6_2"><span class="xref myst"><strong>“4.6.2 Call Action Group”</strong></span></a> to open the program file. Do not enter edit mode, otherwise copying will fail. If you are currently in editing mode, you can press the <strong>“Esc”</strong> key on the keyboard.</p>
+<p>(2) Use the arrow keys to move the cursor before line 15, then press <strong>“yy”</strong> on the keyboard. If you want to copy 2 lines, press <strong>“2yy”</strong>, where <strong>“2”</strong> indicates copying 2 lines. If you want to copy more lines, input the desired number. For example, to copy 5 lines, input <strong>“5yy”</strong>.</p>
+<p>(3) Then, use the arrow keys to move the cursor to the end of line 15, and press <strong>“p”</strong> to paste.</p>
+<img src="../_static/media/chapter_4/section_6/image14.png" class="common_img" />
+<p>(4) Press <strong>“i”</strong> to enter edit mode, then modify the numbers in lines 15 and 16 to <strong>go</strong> and <strong>move_up</strong>.</p>
+<img src="../_static/media/chapter_4/section_6/image15.png" class="common_img" />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Action group files must be saved in the directory <strong>/home/pi/TonyPi/ActionGroups</strong>, and the action group names in the program must match the names stored in the folder. Otherwise, the call will fail!</p>
+</div>
+<p>(5) After making the modifications, press the <strong>“Esc”</strong> key on the keyboard to exit editing mode. Then, type and press Enter to save and exit the program file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">wq</span>
+</pre></div>
+</div>
+<p>(6) Input command and press Enter to start the game. The robot will execute <strong>go</strong> and <strong>move_up</strong> action groups in turn:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">ActionGroupControlDemo</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="3_remote_desktop_tool_installation_and_connection.html" class="btn btn-neutral float-left" title="3. Remote Desktop Tool Installation and Connection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="5_ai_vision_course.html" class="btn btn-neutral float-right" title="5. AI Vision Course" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Hiwonder.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

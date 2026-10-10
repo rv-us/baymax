@@ -1,0 +1,1259 @@
+16:16:31.968 INFO start mode=human face_mode=full pose=lite arms=True duration=30.0 gui=False
+16:16:33.204 INFO head_init yaw0=1509 pitch0=1500 P=0.060 dead=(55,65) ema=0.25 interval=0.12 max_d=(8,10)
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+16:16:33.338 INFO human_init face=full pose=lite arms=True
+16:16:33.355 DEBUG face_hit score=0.70 box=(421,178,219,259) c=(530.5,307.5)
+16:16:33.431 DEBUG pose_match dist=69.0
+16:16:33.432 DEBUG arm_skip reach x1=-0.098 x2=-0.004
+16:16:33.432 INFO head_move err=(+210.5,+67.5) d=(-8,-4) -> yaw=1501 pitch=1496 dur=40ms
+16:16:33.447 DEBUG face_hit score=0.68 box=(401,154,239,269) c=(520.5,288.5)
+16:16:33.515 DEBUG pose_match dist=75.3
+16:16:33.516 DEBUG arm_skip reach x1=-0.059 x2=-0.009
+16:16:33.531 DEBUG face_hit score=0.82 box=(402,155,238,263) c=(521.0,286.5)
+16:16:33.598 DEBUG pose_match dist=74.4
+16:16:33.599 DEBUG arm_skip reach x1=-0.033 x2=-0.010
+16:16:33.599 INFO head_move err=(+208.1,+62.2) d=(-8,+0) -> yaw=1493 pitch=1496 dur=40ms
+16:16:33.615 DEBUG face_hit score=0.78 box=(396,159,244,271) c=(518.0,294.5)
+16:16:33.680 DEBUG pose_match dist=55.0
+16:16:33.681 DEBUG arm_skip reach x1=-0.106 x2=-0.002
+16:16:33.695 DEBUG face_hit score=0.90 box=(371,148,269,275) c=(505.5,285.5)
+16:16:33.762 DEBUG pose_match dist=73.4
+16:16:33.763 INFO arm_cmd side=R ang=(84,27,-85,-2) pul=(6:748 7:839 14:479 15:150)
+16:16:33.764 INFO head_move err=(+202.5,+58.1) d=(-8,+0) -> yaw=1485 pitch=1496 dur=40ms
+16:16:33.778 DEBUG face_hit score=0.81 box=(358,148,282,282) c=(499.0,289.0)
+16:16:33.846 DEBUG pose_match dist=63.9
+16:16:33.847 DEBUG arm_skip reach x1=-0.041 x2=-0.001
+16:16:33.862 DEBUG face_hit score=0.90 box=(352,142,269,269) c=(486.5,276.5)
+16:16:33.927 DEBUG pose_match dist=70.0
+16:16:33.928 INFO arm_cmd side=R ang=(82,88,-87,-1) pul=(6:748 7:839 14:479 15:150)
+16:16:33.929 INFO head_move err=(+193.5,+52.7) d=(-8,+0) -> yaw=1477 pitch=1496 dur=40ms
+16:16:33.944 DEBUG face_hit score=0.78 box=(335,139,269,269) c=(469.5,273.5)
+16:16:34.009 DEBUG pose_match dist=68.9
+16:16:34.009 DEBUG arm_skip reach x1=-0.101 x2=-0.003
+16:16:34.024 DEBUG face_hit score=0.80 box=(308,114,291,291) c=(453.5,259.5)
+16:16:34.091 DEBUG pose_match dist=71.3
+16:16:34.092 INFO arm_cmd side=R ang=(91,26,-83,0) pul=(6:748 7:839 14:479 15:150)
+16:16:34.092 INFO head_move err=(+178.5,+44.4) d=(-8,+0) -> yaw=1469 pitch=1496 dur=40ms
+16:16:34.107 DEBUG face_hit score=0.79 box=(295,110,292,292) c=(441.0,256.0)
+16:16:34.171 DEBUG pose_match dist=112.3
+16:16:34.172 DEBUG arm_skip reach x1=-0.081 x2=-0.091
+16:16:34.187 DEBUG face_hit score=0.74 box=(272,105,284,284) c=(414.0,247.0)
+16:16:34.251 DEBUG pose_match dist=91.4
+16:16:34.252 INFO arm_cmd side=R ang=(106,118,-77,7) pul=(6:793 7:839 14:430 15:150)
+16:16:34.253 INFO head_move err=(+157.4,+35.0) d=(-8,+0) -> yaw=1461 pitch=1496 dur=40ms
+16:16:34.267 DEBUG face_hit score=0.77 box=(263,101,282,282) c=(404.0,242.0)
+16:16:34.332 DEBUG pose_match dist=74.5
+16:16:34.333 INFO arm_cmd side=R ang=(91,6,-80,-2) pul=(6:726 7:839 14:430 15:150)
+16:16:34.349 DEBUG face_hit score=0.78 box=(247,93,283,283) c=(388.5,234.5)
+16:16:34.414 DEBUG pose_match dist=66.5
+16:16:34.415 INFO arm_cmd side=R ang=(92,17,-82,1) pul=(6:687 7:839 14:430 15:150)
+16:16:34.416 INFO head_move err=(+135.1,+24.9) d=(-8,+0) -> yaw=1453 pitch=1496 dur=40ms
+16:16:34.430 DEBUG face_hit score=0.77 box=(227,92,283,283) c=(368.5,233.5)
+16:16:34.495 DEBUG pose_match dist=45.0
+16:16:34.496 INFO arm_cmd side=R ang=(88,31,-78,0) pul=(6:687 7:839 14:430 15:150)
+16:16:34.511 DEBUG face_hit score=0.81 box=(224,101,266,266) c=(357.0,234.0)
+16:16:34.576 DEBUG pose_match dist=43.1
+16:16:34.578 INFO arm_cmd side=R ang=(88,5,-84,1) pul=(6:645 7:839 14:430 15:150)
+16:16:34.578 INFO head_move err=(+110.6,+17.2) d=(-6,+0) -> yaw=1447 pitch=1496 dur=40ms
+16:16:34.592 DEBUG face_hit score=0.88 box=(214,100,266,266) c=(347.0,233.0)
+16:16:34.664 DEBUG pose_match dist=50.8
+16:16:34.665 INFO arm_cmd side=both ang=(85,4,-81,0) pul=(6:613 7:839 14:430 15:150)
+16:16:34.681 DEBUG face_hit score=0.85 box=(205,100,258,258) c=(334.0,229.0)
+16:16:34.748 DEBUG pose_match dist=47.1
+16:16:34.750 INFO arm_cmd side=both ang=(83,3,-81,4) pul=(6:588 7:839 14:430 15:150)
+16:16:34.750 INFO head_move err=(+86.5,+10.1) d=(-5,+0) -> yaw=1442 pitch=1496 dur=40ms
+16:16:34.764 DEBUG face_hit score=0.79 box=(188,92,260,260) c=(318.0,222.0)
+16:16:34.832 DEBUG pose_match dist=38.5
+16:16:34.833 INFO arm_cmd side=both ang=(83,4,-76,-13) pul=(6:588 7:839 14:430 15:150)
+16:16:34.849 DEBUG face_hit score=0.82 box=(179,92,257,257) c=(307.5,220.5)
+16:16:34.916 DEBUG pose_match dist=48.1
+16:16:34.917 INFO arm_cmd side=both ang=(85,3,-74,-9) pul=(6:588 7:839 14:430 15:150)
+16:16:34.917 INFO head_move err=(+61.7,+2.7) d=(-3,+0) -> yaw=1439 pitch=1496 dur=40ms
+16:16:34.931 DEBUG face_hit score=0.90 box=(173,92,249,249) c=(297.5,216.5)
+16:16:34.998 DEBUG pose_match dist=51.0
+16:16:34.999 INFO arm_cmd side=R ang=(95,27,-78,-9) pul=(6:588 7:839 14:430 15:150)
+16:16:35.016 DEBUG face_hit score=0.82 box=(170,89,242,242) c=(291.0,210.0)
+16:16:35.087 DEBUG pose_match dist=45.3
+16:16:35.088 INFO arm_cmd side=both ang=(88,0,-81,-7) pul=(6:588 7:839 14:430 15:150)
+16:16:35.088 DEBUG head_hold raw=(291.0,210.0) sm=(359.0,234.5) err=(39.0,-5.5) yaw=1439 pitch=1496
+16:16:35.106 DEBUG face_hit score=0.79 box=(168,95,230,230) c=(283.0,210.0)
+16:16:35.183 DEBUG pose_match dist=27.7
+16:16:35.184 INFO arm_cmd side=both ang=(85,-2,-77,-8) pul=(6:588 7:839 14:430 15:150)
+16:16:35.200 DEBUG face_hit score=0.85 box=(168,95,227,227) c=(281.5,208.5)
+16:16:35.266 DEBUG pose_match dist=26.9
+16:16:35.267 INFO arm_cmd side=both ang=(82,1,-78,-10) pul=(6:588 7:839 14:430 15:150)
+16:16:35.267 DEBUG head_hold raw=(281.5,208.5) sm=(339.7,228.0) err=(19.7,-12.0) yaw=1439 pitch=1496
+16:16:35.284 DEBUG face_hit score=0.80 box=(167,97,222,222) c=(278.0,208.0)
+16:16:35.350 DEBUG pose_match dist=22.6
+16:16:35.351 INFO arm_cmd side=both ang=(83,-1,-80,-2) pul=(6:588 7:839 14:430 15:150)
+16:16:35.367 DEBUG face_hit score=0.89 box=(158,91,225,225) c=(270.5,203.5)
+16:16:35.433 DEBUG pose_match dist=29.2
+16:16:35.434 INFO arm_cmd side=both ang=(80,9,-76,-5) pul=(6:588 7:839 14:430 15:150)
+16:16:35.434 DEBUG head_hold raw=(270.5,203.5) sm=(322.4,221.9) err=(2.4,-18.1) yaw=1439 pitch=1496
+16:16:35.451 DEBUG face_hit score=0.86 box=(158,97,220,220) c=(268.0,207.0)
+16:16:35.517 DEBUG pose_match dist=30.8
+16:16:35.518 INFO arm_cmd side=both ang=(83,4,-74,-14) pul=(6:588 7:839 14:430 15:150)
+16:16:35.534 DEBUG face_hit score=0.78 box=(157,100,219,218) c=(266.5,209.0)
+16:16:35.600 DEBUG pose_match dist=17.5
+16:16:35.601 INFO arm_cmd side=both ang=(77,7,-77,-9) pul=(6:588 7:839 14:430 15:150)
+16:16:35.601 DEBUG head_hold raw=(266.5,209.0) sm=(308.4,218.7) err=(-11.6,-21.3) yaw=1439 pitch=1496
+16:16:35.616 DEBUG face_hit score=0.84 box=(157,109,214,214) c=(264.0,216.0)
+16:16:35.683 DEBUG pose_match dist=19.2
+16:16:35.684 INFO arm_cmd side=both ang=(73,11,-73,-14) pul=(6:588 7:839 14:430 15:150)
+16:16:35.699 DEBUG face_hit score=0.90 box=(165,115,208,208) c=(269.0,219.0)
+16:16:35.765 DEBUG pose_match dist=25.3
+16:16:35.766 INFO arm_cmd side=both ang=(71,15,-78,-5) pul=(6:588 7:839 14:430 15:150)
+16:16:35.766 DEBUG head_hold raw=(269.0,219.0) sm=(298.5,218.8) err=(-21.5,-21.2) yaw=1439 pitch=1496
+16:16:35.781 DEBUG face_hit score=0.81 box=(169,117,209,209) c=(273.5,221.5)
+16:16:35.849 DEBUG pose_match dist=36.3
+16:16:35.850 INFO arm_cmd side=both ang=(72,16,-76,-3) pul=(6:588 7:839 14:430 15:150)
+16:16:35.851 INFO heartbeat fps=11.7 frames=30 face_lock=30/100% head={'moves': 10, 'holds': 5, 'recenters': 0}
+16:16:35.867 DEBUG face_hit score=0.86 box=(176,121,205,205) c=(278.5,223.5)
+16:16:35.940 DEBUG pose_match dist=32.5
+16:16:35.942 INFO arm_cmd side=both ang=(74,13,-82,0) pul=(6:588 7:839 14:430 15:150)
+16:16:35.942 DEBUG head_hold raw=(278.5,223.5) sm=(293.5,219.9) err=(-26.5,-20.1) yaw=1439 pitch=1496
+16:16:35.959 DEBUG face_hit score=0.81 box=(183,126,193,193) c=(279.5,222.5)
+16:16:36.030 DEBUG pose_match dist=28.5
+16:16:36.031 INFO arm_cmd side=both ang=(77,13,-85,4) pul=(6:588 7:839 14:430 15:150)
+16:16:36.046 DEBUG face_hit score=0.87 box=(185,133,190,190) c=(280.0,228.0)
+16:16:36.114 DEBUG pose_match dist=27.3
+16:16:36.115 INFO arm_cmd side=both ang=(70,13,-81,1) pul=(6:588 7:839 14:430 15:150)
+16:16:36.116 DEBUG head_hold raw=(280.0,228.0) sm=(290.2,222.0) err=(-29.8,-18.0) yaw=1439 pitch=1496
+16:16:36.131 DEBUG face_hit score=0.90 box=(188,136,186,186) c=(281.0,229.0)
+16:16:36.198 DEBUG pose_match dist=21.6
+16:16:36.200 INFO arm_cmd side=both ang=(65,16,-77,-2) pul=(6:588 7:839 14:430 15:150)
+16:16:36.214 DEBUG face_hit score=0.85 box=(194,137,182,182) c=(285.0,228.0)
+16:16:36.281 DEBUG pose_match dist=28.3
+16:16:36.281 INFO arm_cmd side=both ang=(64,15,-73,-5) pul=(6:588 7:839 14:430 15:150)
+16:16:36.282 DEBUG head_hold raw=(285.0,228.0) sm=(288.9,223.5) err=(-31.1,-16.5) yaw=1439 pitch=1496
+16:16:36.297 DEBUG face_hit score=0.90 box=(191,136,184,184) c=(283.0,228.0)
+16:16:36.363 DEBUG pose_match dist=32.4
+16:16:36.364 INFO arm_cmd side=both ang=(60,18,-59,65) pul=(6:588 7:839 14:515 15:176)
+16:16:36.379 DEBUG face_hit score=0.89 box=(189,137,184,184) c=(281.0,229.0)
+16:16:36.446 DEBUG pose_match dist=37.5
+16:16:36.446 INFO arm_cmd side=both ang=(55,24,-40,43) pul=(6:588 7:812 14:556 15:215)
+16:16:36.447 DEBUG head_hold raw=(281.0,229.0) sm=(286.9,224.9) err=(-33.1,-15.1) yaw=1439 pitch=1496
+16:16:36.461 DEBUG face_hit score=0.90 box=(191,137,184,184) c=(283.0,229.0)
+16:16:36.527 DEBUG pose_match dist=29.0
+16:16:36.528 INFO arm_cmd side=both ang=(47,35,-40,54) pul=(6:588 7:783 14:598 15:244)
+16:16:36.543 DEBUG face_hit score=0.87 box=(192,138,184,184) c=(284.0,230.0)
+16:16:36.610 DEBUG pose_match dist=32.9
+16:16:36.610 INFO arm_cmd side=both ang=(37,40,-30,63) pul=(6:588 7:751 14:639 15:277)
+16:16:36.611 DEBUG head_hold raw=(284.0,230.0) sm=(286.2,226.1) err=(-33.8,-13.9) yaw=1439 pitch=1496
+16:16:36.626 DEBUG face_hit score=0.90 box=(189,135,188,188) c=(283.0,229.0)
+16:16:36.692 DEBUG pose_match dist=21.5
+16:16:36.693 INFO arm_cmd side=both ang=(37,39,-22,42) pul=(6:588 7:751 14:639 15:310)
+16:16:36.707 DEBUG face_hit score=0.90 box=(187,134,192,192) c=(283.0,230.0)
+16:16:36.772 DEBUG pose_match dist=38.4
+16:16:36.773 INFO arm_cmd side=both ang=(47,46,-52,58) pul=(6:614 7:751 14:664 15:310)
+16:16:36.773 DEBUG head_hold raw=(283.0,230.0) sm=(285.4,227.1) err=(-34.6,-12.9) yaw=1439 pitch=1496
+16:16:36.788 DEBUG face_hit score=0.91 box=(185,136,193,193) c=(281.5,232.5)
+16:16:36.858 DEBUG pose_match dist=29.5
+16:16:36.859 INFO arm_cmd side=both ang=(55,42,-46,89) pul=(6:614 7:751 14:710 15:310)
+16:16:36.874 DEBUG face_hit score=0.93 box=(187,138,191,191) c=(282.5,233.5)
+16:16:36.941 DEBUG pose_match dist=26.2
+16:16:36.942 INFO arm_cmd side=both ang=(60,39,-31,86) pul=(6:614 7:751 14:745 15:310)
+16:16:36.942 DEBUG head_hold raw=(282.5,233.5) sm=(284.7,228.7) err=(-35.3,-11.3) yaw=1439 pitch=1496
+16:16:36.957 DEBUG face_hit score=0.92 box=(186,137,193,193) c=(282.5,233.5)
+16:16:37.024 DEBUG pose_match dist=22.0
+16:16:37.025 INFO arm_cmd side=both ang=(50,49,-17,0) pul=(6:614 7:751 14:684 15:340)
+16:16:37.040 DEBUG face_hit score=0.91 box=(184,138,191,191) c=(279.5,233.5)
+16:16:37.105 DEBUG pose_match dist=29.9
+16:16:37.106 INFO arm_cmd side=both ang=(30,41,-12,92) pul=(6:614 7:720 14:726 15:368)
+16:16:37.106 DEBUG head_hold raw=(279.5,233.5) sm=(283.4,229.9) err=(-36.6,-10.1) yaw=1439 pitch=1496
+16:16:37.122 DEBUG face_hit score=0.93 box=(186,137,192,192) c=(282.0,233.0)
+16:16:37.188 DEBUG pose_match dist=25.7
+16:16:37.190 INFO arm_cmd side=both ang=(24,87,-23,82) pul=(6:673 7:690 14:755 15:368)
+16:16:37.205 DEBUG face_hit score=0.89 box=(184,138,190,190) c=(279.0,233.0)
+16:16:37.273 DEBUG pose_match dist=28.4
+16:16:37.274 INFO arm_cmd side=both ang=(57,37,-17,68) pul=(6:673 7:690 14:755 15:368)
+16:16:37.275 DEBUG head_hold raw=(279.0,233.0) sm=(282.3,230.7) err=(-37.7,-9.3) yaw=1439 pitch=1496
+16:16:37.290 DEBUG face_hit score=0.91 box=(185,139,188,188) c=(279.0,233.0)
+16:16:37.355 DEBUG pose_match dist=32.4
+16:16:37.356 INFO arm_cmd side=both ang=(22,39,-32,73) pul=(6:673 7:665 14:755 15:368)
+16:16:37.371 DEBUG face_hit score=0.93 box=(186,137,192,192) c=(282.0,233.0)
+16:16:37.436 DEBUG pose_match dist=25.5
+16:16:37.437 INFO arm_cmd side=both ang=(17,69,-15,57) pul=(6:702 7:665 14:755 15:368)
+16:16:37.437 DEBUG head_hold raw=(282.0,233.0) sm=(282.2,231.3) err=(-37.8,-8.7) yaw=1439 pitch=1496
+16:16:37.452 DEBUG face_hit score=0.91 box=(185,139,188,188) c=(279.0,233.0)
+16:16:37.516 DEBUG pose_match dist=27.0
+16:16:37.517 INFO arm_cmd side=both ang=(44,42,-15,93) pul=(6:702 7:665 14:755 15:368)
+16:16:37.533 DEBUG face_hit score=0.93 box=(185,137,191,191) c=(280.5,232.5)
+16:16:37.600 DEBUG pose_match dist=28.7
+16:16:37.601 INFO arm_cmd side=both ang=(41,44,-42,42) pul=(6:702 7:665 14:755 15:368)
+16:16:37.602 DEBUG head_hold raw=(280.5,232.5) sm=(281.8,231.6) err=(-38.2,-8.4) yaw=1439 pitch=1496
+16:16:37.616 DEBUG face_hit score=0.91 box=(183,136,194,194) c=(280.0,233.0)
+16:16:37.683 DEBUG pose_match dist=20.7
+16:16:37.684 INFO arm_cmd side=both ang=(23,37,-17,77) pul=(6:702 7:665 14:755 15:368)
+16:16:37.699 DEBUG face_hit score=0.89 box=(183,138,192,192) c=(279.0,234.0)
+16:16:37.764 DEBUG pose_match dist=18.9
+16:16:37.765 INFO arm_cmd side=both ang=(21,35,-17,77) pul=(6:702 7:665 14:755 15:368)
+16:16:37.765 DEBUG head_hold raw=(279.0,234.0) sm=(281.1,232.2) err=(-38.9,-7.8) yaw=1439 pitch=1496
+16:16:37.780 DEBUG face_hit score=0.89 box=(183,138,193,193) c=(279.5,234.5)
+16:16:37.846 DEBUG pose_match dist=26.6
+16:16:37.847 INFO arm_cmd side=both ang=(21,-33,-17,99) pul=(6:617 7:665 14:755 15:368)
+16:16:37.862 DEBUG face_hit score=0.92 box=(182,136,193,193) c=(278.5,232.5)
+16:16:37.927 DEBUG pose_match dist=28.2
+16:16:37.929 INFO arm_cmd side=both ang=(60,36,-22,0) pul=(6:617 7:665 14:691 15:368)
+16:16:37.929 DEBUG head_hold raw=(278.5,232.5) sm=(280.4,232.3) err=(-39.6,-7.7) yaw=1439 pitch=1496
+16:16:37.944 DEBUG face_hit score=0.88 box=(184,138,194,194) c=(281.0,235.0)
+16:16:38.010 DEBUG pose_match dist=25.5
+16:16:38.011 INFO arm_cmd side=both ang=(29,40,-15,95) pul=(6:617 7:665 14:731 15:368)
+16:16:38.027 DEBUG face_hit score=0.88 box=(180,135,198,198) c=(279.0,234.0)
+16:16:38.093 DEBUG pose_match dist=21.8
+16:16:38.095 INFO arm_cmd side=R ang=(-2,-129,-22,93) pul=(6:500 7:622 14:761 15:368)
+16:16:38.095 DEBUG head_hold raw=(279.0,234.0) sm=(280.1,232.7) err=(-39.9,-7.3) yaw=1439 pitch=1496
+16:16:38.109 DEBUG face_hit score=0.86 box=(185,139,193,193) c=(281.5,235.5)
+16:16:38.175 DEBUG pose_match dist=23.2
+16:16:38.175 INFO arm_cmd side=both ang=(46,37,-18,66) pul=(6:538 7:622 14:761 15:368)
+16:16:38.191 DEBUG face_hit score=0.88 box=(186,139,193,193) c=(282.5,235.5)
+16:16:38.256 DEBUG pose_match dist=19.4
+16:16:38.257 INFO arm_cmd side=both ang=(16,50,-15,52) pul=(6:580 7:622 14:761 15:368)
+16:16:38.257 DEBUG head_hold raw=(282.5,235.5) sm=(280.7,233.4) err=(-39.3,-6.6) yaw=1439 pitch=1496
+16:16:38.273 DEBUG face_hit score=0.90 box=(185,139,193,193) c=(281.5,235.5)
+16:16:38.338 DEBUG pose_match dist=15.5
+16:16:38.340 INFO arm_cmd side=both ang=(9,24,-28,83) pul=(6:580 7:622 14:761 15:368)
+16:16:38.340 INFO heartbeat fps=12.1 frames=60 face_lock=60/100% head={'moves': 10, 'holds': 20, 'recenters': 0}
+16:16:38.355 DEBUG face_hit score=0.82 box=(183,140,191,191) c=(278.5,235.5)
+16:16:38.423 DEBUG pose_match dist=21.9
+16:16:38.424 INFO arm_cmd side=both ang=(13,46,-14,94) pul=(6:608 7:622 14:761 15:368)
+16:16:38.424 DEBUG head_hold raw=(278.5,235.5) sm=(280.1,233.9) err=(-39.9,-6.1) yaw=1439 pitch=1496
+16:16:38.439 DEBUG face_hit score=0.89 box=(185,138,193,193) c=(281.5,234.5)
+16:16:38.505 DEBUG pose_match dist=25.1
+16:16:38.506 INFO arm_cmd side=both ang=(24,73,-29,79) pul=(6:657 7:622 14:761 15:368)
+16:16:38.521 DEBUG face_hit score=0.86 box=(185,140,193,193) c=(281.5,236.5)
+16:16:38.588 DEBUG pose_match dist=25.2
+16:16:38.590 INFO arm_cmd side=both ang=(47,48,-36,101) pul=(6:657 7:622 14:761 15:368)
+16:16:38.590 DEBUG head_hold raw=(281.5,236.5) sm=(280.5,234.6) err=(-39.5,-5.4) yaw=1439 pitch=1496
+16:16:38.606 DEBUG face_hit score=0.82 box=(183,138,195,195) c=(280.5,235.5)
+16:16:38.679 DEBUG pose_match dist=23.7
+16:16:38.680 INFO arm_cmd side=both ang=(24,68,-34,92) pul=(6:688 7:622 14:761 15:368)
+16:16:38.697 DEBUG face_hit score=0.85 box=(184,141,192,192) c=(280.0,237.0)
+16:16:38.772 DEBUG pose_match dist=20.3
+16:16:38.773 INFO arm_cmd side=both ang=(0,0,-14,59) pul=(6:641 7:592 14:761 15:368)
+16:16:38.773 DEBUG head_hold raw=(280.0,237.0) sm=(280.4,235.2) err=(-39.6,-4.8) yaw=1439 pitch=1496
+16:16:38.788 DEBUG face_hit score=0.84 box=(182,138,194,194) c=(279.0,235.0)
+16:16:38.855 DEBUG pose_match dist=31.7
+16:16:38.856 INFO arm_cmd side=R ang=(25,123,-18,91) pul=(6:693 7:592 14:761 15:368)
+16:16:38.872 DEBUG face_hit score=0.83 box=(183,138,193,193) c=(279.5,234.5)
+16:16:38.939 DEBUG pose_match dist=31.4
+16:16:38.940 INFO arm_cmd side=both ang=(16,53,-15,30) pul=(6:693 7:592 14:727 15:368)
+16:16:38.940 DEBUG head_hold raw=(279.5,234.5) sm=(280.1,235.0) err=(-39.9,-5.0) yaw=1439 pitch=1496
+16:16:38.955 DEBUG face_hit score=0.82 box=(180,136,197,197) c=(278.5,234.5)
+16:16:39.023 DEBUG pose_match dist=24.4
+16:16:39.024 INFO arm_cmd side=both ang=(15,48,-33,96) pul=(6:693 7:592 14:758 15:368)
+16:16:39.038 DEBUG face_hit score=0.83 box=(182,138,197,197) c=(280.5,236.5)
+16:16:39.103 DEBUG pose_match dist=27.6
+16:16:39.104 INFO arm_cmd side=both ang=(34,52,-25,64) pul=(6:693 7:592 14:758 15:368)
+16:16:39.104 DEBUG head_hold raw=(280.5,236.5) sm=(280.2,235.4) err=(-39.8,-4.6) yaw=1439 pitch=1496
+16:16:39.119 DEBUG face_hit score=0.84 box=(181,138,198,198) c=(280.0,237.0)
+16:16:39.186 DEBUG pose_match dist=29.9
+16:16:39.187 INFO arm_cmd side=both ang=(9,65,-12,102) pul=(6:693 7:592 14:758 15:368)
+16:16:39.202 DEBUG face_hit score=0.85 box=(178,134,200,200) c=(278.0,234.0)
+16:16:39.269 DEBUG pose_match dist=20.4
+16:16:39.270 INFO arm_cmd side=both ang=(6,-84,-20,74) pul=(6:557 7:592 14:758 15:368)
+16:16:39.270 DEBUG head_hold raw=(278.0,234.0) sm=(279.7,235.0) err=(-40.3,-5.0) yaw=1439 pitch=1496
+16:16:39.285 DEBUG face_hit score=0.82 box=(176,133,204,204) c=(278.0,235.0)
+16:16:39.351 DEBUG pose_match dist=20.6
+16:16:39.352 INFO arm_cmd side=both ang=(13,-34,-40,67) pul=(6:507 7:592 14:758 15:368)
+16:16:39.366 DEBUG face_hit score=0.81 box=(177,134,201,202) c=(277.5,235.0)
+16:16:39.432 DEBUG pose_match dist=31.8
+16:16:39.433 INFO arm_cmd side=both ang=(27,73,-47,95) pul=(6:581 7:592 14:758 15:368)
+16:16:39.433 DEBUG head_hold raw=(277.5,235.0) sm=(279.1,235.0) err=(-40.9,-5.0) yaw=1439 pitch=1496
+16:16:39.448 DEBUG face_hit score=0.84 box=(177,132,202,202) c=(278.0,233.0)
+16:16:39.513 DEBUG pose_match dist=33.0
+16:16:39.514 INFO arm_cmd side=both ang=(6,-97,-27,82) pul=(6:473 7:592 14:758 15:368)
+16:16:39.530 DEBUG face_hit score=0.79 box=(176,134,200,200) c=(276.0,234.0)
+16:16:39.600 DEBUG pose_match dist=42.4
+16:16:39.601 INFO arm_cmd side=both ang=(6,-117,-12,71) pul=(6:392 7:592 14:758 15:368)
+16:16:39.601 DEBUG head_hold raw=(276.0,234.0) sm=(278.3,234.8) err=(-41.7,-5.2) yaw=1439 pitch=1496
+16:16:39.616 DEBUG face_hit score=0.89 box=(174,135,198,198) c=(273.0,234.0)
+16:16:39.683 DEBUG pose_match dist=26.8
+16:16:39.684 INFO arm_cmd side=both ang=(14,-135,-16,83) pul=(6:332 7:592 14:758 15:368)
+16:16:39.699 DEBUG face_hit score=0.88 box=(175,136,196,196) c=(273.0,234.0)
+16:16:39.765 DEBUG pose_match dist=31.7
+16:16:39.766 INFO arm_cmd side=both ang=(2,-72,-19,93) pul=(6:299 7:592 14:758 15:368)
+16:16:39.767 DEBUG head_hold raw=(273.0,234.0) sm=(277.0,234.6) err=(-43.0,-5.4) yaw=1439 pitch=1496
+16:16:39.781 DEBUG face_hit score=0.85 box=(175,135,198,198) c=(274.0,234.0)
+16:16:39.851 DEBUG pose_match dist=28.4
+16:16:39.852 INFO arm_cmd side=both ang=(0,-91,-14,97) pul=(6:262 7:592 14:758 15:368)
+16:16:39.867 DEBUG face_hit score=0.83 box=(175,137,196,196) c=(273.0,235.0)
+16:16:39.934 DEBUG pose_match dist=24.4
+16:16:39.935 INFO arm_cmd side=both ang=(0,-121,-13,103) pul=(6:234 7:592 14:758 15:368)
+16:16:39.935 DEBUG head_hold raw=(273.0,235.0) sm=(276.0,234.7) err=(-44.0,-5.3) yaw=1439 pitch=1496
+16:16:39.950 DEBUG face_hit score=0.88 box=(176,139,194,194) c=(273.0,236.0)
+16:16:40.015 DEBUG pose_match dist=18.2
+16:16:40.016 INFO arm_cmd side=both ang=(0,-123,-7,103) pul=(6:234 7:592 14:758 15:394)
+16:16:40.031 DEBUG face_hit score=0.78 box=(177,141,191,191) c=(272.5,236.5)
+16:16:40.097 DEBUG pose_match dist=35.1
+16:16:40.098 INFO arm_cmd side=R ang=(-5,-119,-3,109) pul=(6:234 7:564 14:758 15:394)
+16:16:40.098 DEBUG head_hold raw=(272.5,236.5) sm=(275.1,235.1) err=(-44.9,-4.9) yaw=1439 pitch=1496
+16:16:40.114 DEBUG face_hit score=0.80 box=(179,142,188,188) c=(273.0,236.0)
+16:16:40.185 DEBUG pose_match dist=25.3
+16:16:40.186 INFO arm_cmd side=R ang=(-8,-118,-4,101) pul=(6:234 7:564 14:758 15:394)
+16:16:40.204 DEBUG face_hit score=0.73 box=(179,141,190,190) c=(274.0,236.0)
+16:16:40.280 DEBUG pose_match dist=31.1
+16:16:40.281 INFO arm_cmd side=both ang=(-4,-114,-5,103) pul=(6:234 7:564 14:758 15:394)
+16:16:40.281 DEBUG head_hold raw=(274.0,236.0) sm=(274.8,235.4) err=(-45.2,-4.6) yaw=1439 pitch=1496
+16:16:40.296 DEBUG face_hit score=0.77 box=(174,139,194,194) c=(271.0,236.0)
+16:16:40.362 DEBUG pose_match dist=25.9
+16:16:40.363 INFO arm_cmd side=both ang=(-3,-119,-8,102) pul=(6:234 7:564 14:758 15:394)
+16:16:40.378 DEBUG face_hit score=0.74 box=(178,141,191,191) c=(273.5,236.5)
+16:16:40.500 DEBUG pose_match dist=28.9
+16:16:40.501 INFO arm_cmd side=both ang=(-6,-110,-6,99) pul=(6:234 7:564 14:758 15:394)
+16:16:40.502 DEBUG head_hold raw=(273.5,236.5) sm=(274.5,235.6) err=(-45.5,-4.4) yaw=1439 pitch=1496
+16:16:40.517 DEBUG face_hit score=0.86 box=(176,140,192,192) c=(272.0,236.0)
+16:16:40.581 DEBUG pose_match dist=23.0
+16:16:40.583 INFO arm_cmd side=both ang=(-6,-111,-5,101) pul=(6:234 7:564 14:758 15:394)
+16:16:40.597 DEBUG face_hit score=0.87 box=(174,137,195,195) c=(271.5,234.5)
+16:16:40.664 DEBUG pose_match dist=24.8
+16:16:40.665 INFO arm_cmd side=R ang=(-3,-121,-7,102) pul=(6:234 7:564 14:758 15:394)
+16:16:40.665 DEBUG head_hold raw=(271.5,234.5) sm=(273.8,235.4) err=(-46.2,-4.6) yaw=1439 pitch=1496
+16:16:40.679 DEBUG face_hit score=0.78 box=(175,139,195,195) c=(272.5,236.5)
+16:16:40.746 DEBUG pose_match dist=23.4
+16:16:40.747 INFO arm_cmd side=both ang=(-3,-107,-7,99) pul=(6:234 7:564 14:758 15:394)
+16:16:40.762 DEBUG face_hit score=0.83 box=(176,139,194,194) c=(273.0,236.0)
+16:16:40.828 DEBUG pose_match dist=31.0
+16:16:40.829 INFO arm_cmd side=both ang=(-4,-113,-6,102) pul=(6:234 7:564 14:758 15:394)
+16:16:40.829 DEBUG head_hold raw=(273.0,236.0) sm=(273.6,235.5) err=(-46.4,-4.5) yaw=1439 pitch=1496
+16:16:40.844 DEBUG face_hit score=0.82 box=(174,137,197,197) c=(272.5,235.5)
+16:16:40.911 DEBUG pose_match dist=23.1
+16:16:40.912 INFO arm_cmd side=R ang=(-9,-115,-6,103) pul=(6:234 7:538 14:758 15:394)
+16:16:40.912 INFO heartbeat fps=11.3 frames=90 face_lock=90/100% head={'moves': 10, 'holds': 35, 'recenters': 0}
+16:16:40.927 DEBUG face_hit score=0.85 box=(173,137,195,196) c=(270.5,235.0)
+16:16:40.994 DEBUG pose_match dist=21.9
+16:16:40.995 INFO arm_cmd side=both ang=(-5,-115,-7,102) pul=(6:234 7:538 14:758 15:394)
+16:16:40.995 DEBUG head_hold raw=(270.5,235.0) sm=(272.8,235.4) err=(-47.2,-4.6) yaw=1439 pitch=1496
+16:16:41.015 DEBUG face_hit score=0.81 box=(173,135,200,200) c=(273.0,235.0)
+16:16:41.081 DEBUG pose_match dist=29.6
+16:16:41.082 INFO arm_cmd side=both ang=(-2,-116,-7,108) pul=(6:234 7:538 14:758 15:394)
+16:16:41.097 DEBUG face_hit score=0.87 box=(176,136,196,196) c=(274.0,234.0)
+16:16:41.161 DEBUG pose_match dist=36.6
+16:16:41.162 INFO arm_cmd side=both ang=(-5,-108,-4,102) pul=(6:234 7:538 14:758 15:394)
+16:16:41.163 DEBUG head_hold raw=(274.0,234.0) sm=(273.1,235.0) err=(-46.9,-5.0) yaw=1439 pitch=1496
+16:16:41.180 DEBUG face_hit score=0.86 box=(176,134,197,197) c=(274.5,232.5)
+16:16:41.248 DEBUG pose_match dist=31.1
+16:16:41.249 INFO arm_cmd side=both ang=(-2,-114,-5,105) pul=(6:234 7:538 14:758 15:394)
+16:16:41.264 DEBUG face_hit score=0.89 box=(178,137,192,192) c=(274.0,233.0)
+16:16:41.331 DEBUG pose_match dist=26.4
+16:16:41.332 INFO arm_cmd side=both ang=(-4,-110,-4,96) pul=(6:234 7:538 14:758 15:394)
+16:16:41.332 DEBUG head_hold raw=(274.0,233.0) sm=(273.3,234.5) err=(-46.7,-5.5) yaw=1439 pitch=1496
+16:16:41.347 DEBUG face_hit score=0.88 box=(179,139,190,190) c=(274.0,234.0)
+16:16:41.415 DEBUG pose_match dist=20.5
+16:16:41.416 INFO arm_cmd side=both ang=(-4,-112,-6,99) pul=(6:234 7:538 14:758 15:394)
+16:16:41.433 DEBUG face_hit score=0.86 box=(180,138,190,190) c=(275.0,233.0)
+16:16:41.506 DEBUG pose_match dist=26.3
+16:16:41.507 INFO arm_cmd side=both ang=(-1,-112,-5,95) pul=(6:234 7:538 14:758 15:394)
+16:16:41.507 DEBUG head_hold raw=(275.0,233.0) sm=(273.7,234.1) err=(-46.3,-5.9) yaw=1439 pitch=1496
+16:16:41.524 DEBUG face_hit score=0.80 box=(179,137,192,192) c=(275.0,233.0)
+16:16:41.601 DEBUG pose_match dist=31.6
+16:16:41.602 INFO arm_cmd side=both ang=(-1,-111,-2,95) pul=(6:234 7:538 14:758 15:394)
+16:16:41.617 DEBUG face_hit score=0.84 box=(178,139,190,190) c=(273.0,234.0)
+16:16:41.689 DEBUG pose_match dist=19.9
+16:16:41.690 INFO arm_cmd side=both ang=(0,-108,-8,101) pul=(6:234 7:538 14:758 15:394)
+16:16:41.690 DEBUG head_hold raw=(273.0,234.0) sm=(273.6,234.1) err=(-46.4,-5.9) yaw=1439 pitch=1496
+16:16:41.705 DEBUG face_hit score=0.88 box=(174,134,195,195) c=(271.5,231.5)
+16:16:41.775 DEBUG pose_match dist=27.1
+16:16:41.776 INFO arm_cmd side=both ang=(0,-111,-8,98) pul=(6:234 7:538 14:758 15:394)
+16:16:41.792 DEBUG face_hit score=0.88 box=(173,136,196,196) c=(271.0,234.0)
+16:16:41.857 DEBUG pose_match dist=21.8
+16:16:41.858 INFO arm_cmd side=both ang=(3,-114,-9,100) pul=(6:234 7:538 14:758 15:394)
+16:16:41.858 DEBUG head_hold raw=(271.0,234.0) sm=(272.9,234.1) err=(-47.1,-5.9) yaw=1439 pitch=1496
+16:16:41.874 DEBUG face_hit score=0.88 box=(174,132,197,197) c=(272.5,230.5)
+16:16:41.938 DEBUG pose_match dist=37.1
+16:16:41.939 INFO arm_cmd side=both ang=(0,-99,-10,100) pul=(6:234 7:538 14:758 15:394)
+16:16:41.954 DEBUG face_hit score=0.89 box=(174,133,195,195) c=(271.5,230.5)
+16:16:42.019 DEBUG pose_match dist=27.4
+16:16:42.020 INFO arm_cmd side=both ang=(6,-102,-15,99) pul=(6:234 7:538 14:758 15:394)
+16:16:42.021 DEBUG head_hold raw=(271.5,230.5) sm=(272.6,233.2) err=(-47.4,-6.8) yaw=1439 pitch=1496
+16:16:42.036 DEBUG face_hit score=0.89 box=(175,134,192,192) c=(271.0,230.0)
+16:16:42.102 DEBUG pose_match dist=32.8
+16:16:42.103 INFO arm_cmd side=both ang=(2,-103,-15,98) pul=(6:234 7:538 14:758 15:394)
+16:16:42.119 DEBUG face_hit score=0.89 box=(176,135,191,191) c=(271.5,230.5)
+16:16:42.189 DEBUG pose_match dist=29.1
+16:16:42.190 INFO arm_cmd side=both ang=(-3,-89,-13,99) pul=(6:234 7:538 14:758 15:394)
+16:16:42.191 DEBUG head_hold raw=(271.5,230.5) sm=(272.3,232.5) err=(-47.7,-7.5) yaw=1439 pitch=1496
+16:16:42.205 DEBUG face_hit score=0.92 box=(173,136,195,195) c=(270.5,233.5)
+16:16:42.271 DEBUG pose_match dist=29.0
+16:16:42.272 INFO arm_cmd side=both ang=(2,-105,-10,98) pul=(6:234 7:538 14:758 15:394)
+16:16:42.287 DEBUG face_hit score=0.87 box=(174,137,193,193) c=(270.5,233.5)
+16:16:42.354 DEBUG pose_match dist=26.3
+16:16:42.355 INFO arm_cmd side=R ang=(2,-129,-6,92) pul=(6:234 7:538 14:758 15:394)
+16:16:42.355 DEBUG head_hold raw=(270.5,233.5) sm=(271.8,232.8) err=(-48.2,-7.2) yaw=1439 pitch=1496
+16:16:42.370 DEBUG face_hit score=0.90 box=(172,132,198,198) c=(271.0,231.0)
+16:16:42.439 DEBUG pose_match dist=25.8
+16:16:42.439 INFO arm_cmd side=both ang=(-1,-68,-10,91) pul=(6:234 7:538 14:758 15:394)
+16:16:42.456 DEBUG face_hit score=0.91 box=(171,131,200,200) c=(271.0,231.0)
+16:16:42.523 DEBUG pose_match dist=33.4
+16:16:42.524 INFO arm_cmd side=R ang=(-12,-122,-12,87) pul=(6:234 7:538 14:758 15:394)
+16:16:42.525 DEBUG head_hold raw=(271.0,231.0) sm=(271.6,232.3) err=(-48.4,-7.7) yaw=1439 pitch=1496
+16:16:42.539 DEBUG face_hit score=0.80 box=(171,136,198,198) c=(270.0,235.0)
+16:16:42.605 DEBUG pose_match dist=26.3
+16:16:42.606 INFO arm_cmd side=both ang=(-1,-71,-35,89) pul=(6:234 7:538 14:758 15:394)
+16:16:42.621 DEBUG face_hit score=0.85 box=(171,135,199,199) c=(270.5,234.5)
+16:16:42.687 DEBUG pose_match dist=35.3
+16:16:42.688 INFO arm_cmd side=R ang=(-23,-115,-27,146) pul=(6:234 7:504 14:758 15:394)
+16:16:42.689 DEBUG head_hold raw=(270.5,234.5) sm=(271.4,232.9) err=(-48.6,-7.1) yaw=1439 pitch=1496
+16:16:42.703 DEBUG face_hit score=0.86 box=(171,136,197,197) c=(269.5,234.5)
+16:16:42.770 DEBUG pose_match dist=28.0
+16:16:42.771 INFO arm_cmd side=both ang=(-10,-64,-26,60) pul=(6:234 7:504 14:758 15:394)
+16:16:42.788 DEBUG face_hit score=0.80 box=(171,136,198,198) c=(270.0,235.0)
+16:16:42.858 DEBUG pose_match dist=29.4
+16:16:42.859 INFO arm_cmd side=both ang=(4,5,-7,-3) pul=(6:306 7:504 14:690 15:394)
+16:16:42.859 DEBUG head_hold raw=(270.0,235.0) sm=(271.0,233.4) err=(-49.0,-6.6) yaw=1439 pitch=1496
+16:16:42.874 DEBUG face_hit score=0.85 box=(172,137,194,194) c=(269.0,234.0)
+16:16:42.941 DEBUG pose_match dist=29.2
+16:16:42.942 INFO arm_cmd side=both ang=(-2,15,-16,41) pul=(6:370 7:504 14:690 15:394)
+16:16:42.957 DEBUG face_hit score=0.89 box=(173,136,195,195) c=(270.5,233.5)
+16:16:43.023 DEBUG pose_match dist=31.1
+16:16:43.024 INFO arm_cmd side=both ang=(-8,-57,-34,97) pul=(6:343 7:504 14:730 15:394)
+16:16:43.025 DEBUG head_hold raw=(270.5,233.5) sm=(270.9,233.4) err=(-49.1,-6.6) yaw=1439 pitch=1496
+16:16:43.039 DEBUG face_hit score=0.82 box=(171,136,196,196) c=(269.0,234.0)
+16:16:43.104 DEBUG pose_match dist=30.2
+16:16:43.105 INFO arm_cmd side=both ang=(-4,-59,-28,51) pul=(6:343 7:504 14:730 15:394)
+16:16:43.122 DEBUG face_hit score=0.80 box=(173,139,193,193) c=(269.5,235.5)
+16:16:43.189 DEBUG pose_match dist=25.3
+16:16:43.190 INFO arm_cmd side=both ang=(-10,-39,-6,3) pul=(6:343 7:504 14:676 15:394)
+16:16:43.190 DEBUG head_hold raw=(269.5,235.5) sm=(270.5,233.9) err=(-49.5,-6.1) yaw=1439 pitch=1496
+16:16:43.204 DEBUG face_hit score=0.86 box=(170,135,197,197) c=(268.5,233.5)
+16:16:43.270 DEBUG pose_match dist=38.7
+16:16:43.271 INFO arm_cmd side=both ang=(-8,-33,2,-50) pul=(6:343 7:504 14:580 15:422)
+16:16:43.286 DEBUG face_hit score=0.80 box=(172,138,195,195) c=(269.5,235.5)
+16:16:43.350 DEBUG pose_match dist=40.3
+16:16:43.351 INFO arm_cmd side=both ang=(-9,-74,-5,-51) pul=(6:305 7:504 14:507 15:422)
+16:16:43.351 DEBUG head_hold raw=(269.5,235.5) sm=(270.3,234.3) err=(-49.7,-5.7) yaw=1439 pitch=1496
+16:16:43.366 DEBUG face_hit score=0.88 box=(171,136,196,196) c=(269.0,234.0)
+16:16:43.436 DEBUG pose_match dist=31.0
+16:16:43.437 INFO arm_cmd side=R ang=(-21,-102,-1,-25) pul=(6:266 7:504 14:479 15:422)
+16:16:43.437 INFO heartbeat fps=12.0 frames=120 face_lock=120/100% head={'moves': 10, 'holds': 50, 'recenters': 0}
+16:16:43.453 DEBUG face_hit score=0.80 box=(171,137,197,197) c=(269.5,235.5)
+16:16:43.518 DEBUG pose_match dist=35.8
+16:16:43.519 DEBUG arm_skip reach x1=-0.041 x2=-0.050
+16:16:43.519 DEBUG head_hold raw=(269.5,235.5) sm=(270.1,234.6) err=(-49.9,-5.4) yaw=1439 pitch=1496
+16:16:43.534 DEBUG face_hit score=0.79 box=(170,136,198,198) c=(269.0,235.0)
+16:16:43.599 DEBUG pose_match dist=33.9
+16:16:43.600 INFO arm_cmd side=R ang=(-28,-152,2,-56) pul=(6:215 7:454 14:479 15:422)
+16:16:43.615 DEBUG face_hit score=0.84 box=(168,136,196,196) c=(266.0,234.0)
+16:16:43.681 DEBUG pose_match dist=44.0
+16:16:43.683 INFO arm_cmd side=R ang=(-31,-171,6,-80) pul=(6:215 7:454 14:401 15:448)
+16:16:43.683 DEBUG head_hold raw=(266.0,234.0) sm=(269.1,234.5) err=(-50.9,-5.5) yaw=1439 pitch=1496
+16:16:43.699 DEBUG face_hit score=0.82 box=(171,139,194,194) c=(268.0,236.0)
+16:16:43.768 DEBUG pose_match dist=24.9
+16:16:43.769 DEBUG arm_skip reach x1=-0.056 x2=-0.047
+16:16:43.785 DEBUG face_hit score=0.84 box=(172,143,192,192) c=(268.0,239.0)
+16:16:43.853 DEBUG pose_match dist=29.2
+16:16:43.854 DEBUG arm_skip reach x1=-0.058 x2=-0.050
+16:16:43.854 DEBUG head_hold raw=(268.0,239.0) sm=(268.8,235.6) err=(-51.2,-4.4) yaw=1439 pitch=1496
+16:16:43.869 DEBUG face_hit score=0.83 box=(170,138,196,196) c=(268.0,236.0)
+16:16:43.939 DEBUG pose_match dist=33.0
+16:16:43.940 INFO arm_cmd side=R ang=(-23,-127,-14,-65) pul=(6:215 7:454 14:401 15:448)
+16:16:43.955 DEBUG face_hit score=0.82 box=(170,139,195,195) c=(267.5,236.5)
+16:16:44.022 DEBUG pose_match dist=35.8
+16:16:44.022 DEBUG arm_skip reach x1=-0.057 x2=-0.050
+16:16:44.023 DEBUG head_hold raw=(267.5,236.5) sm=(268.5,235.8) err=(-51.5,-4.2) yaw=1439 pitch=1496
+16:16:44.037 DEBUG face_hit score=0.84 box=(171,139,193,193) c=(267.5,235.5)
+16:16:44.105 DEBUG pose_match dist=30.0
+16:16:44.106 INFO arm_cmd side=R ang=(-27,-156,-6,-82) pul=(6:215 7:454 14:401 15:448)
+16:16:44.121 DEBUG face_hit score=0.83 box=(170,138,195,195) c=(267.5,235.5)
+16:16:44.190 DEBUG pose_match dist=25.7
+16:16:44.191 INFO arm_cmd side=both ang=(-11,102,-41,-2) pul=(6:374 7:454 14:401 15:418)
+16:16:44.191 DEBUG head_hold raw=(267.5,235.5) sm=(268.2,235.7) err=(-51.8,-4.3) yaw=1439 pitch=1496
+16:16:44.208 DEBUG face_hit score=0.78 box=(169,136,199,199) c=(268.5,235.5)
+16:16:44.281 DEBUG pose_match dist=24.2
+16:16:44.282 DEBUG arm_skip reach x1=-0.054 x2=-0.049
+16:16:44.299 DEBUG face_hit score=0.80 box=(170,137,197,197) c=(268.5,235.5)
+16:16:44.374 DEBUG pose_match dist=24.5
+16:16:44.375 INFO arm_cmd side=R ang=(-24,-145,4,-40) pul=(6:276 7:454 14:468 15:418)
+16:16:44.375 DEBUG head_hold raw=(268.5,235.5) sm=(268.3,235.7) err=(-51.7,-4.3) yaw=1439 pitch=1496
+16:16:44.389 DEBUG face_hit score=0.75 box=(162,137,197,197) c=(260.5,235.5)
+16:16:44.459 DEBUG pose_match dist=21.3
+16:16:44.460 DEBUG arm_skip reach x1=-0.054 x2=-0.050
+16:16:44.475 DEBUG face_hit score=0.87 box=(162,138,194,194) c=(259.0,235.0)
+16:16:44.542 DEBUG pose_match dist=26.2
+16:16:44.543 INFO arm_cmd side=R ang=(-8,-115,-4,-20) pul=(6:220 7:454 14:395 15:418)
+16:16:44.543 DEBUG head_hold raw=(259.0,235.0) sm=(266.0,235.5) err=(-54.0,-4.5) yaw=1439 pitch=1496
+16:16:44.559 DEBUG face_hit score=0.90 box=(159,136,196,196) c=(257.0,234.0)
+16:16:44.625 DEBUG pose_match dist=31.9
+16:16:44.626 INFO arm_cmd side=both ang=(5,-82,-4,51) pul=(6:220 7:454 14:474 15:418)
+16:16:44.642 DEBUG face_hit score=0.90 box=(156,135,199,199) c=(255.5,234.5)
+16:16:44.709 DEBUG pose_match dist=37.3
+16:16:44.710 INFO arm_cmd side=both ang=(3,-44,-16,25) pul=(6:220 7:454 14:506 15:418)
+16:16:44.710 INFO head_move err=(-56.6,-4.7) d=(+3,+0) -> yaw=1442 pitch=1496 dur=40ms
+16:16:44.725 DEBUG face_hit score=0.92 box=(153,133,199,199) c=(252.5,232.5)
+16:16:44.790 DEBUG pose_match dist=45.0
+16:16:44.791 INFO arm_cmd side=both ang=(28,31,-30,55) pul=(6:322 7:494 14:562 15:418)
+16:16:44.807 DEBUG face_hit score=0.90 box=(154,133,202,202) c=(255.0,234.0)
+16:16:44.872 DEBUG pose_match dist=43.7
+16:16:44.873 INFO arm_cmd side=both ang=(18,-67,-38,63) pul=(6:296 7:494 14:612 15:418)
+16:16:44.874 INFO head_move err=(-58.7,-5.1) d=(+3,+0) -> yaw=1445 pitch=1496 dur=40ms
+16:16:44.888 DEBUG face_hit score=0.88 box=(155,133,200,200) c=(255.0,233.0)
+16:16:44.957 DEBUG pose_match dist=36.0
+16:16:44.958 INFO arm_cmd side=both ang=(35,21,-42,59) pul=(6:369 7:532 14:645 15:418)
+16:16:44.973 DEBUG face_hit score=0.91 box=(155,134,199,199) c=(254.5,233.5)
+16:16:45.040 DEBUG pose_match dist=42.1
+16:16:45.041 INFO arm_cmd side=both ang=(55,38,-61,9) pul=(6:441 7:581 14:618 15:375)
+16:16:45.041 INFO head_move err=(-60.4,-5.4) d=(+3,+0) -> yaw=1448 pitch=1496 dur=40ms
+16:16:45.056 DEBUG face_hit score=0.89 box=(154,134,196,196) c=(252.0,232.0)
+16:16:45.123 DEBUG pose_match dist=33.8
+16:16:45.124 INFO arm_cmd side=both ang=(62,31,-69,16) pul=(6:488 7:625 14:618 15:334)
+16:16:45.139 DEBUG face_hit score=0.87 box=(150,134,198,198) c=(249.0,233.0)
+16:16:45.207 DEBUG pose_match dist=22.7
+16:16:45.208 INFO arm_cmd side=both ang=(41,33,-58,1) pul=(6:525 7:625 14:590 15:334)
+16:16:45.209 INFO head_move err=(-63.1,-5.8) d=(+3,+0) -> yaw=1451 pitch=1496 dur=40ms
+16:16:45.224 DEBUG face_hit score=0.88 box=(149,131,201,201) c=(249.5,231.5)
+16:16:45.297 DEBUG pose_match dist=36.4
+16:16:45.298 INFO arm_cmd side=both ang=(27,31,-57,28) pul=(6:551 7:625 14:590 15:334)
+16:16:45.318 DEBUG face_hit score=0.87 box=(149,130,196,196) c=(247.0,228.0)
+16:16:45.393 DEBUG pose_match dist=18.2
+16:16:45.394 INFO arm_cmd side=both ang=(48,32,-73,-15) pul=(6:551 7:625 14:552 15:299)
+16:16:45.394 INFO head_move err=(-65.6,-7.4) d=(+3,+0) -> yaw=1454 pitch=1496 dur=40ms
+16:16:45.409 DEBUG face_hit score=0.88 box=(149,122,191,191) c=(244.5,217.5)
+16:16:45.475 DEBUG pose_match dist=28.9
+16:16:45.476 INFO arm_cmd side=both ang=(54,26,-68,-14) pul=(6:551 7:650 14:524 15:299)
+16:16:45.492 DEBUG face_hit score=0.91 box=(147,119,193,193) c=(243.5,215.5)
+16:16:45.559 DEBUG pose_match dist=24.1
+16:16:45.560 INFO arm_cmd side=both ang=(53,11,-63,-10) pul=(6:551 7:650 14:524 15:299)
+16:16:45.561 INFO head_move err=(-68.3,-11.6) d=(+4,+0) -> yaw=1458 pitch=1496 dur=40ms
+16:16:45.576 DEBUG face_hit score=0.90 box=(146,120,193,193) c=(242.5,216.5)
+16:16:45.642 DEBUG pose_match dist=23.6
+16:16:45.646 INFO arm_cmd side=both ang=(50,-4,-65,-5) pul=(6:551 7:650 14:524 15:299)
+16:16:45.663 DEBUG face_hit score=0.83 box=(145,121,186,186) c=(238.0,214.0)
+16:16:45.731 DEBUG pose_match dist=23.8
+16:16:45.732 INFO arm_cmd side=both ang=(61,-2,-67,-25) pul=(6:551 7:676 14:492 15:299)
+16:16:45.732 INFO head_move err=(-71.7,-15.2) d=(+4,+0) -> yaw=1462 pitch=1496 dur=40ms
+16:16:45.747 DEBUG face_hit score=0.86 box=(148,121,185,185) c=(240.5,213.5)
+16:16:45.814 DEBUG pose_match dist=28.8
+16:16:45.815 DEBUG arm_skip reach x1=-0.075 x2=-0.079
+16:16:45.829 DEBUG face_hit score=0.81 box=(153,121,177,177) c=(241.5,209.5)
+16:16:45.896 DEBUG pose_match dist=26.4
+16:16:45.897 DEBUG arm_skip reach x1=-0.054 x2=-0.036
+16:16:45.897 INFO head_move err=(-73.4,-19.1) d=(+4,+0) -> yaw=1466 pitch=1496 dur=40ms
+16:16:45.912 DEBUG face_hit score=0.86 box=(156,121,173,173) c=(242.5,207.5)
+16:16:45.977 DEBUG pose_match dist=17.3
+16:16:45.978 DEBUG arm_skip reach x1=-0.035 x2=-0.061
+16:16:45.978 INFO heartbeat fps=11.8 frames=150 face_lock=150/100% head={'moves': 18, 'holds': 57, 'recenters': 0}
+16:16:45.993 DEBUG face_hit score=0.88 box=(167,127,154,154) c=(244.0,204.0)
+16:16:46.062 DEBUG pose_match dist=23.7
+16:16:46.062 DEBUG arm_skip reach x1=-0.073 x2=-0.074
+16:16:46.063 INFO head_move err=(-74.1,-23.3) d=(+4,+0) -> yaw=1470 pitch=1496 dur=40ms
+16:16:46.078 DEBUG face_hit score=0.79 box=(178,134,148,148) c=(252.0,208.0)
+16:16:46.144 DEBUG pose_match dist=15.3
+16:16:46.145 DEBUG arm_skip reach x1=-0.071 x2=-0.077
+16:16:46.160 DEBUG face_hit score=0.94 box=(187,136,140,140) c=(257.0,206.0)
+16:16:46.229 DEBUG pose_match dist=17.3
+16:16:46.230 DEBUG arm_skip reach x1=-0.071 x2=-0.082
+16:16:46.230 INFO head_move err=(-71.3,-26.0) d=(+4,+0) -> yaw=1474 pitch=1496 dur=40ms
+16:16:46.246 DEBUG face_hit score=0.92 box=(188,135,137,137) c=(256.5,203.5)
+16:16:46.314 DEBUG pose_match dist=17.2
+16:16:46.315 DEBUG arm_skip reach x1=-0.071 x2=-0.077
+16:16:46.330 DEBUG face_hit score=0.91 box=(199,140,129,129) c=(263.5,204.5)
+16:16:46.398 DEBUG pose_match dist=10.0
+16:16:46.399 DEBUG arm_skip reach x1=-0.064 x2=-0.079
+16:16:46.399 INFO head_move err=(-67.6,-28.3) d=(+4,+0) -> yaw=1478 pitch=1496 dur=40ms
+16:16:46.414 DEBUG face_hit score=0.88 box=(198,140,129,129) c=(262.5,204.5)
+16:16:46.480 DEBUG pose_match dist=9.4
+16:16:46.481 DEBUG arm_skip reach x1=-0.064 x2=-0.078
+16:16:46.496 DEBUG face_hit score=0.88 box=(198,140,131,131) c=(263.5,205.5)
+16:16:46.563 DEBUG pose_match dist=9.5
+16:16:46.564 DEBUG arm_skip reach x1=-0.067 x2=-0.069
+16:16:46.564 INFO head_move err=(-64.8,-29.9) d=(+3,+0) -> yaw=1481 pitch=1496 dur=40ms
+16:16:46.579 DEBUG face_hit score=0.94 box=(207,137,128,128) c=(271.0,201.0)
+16:16:46.646 DEBUG pose_match dist=10.0
+16:16:46.647 DEBUG arm_skip reach x1=-0.069 x2=-0.073
+16:16:46.662 DEBUG face_hit score=0.90 box=(208,137,131,131) c=(273.5,202.5)
+16:16:46.728 DEBUG pose_match dist=16.4
+16:16:46.729 DEBUG arm_skip reach x1=-0.069 x2=-0.075
+16:16:46.729 INFO head_move err=(-60.2,-31.8) d=(+3,+0) -> yaw=1484 pitch=1496 dur=40ms
+16:16:46.744 DEBUG face_hit score=0.87 box=(208,136,135,135) c=(275.5,203.5)
+16:16:46.810 DEBUG pose_match dist=18.1
+16:16:46.811 DEBUG arm_skip reach x1=-0.069 x2=-0.080
+16:16:46.827 DEBUG face_hit score=0.86 box=(211,140,132,132) c=(277.0,206.0)
+16:16:46.895 DEBUG pose_match dist=19.7
+16:16:46.897 DEBUG arm_skip reach x1=-0.065 x2=-0.076
+16:16:46.897 INFO head_move err=(-55.9,-32.3) d=(+3,+0) -> yaw=1487 pitch=1496 dur=40ms
+16:16:46.912 DEBUG face_hit score=0.84 box=(217,145,131,131) c=(282.5,210.5)
+16:16:46.979 DEBUG pose_match dist=15.1
+16:16:46.981 DEBUG arm_skip reach x1=-0.057 x2=-0.067
+16:16:47.000 DEBUG face_hit score=0.84 box=(225,153,123,123) c=(286.5,214.5)
+16:16:47.072 DEBUG pose_match dist=10.4
+16:16:47.074 DEBUG arm_skip reach x1=-0.054 x2=-0.068
+16:16:47.074 DEBUG head_hold raw=(286.5,214.5) sm=(269.7,209.4) err=(-50.3,-30.6) yaw=1487 pitch=1496
+16:16:47.091 DEBUG face_hit score=0.80 box=(226,153,122,122) c=(287.0,214.0)
+16:16:47.162 DEBUG pose_match dist=10.9
+16:16:47.163 DEBUG arm_skip reach x1=-0.049 x2=-0.057
+16:16:47.179 DEBUG face_hit score=0.79 box=(229,155,117,117) c=(287.5,213.5)
+16:16:47.246 DEBUG pose_match dist=14.3
+16:16:47.247 DEBUG arm_skip reach x1=-0.043 x2=-0.051
+16:16:47.247 DEBUG head_hold raw=(287.5,213.5) sm=(274.1,210.4) err=(-45.9,-29.6) yaw=1487 pitch=1496
+16:16:47.263 DEBUG face_hit score=0.81 box=(228,149,120,120) c=(288.0,209.0)
+16:16:47.329 DEBUG pose_match dist=16.0
+16:16:47.331 INFO arm_cmd side=R ang=(51,179,-59,163) pul=(6:848 7:676 14:326 15:299)
+16:16:47.346 DEBUG face_hit score=0.86 box=(226,148,122,122) c=(287.0,209.0)
+16:16:47.412 DEBUG pose_match dist=18.5
+16:16:47.413 INFO arm_cmd side=R ang=(52,178,-60,153) pul=(6:848 7:676 14:457 15:299)
+16:16:47.414 DEBUG head_hold raw=(287.0,209.0) sm=(277.3,210.1) err=(-42.7,-29.9) yaw=1487 pitch=1496
+16:16:47.429 DEBUG face_hit score=0.85 box=(229,146,122,122) c=(290.0,207.0)
+16:16:47.496 DEBUG pose_match dist=21.8
+16:16:47.497 INFO arm_cmd side=R ang=(56,173,-59,138) pul=(6:848 7:676 14:555 15:299)
+16:16:47.513 DEBUG face_hit score=0.94 box=(235,145,122,122) c=(296.0,206.0)
+16:16:47.581 DEBUG pose_match dist=37.6
+16:16:47.582 INFO arm_cmd side=R ang=(64,161,-58,77) pul=(6:848 7:676 14:621 15:299)
+16:16:47.583 DEBUG head_hold raw=(296.0,206.0) sm=(282.0,209.0) err=(-38.0,-31.0) yaw=1487 pitch=1496
+16:16:47.597 DEBUG face_hit score=0.89 box=(244,145,122,122) c=(305.0,206.0)
+16:16:47.666 DEBUG pose_match dist=34.3
+16:16:47.667 INFO arm_cmd side=R ang=(62,161,-59,102) pul=(6:848 7:676 14:678 15:299)
+16:16:47.682 DEBUG face_hit score=0.90 box=(251,146,126,126) c=(314.0,209.0)
+16:16:47.750 DEBUG pose_match dist=37.9
+16:16:47.751 INFO arm_cmd side=R ang=(58,158,-59,123) pul=(6:848 7:676 14:721 15:299)
+16:16:47.751 DEBUG head_hold raw=(314.0,209.0) sm=(290.0,209.0) err=(-30.0,-31.0) yaw=1487 pitch=1496
+16:16:47.767 DEBUG face_hit score=0.95 box=(262,143,126,126) c=(325.0,206.0)
+16:16:47.834 DEBUG pose_match dist=43.5
+16:16:47.835 INFO arm_cmd side=R ang=(59,156,-61,119) pul=(6:848 7:676 14:753 15:299)
+16:16:47.850 DEBUG face_hit score=0.78 box=(292,151,121,121) c=(352.5,211.5)
+16:16:47.915 DEBUG pose_match dist=35.2
+16:16:47.917 INFO arm_cmd side=R ang=(58,154,-67,114) pul=(6:848 7:676 14:753 15:299)
+16:16:47.917 DEBUG head_hold raw=(352.5,211.5) sm=(305.6,209.6) err=(-14.4,-30.4) yaw=1487 pitch=1496
+16:16:47.932 DEBUG face_hit score=0.86 box=(310,151,127,127) c=(373.5,214.5)
+16:16:47.998 DEBUG pose_match dist=27.3
+16:16:47.999 INFO arm_cmd side=R ang=(56,154,-67,115) pul=(6:848 7:676 14:753 15:299)
+16:16:48.015 DEBUG face_hit score=0.83 box=(323,148,133,133) c=(389.5,214.5)
+16:16:48.081 DEBUG pose_match dist=36.7
+16:16:48.082 INFO arm_cmd side=R ang=(53,153,-67,97) pul=(6:848 7:676 14:753 15:299)
+16:16:48.083 DEBUG head_hold raw=(389.5,214.5) sm=(326.6,210.9) err=(6.6,-29.1) yaw=1487 pitch=1496
+16:16:48.099 DEBUG face_hit score=0.78 box=(346,153,137,137) c=(414.5,221.5)
+16:16:48.165 DEBUG pose_match dist=31.4
+16:16:48.166 INFO arm_cmd side=R ang=(52,152,-78,28) pul=(6:848 7:676 14:719 15:268)
+16:16:48.181 DEBUG face_hit score=0.86 box=(383,161,132,132) c=(449.0,227.0)
+16:16:48.248 DEBUG pose_match dist=21.2
+16:16:48.249 INFO arm_cmd side=R ang=(50,150,-90,133) pul=(6:848 7:676 14:752 15:238)
+16:16:48.249 DEBUG head_hold raw=(449.0,227.0) sm=(357.2,214.9) err=(37.2,-25.1) yaw=1487 pitch=1496
+16:16:48.264 DEBUG face_hit score=0.83 box=(396,158,129,129) c=(460.5,222.5)
+16:16:48.329 DEBUG pose_match dist=21.3
+16:16:48.330 INFO arm_cmd side=R ang=(53,149,-80,133) pul=(6:848 7:676 14:752 15:238)
+16:16:48.345 DEBUG face_hit score=0.89 box=(400,166,125,125) c=(462.5,228.5)
+16:16:48.413 DEBUG pose_match dist=24.7
+16:16:48.414 INFO arm_cmd side=R ang=(52,151,-93,142) pul=(6:848 7:676 14:752 15:238)
+16:16:48.414 INFO head_move err=(+63.5,-21.7) d=(-3,+0) -> yaw=1484 pitch=1496 dur=40ms
+16:16:48.429 DEBUG face_hit score=0.92 box=(403,165,130,130) c=(468.0,230.0)
+16:16:48.496 DEBUG pose_match dist=33.0
+16:16:48.497 INFO arm_cmd side=R ang=(53,149,-94,113) pul=(6:848 7:676 14:752 15:238)
+16:16:48.497 INFO heartbeat fps=11.8 frames=180 face_lock=180/100% head={'moves': 25, 'holds': 65, 'recenters': 0}
+16:16:48.512 DEBUG face_hit score=0.81 box=(411,169,131,131) c=(476.5,234.5)
+16:16:48.578 DEBUG pose_match dist=47.7
+16:16:48.579 INFO arm_cmd side=R ang=(48,150,-87,147) pul=(6:848 7:676 14:752 15:238)
+16:16:48.580 INFO head_move err=(+86.8,-17.7) d=(-5,+0) -> yaw=1479 pitch=1496 dur=40ms
+16:16:48.594 DEBUG face_hit score=0.86 box=(413,171,129,129) c=(477.5,235.5)
+16:16:48.662 DEBUG pose_match dist=49.3
+16:16:48.663 INFO arm_cmd side=R ang=(47,150,-96,71) pul=(6:848 7:676 14:752 15:238)
+16:16:48.678 DEBUG face_hit score=0.88 box=(417,175,128,128) c=(481.0,239.0)
+16:16:48.745 DEBUG pose_match dist=27.7
+16:16:48.746 INFO arm_cmd side=R ang=(49,149,-83,147) pul=(6:848 7:676 14:752 15:238)
+16:16:48.746 INFO head_move err=(+105.3,-13.5) d=(-6,+0) -> yaw=1473 pitch=1496 dur=40ms
+16:16:48.761 DEBUG face_hit score=0.79 box=(420,173,124,124) c=(482.0,235.0)
+16:16:48.831 DEBUG pose_match dist=34.0
+16:16:48.832 INFO arm_cmd side=R ang=(52,151,-89,140) pul=(6:848 7:676 14:752 15:238)
+16:16:48.847 DEBUG face_hit score=0.83 box=(410,164,130,130) c=(475.0,229.0)
+16:16:48.914 DEBUG pose_match dist=28.7
+16:16:48.915 INFO arm_cmd side=R ang=(49,152,-95,32) pul=(6:848 7:676 14:722 15:238)
+16:16:48.916 INFO head_move err=(+117.7,-12.9) d=(-7,+0) -> yaw=1466 pitch=1496 dur=40ms
+16:16:48.930 DEBUG face_hit score=0.88 box=(401,163,129,129) c=(465.5,227.5)
+16:16:48.999 DEBUG pose_match dist=39.7
+16:16:49.000 INFO arm_cmd side=R ang=(49,149,-95,123) pul=(6:848 7:676 14:754 15:238)
+16:16:49.015 DEBUG face_hit score=0.90 box=(389,161,132,132) c=(455.0,227.0)
+16:16:49.083 DEBUG pose_match dist=43.1
+16:16:49.084 INFO arm_cmd side=R ang=(48,149,-90,53) pul=(6:848 7:676 14:754 15:238)
+16:16:49.084 INFO head_move err=(+122.1,-12.9) d=(-7,+0) -> yaw=1459 pitch=1496 dur=40ms
+16:16:49.100 DEBUG face_hit score=0.82 box=(375,155,134,134) c=(442.0,222.0)
+16:16:49.168 DEBUG pose_match dist=34.3
+16:16:49.169 INFO arm_cmd side=R ang=(48,151,-100,73) pul=(6:848 7:676 14:754 15:238)
+16:16:49.183 DEBUG face_hit score=0.85 box=(337,148,133,133) c=(403.5,214.5)
+16:16:49.251 DEBUG pose_match dist=30.6
+16:16:49.252 INFO arm_cmd side=R ang=(44,158,-74,115) pul=(6:848 7:676 14:754 15:238)
+16:16:49.252 INFO head_move err=(+112.4,-16.1) d=(-6,+0) -> yaw=1453 pitch=1496 dur=40ms
+16:16:49.267 DEBUG face_hit score=0.69 box=(317,150,126,126) c=(380.0,213.0)
+16:16:49.332 DEBUG pose_match dist=31.4
+16:16:49.333 INFO arm_cmd side=R ang=(39,163,-67,100) pul=(6:848 7:676 14:754 15:238)
+16:16:49.348 DEBUG face_hit score=0.78 box=(291,147,124,124) c=(353.0,209.0)
+16:16:49.415 DEBUG pose_match dist=34.9
+16:16:49.416 INFO arm_cmd side=R ang=(41,168,-62,104) pul=(6:848 7:676 14:754 15:238)
+16:16:49.417 INFO head_move err=(+92.6,-19.8) d=(-5,+0) -> yaw=1448 pitch=1496 dur=40ms
+16:16:49.432 DEBUG face_hit score=0.84 box=(272,143,127,127) c=(335.5,206.5)
+16:16:49.498 DEBUG pose_match dist=30.3
+16:16:49.499 INFO arm_cmd side=R ang=(38,174,-65,90) pul=(6:848 7:676 14:754 15:238)
+16:16:49.514 DEBUG face_hit score=0.92 box=(230,140,132,132) c=(296.0,206.0)
+16:16:49.584 DEBUG pose_match dist=20.6
+16:16:49.585 INFO arm_cmd side=R ang=(44,-178,-53,112) pul=(6:674 7:676 14:754 15:238)
+16:16:49.585 INFO head_move err=(+63.4,-23.3) d=(-3,+0) -> yaw=1445 pitch=1496 dur=40ms
+16:16:49.600 DEBUG face_hit score=0.85 box=(211,139,133,133) c=(277.5,205.5)
+16:16:49.668 DEBUG pose_match dist=18.4
+16:16:49.669 INFO arm_cmd side=R ang=(43,-176,-50,141) pul=(6:543 7:676 14:754 15:238)
+16:16:49.684 DEBUG face_hit score=0.90 box=(200,135,136,136) c=(268.0,203.0)
+16:16:49.751 DEBUG pose_match dist=14.0
+16:16:49.752 INFO arm_cmd side=R ang=(45,-170,-53,133) pul=(6:445 7:676 14:754 15:238)
+16:16:49.752 DEBUG head_hold raw=(268.0,203.0) sm=(354.6,213.2) err=(34.6,-26.8) yaw=1445 pitch=1496
+16:16:49.770 DEBUG face_hit score=0.88 box=(187,135,137,137) c=(255.5,203.5)
+16:16:49.852 DEBUG pose_match dist=19.9
+16:16:49.853 INFO arm_cmd side=R ang=(46,-170,-53,92) pul=(6:371 7:676 14:754 15:238)
+16:16:49.882 DEBUG face_hit score=0.89 box=(181,142,131,131) c=(246.5,207.5)
+16:16:49.985 DEBUG pose_match dist=17.7
+16:16:49.987 INFO arm_cmd side=R ang=(45,-168,-50,62) pul=(6:316 7:676 14:754 15:238)
+16:16:49.987 DEBUG head_hold raw=(246.5,207.5) sm=(327.6,211.8) err=(7.6,-28.2) yaw=1445 pitch=1496
+16:16:50.013 DEBUG face_hit score=0.84 box=(176,143,132,132) c=(242.0,209.0)
+16:16:50.124 DEBUG pose_match dist=18.4
+16:16:50.126 INFO arm_cmd side=L ang=(47,-157,-51,167) pul=(6:274 7:676 14:754 15:238)
+16:16:50.127 DEBUG head_hold raw=(242.0,209.0) sm=(306.2,211.1) err=(-13.8,-28.9) yaw=1445 pitch=1496
+16:16:50.146 DEBUG face_hit score=0.93 box=(175,139,135,135) c=(242.5,206.5)
+16:16:50.221 DEBUG pose_match dist=15.3
+16:16:50.222 DEBUG arm_skip reach x1=-0.009 x2=-0.017
+16:16:50.238 DEBUG face_hit score=0.91 box=(175,140,132,132) c=(241.0,206.0)
+16:16:50.305 DEBUG pose_match dist=8.9
+16:16:50.306 INFO arm_cmd side=R ang=(47,-160,-48,155) pul=(6:220 7:676 14:754 15:238)
+16:16:50.306 DEBUG head_hold raw=(241.0,206.0) sm=(289.9,209.8) err=(-30.1,-30.2) yaw=1445 pitch=1496
+16:16:50.322 DEBUG face_hit score=0.91 box=(169,135,135,135) c=(236.5,202.5)
+16:16:50.393 DEBUG pose_match dist=13.6
+16:16:50.395 INFO arm_cmd side=R ang=(41,-160,-49,129) pul=(6:220 7:676 14:754 15:238)
+16:16:50.412 DEBUG face_hit score=0.90 box=(165,134,138,138) c=(234.0,203.0)
+16:16:50.491 DEBUG pose_match dist=20.6
+16:16:50.493 INFO arm_cmd side=R ang=(31,-160,-44,90) pul=(6:220 7:676 14:754 15:238)
+16:16:50.493 DEBUG head_hold raw=(234.0,203.0) sm=(275.9,208.1) err=(-44.1,-31.9) yaw=1445 pitch=1496
+16:16:50.511 DEBUG face_hit score=0.94 box=(159,134,140,139) c=(229.0,203.5)
+16:16:50.585 DEBUG pose_match dist=13.5
+16:16:50.586 INFO arm_cmd side=both ang=(31,-3,-50,21) pul=(6:287 7:676 14:712 15:238)
+16:16:50.600 DEBUG face_hit score=0.91 box=(155,137,136,137) c=(223.0,205.5)
+16:16:50.667 DEBUG pose_match dist=10.4
+16:16:50.668 INFO arm_cmd side=both ang=(28,-67,-49,70) pul=(6:287 7:676 14:712 15:238)
+16:16:50.669 INFO head_move err=(-57.3,-32.5) d=(+3,+0) -> yaw=1448 pitch=1496 dur=40ms
+16:16:50.683 DEBUG face_hit score=0.83 box=(154,137,138,138) c=(223.0,206.0)
+16:16:50.750 DEBUG pose_match dist=14.8
+16:16:50.751 INFO arm_cmd side=both ang=(29,6,-44,3) pul=(6:346 7:676 14:662 15:238)
+16:16:50.767 DEBUG face_hit score=0.85 box=(156,139,134,134) c=(223.0,206.0)
+16:16:50.833 DEBUG pose_match dist=26.3
+16:16:50.834 INFO arm_cmd side=both ang=(40,-21,-48,107) pul=(6:346 7:676 14:709 15:238)
+16:16:50.835 INFO head_move err=(-67.2,-32.9) d=(+4,+0) -> yaw=1452 pitch=1496 dur=40ms
+16:16:50.851 DEBUG face_hit score=0.80 box=(155,138,138,138) c=(224.0,207.0)
+16:16:50.918 DEBUG pose_match dist=20.3
+16:16:50.919 INFO arm_cmd side=both ang=(40,-142,-48,89) pul=(6:297 7:676 14:744 15:238)
+16:16:50.935 DEBUG face_hit score=0.81 box=(160,141,136,136) c=(228.0,209.0)
+16:16:51.003 DEBUG pose_match dist=12.9
+16:16:51.005 INFO arm_cmd side=both ang=(38,-72,-51,85) pul=(6:297 7:676 14:770 15:238)
+16:16:51.005 INFO head_move err=(-73.4,-32.4) d=(+4,+0) -> yaw=1456 pitch=1496 dur=40ms
+16:16:51.019 DEBUG face_hit score=0.81 box=(161,142,137,137) c=(229.5,210.5)
+16:16:51.087 DEBUG pose_match dist=17.7
+16:16:51.088 INFO arm_cmd side=both ang=(41,1,-50,71) pul=(6:349 7:676 14:770 15:238)
+16:16:51.104 DEBUG face_hit score=0.85 box=(170,148,131,131) c=(235.5,213.5)
+16:16:51.172 DEBUG pose_match dist=19.5
+16:16:51.173 INFO arm_cmd side=both ang=(40,-80,-50,118) pul=(6:303 7:676 14:770 15:238)
+16:16:51.173 INFO head_move err=(-76.2,-30.9) d=(+4,+0) -> yaw=1460 pitch=1496 dur=40ms
+16:16:51.173 INFO heartbeat fps=11.5 frames=210 face_lock=210/100% head={'moves': 36, 'holds': 70, 'recenters': 0}
+16:16:51.189 DEBUG face_hit score=0.92 box=(175,151,130,130) c=(240.0,216.0)
+16:16:51.256 DEBUG pose_match dist=22.1
+16:16:51.257 INFO arm_cmd side=both ang=(45,-65,-52,100) pul=(6:303 7:676 14:770 15:238)
+16:16:51.274 DEBUG face_hit score=0.89 box=(174,151,129,129) c=(238.5,215.5)
+16:16:51.340 DEBUG pose_match dist=17.8
+16:16:51.341 INFO arm_cmd side=both ang=(44,-91,-52,107) pul=(6:265 7:676 14:770 15:238)
+16:16:51.342 INFO head_move err=(-77.5,-29.3) d=(+4,+0) -> yaw=1464 pitch=1496 dur=40ms
+16:16:51.356 DEBUG face_hit score=0.95 box=(177,151,133,133) c=(243.5,217.5)
+16:16:51.427 DEBUG pose_match dist=23.5
+16:16:51.429 INFO arm_cmd side=both ang=(43,-105,-49,74) pul=(6:236 7:676 14:770 15:238)
+16:16:51.444 DEBUG face_hit score=0.88 box=(181,152,128,128) c=(245.0,216.0)
+16:16:51.512 DEBUG pose_match dist=18.3
+16:16:51.512 INFO arm_cmd side=both ang=(42,-102,-49,79) pul=(6:236 7:676 14:770 15:238)
+16:16:51.513 INFO head_move err=(-76.9,-28.0) d=(+4,+0) -> yaw=1468 pitch=1496 dur=40ms
+16:16:51.528 DEBUG face_hit score=0.86 box=(181,152,126,126) c=(244.0,215.0)
+16:16:51.593 DEBUG pose_match dist=19.6
+16:16:51.594 INFO arm_cmd side=both ang=(40,-101,-51,86) pul=(6:236 7:676 14:770 15:238)
+16:16:51.610 DEBUG face_hit score=0.84 box=(180,147,128,128) c=(244.0,211.0)
+16:16:51.676 DEBUG pose_match dist=24.0
+16:16:51.677 INFO arm_cmd side=both ang=(39,-10,-54,94) pul=(6:292 7:676 14:770 15:238)
+16:16:51.677 INFO head_move err=(-76.7,-28.2) d=(+4,+0) -> yaw=1472 pitch=1496 dur=40ms
+16:16:51.692 DEBUG face_hit score=0.81 box=(182,149,132,132) c=(248.0,215.0)
+16:16:51.759 DEBUG pose_match dist=14.5
+16:16:51.760 INFO arm_cmd side=both ang=(37,-9,-50,89) pul=(6:334 7:676 14:770 15:238)
+16:16:51.777 DEBUG face_hit score=0.85 box=(194,150,127,127) c=(257.5,213.5)
+16:16:51.845 DEBUG pose_match dist=25.1
+16:16:51.846 INFO arm_cmd side=both ang=(39,-4,-53,73) pul=(6:371 7:676 14:770 15:238)
+16:16:51.847 INFO head_move err=(-73.1,-27.8) d=(+4,+0) -> yaw=1476 pitch=1496 dur=40ms
+16:16:51.863 DEBUG face_hit score=0.84 box=(194,150,127,127) c=(257.5,213.5)
+16:16:51.932 DEBUG pose_match dist=18.0
+16:16:51.933 INFO arm_cmd side=both ang=(40,-7,-50,65) pul=(6:396 7:676 14:770 15:238)
+16:16:51.949 DEBUG face_hit score=0.88 box=(198,151,128,127) c=(262.0,214.5)
+16:16:52.016 DEBUG pose_match dist=29.5
+16:16:52.017 INFO arm_cmd side=both ang=(41,7,-48,55) pul=(6:429 7:676 14:770 15:238)
+16:16:52.018 INFO head_move err=(-69.3,-27.2) d=(+4,+0) -> yaw=1480 pitch=1496 dur=40ms
+16:16:52.033 DEBUG face_hit score=0.91 box=(202,150,129,129) c=(266.5,214.5)
+16:16:52.100 DEBUG pose_match dist=28.8
+16:16:52.101 INFO arm_cmd side=both ang=(41,17,-50,51) pul=(6:464 7:676 14:770 15:238)
+16:16:52.117 DEBUG face_hit score=0.93 box=(205,151,128,128) c=(269.0,215.0)
+16:16:52.186 DEBUG pose_match dist=28.4
+16:16:52.187 INFO arm_cmd side=both ang=(41,19,-52,61) pul=(6:493 7:676 14:770 15:238)
+16:16:52.188 INFO head_move err=(-64.8,-26.7) d=(+3,+0) -> yaw=1483 pitch=1496 dur=40ms
+16:16:52.202 DEBUG face_hit score=0.92 box=(206,153,125,125) c=(268.5,215.5)
+16:16:52.270 DEBUG pose_match dist=20.1
+16:16:52.271 INFO arm_cmd side=both ang=(29,-34,-44,67) pul=(6:459 7:676 14:770 15:238)
+16:16:52.288 DEBUG face_hit score=0.94 box=(206,152,128,128) c=(270.0,216.0)
+16:16:52.355 DEBUG pose_match dist=20.3
+16:16:52.356 INFO arm_cmd side=both ang=(27,-36,-45,80) pul=(6:432 7:676 14:770 15:238)
+16:16:52.356 INFO head_move err=(-61.1,-26.0) d=(+3,+0) -> yaw=1486 pitch=1496 dur=40ms
+16:16:52.371 DEBUG face_hit score=0.92 box=(207,153,125,125) c=(269.5,215.5)
+16:16:52.439 DEBUG pose_match dist=26.3
+16:16:52.440 INFO arm_cmd side=both ang=(9,-29,-17,58) pul=(6:432 7:641 14:770 15:286)
+16:16:52.455 DEBUG face_hit score=0.94 box=(205,153,127,127) c=(268.5,216.5)
+16:16:52.523 DEBUG pose_match dist=16.6
+16:16:52.524 INFO arm_cmd side=both ang=(4,-21,-16,63) pul=(6:432 7:610 14:770 15:323)
+16:16:52.524 INFO head_move err=(-58.7,-25.4) d=(+3,+0) -> yaw=1489 pitch=1496 dur=40ms
+16:16:52.539 DEBUG face_hit score=0.93 box=(204,152,129,129) c=(268.5,216.5)
+16:16:52.606 DEBUG pose_match dist=23.6
+16:16:52.607 INFO arm_cmd side=both ang=(-1,-32,-7,62) pul=(6:432 7:581 14:770 15:360)
+16:16:52.621 DEBUG face_hit score=0.93 box=(206,153,126,126) c=(269.0,216.0)
+16:16:52.686 DEBUG pose_match dist=26.6
+16:16:52.687 INFO arm_cmd side=both ang=(-3,-27,0,44) pul=(6:432 7:581 14:770 15:395)
+16:16:52.687 INFO head_move err=(-56.8,-25.0) d=(+3,+0) -> yaw=1492 pitch=1496 dur=40ms
+16:16:52.702 DEBUG face_hit score=0.92 box=(207,154,127,127) c=(270.5,217.5)
+16:16:52.771 DEBUG pose_match dist=18.4
+16:16:52.772 INFO arm_cmd side=both ang=(-3,-31,0,45) pul=(6:432 7:581 14:770 15:421)
+16:16:52.786 DEBUG face_hit score=0.88 box=(211,154,127,127) c=(274.5,217.5)
+16:16:52.855 DEBUG pose_match dist=33.0
+16:16:52.856 INFO arm_cmd side=both ang=(-10,-18,4,47) pul=(6:432 7:550 14:770 15:421)
+16:16:52.856 DEBUG head_hold raw=(274.5,217.5) sm=(266.1,215.6) err=(-53.9,-24.4) yaw=1492 pitch=1496
+16:16:52.874 DEBUG face_hit score=0.88 box=(213,154,126,126) c=(276.0,217.0)
+16:16:52.947 DEBUG pose_match dist=28.7
+16:16:52.948 INFO arm_cmd side=both ang=(-11,-16,8,36) pul=(6:432 7:550 14:740 15:449)
+16:16:52.966 DEBUG face_hit score=0.87 box=(214,156,125,125) c=(276.5,218.5)
+16:16:53.039 DEBUG pose_match dist=21.9
+16:16:53.040 INFO arm_cmd side=both ang=(-18,-67,9,22) pul=(6:379 7:519 14:703 15:449)
+16:16:53.040 DEBUG head_hold raw=(276.5,218.5) sm=(268.7,216.3) err=(-51.3,-23.7) yaw=1492 pitch=1496
+16:16:53.055 DEBUG face_hit score=0.90 box=(213,154,129,129) c=(277.5,218.5)
+16:16:53.125 DEBUG pose_match dist=24.7
+16:16:53.126 INFO arm_cmd side=both ang=(-19,-27,13,20) pul=(6:379 7:494 14:673 15:475)
+16:16:53.143 DEBUG face_hit score=0.87 box=(214,156,124,124) c=(276.0,218.0)
+16:16:53.211 DEBUG pose_match dist=20.8
+16:16:53.212 INFO arm_cmd side=both ang=(-19,-6,17,11) pul=(6:379 7:494 14:641 15:475)
+16:16:53.212 DEBUG head_hold raw=(276.0,218.0) sm=(270.5,216.7) err=(-49.5,-23.3) yaw=1492 pitch=1496
+16:16:53.228 DEBUG face_hit score=0.87 box=(213,154,129,129) c=(277.5,218.5)
+16:16:53.294 DEBUG pose_match dist=23.4
+16:16:53.295 INFO arm_cmd side=both ang=(-18,-35,12,26) pul=(6:379 7:494 14:641 15:475)
+16:16:53.312 DEBUG face_hit score=0.88 box=(212,154,130,130) c=(277.0,219.0)
+16:16:53.381 DEBUG pose_match dist=25.5
+16:16:53.382 INFO arm_cmd side=both ang=(-19,-41,11,26) pul=(6:379 7:494 14:641 15:475)
+16:16:53.382 DEBUG head_hold raw=(277.0,219.0) sm=(272.1,217.3) err=(-47.9,-22.7) yaw=1492 pitch=1496
+16:16:53.397 DEBUG face_hit score=0.88 box=(212,154,129,129) c=(276.5,218.5)
+16:16:53.464 DEBUG pose_match dist=29.0
+16:16:53.465 INFO arm_cmd side=both ang=(-20,-33,10,30) pul=(6:379 7:494 14:641 15:475)
+16:16:53.481 DEBUG face_hit score=0.87 box=(212,154,130,130) c=(277.0,219.0)
+16:16:53.548 DEBUG pose_match dist=25.6
+16:16:53.548 INFO arm_cmd side=both ang=(-23,-34,13,32) pul=(6:379 7:494 14:641 15:475)
+16:16:53.549 DEBUG head_hold raw=(277.0,219.0) sm=(273.3,217.7) err=(-46.7,-22.3) yaw=1492 pitch=1496
+16:16:53.564 DEBUG face_hit score=0.88 box=(213,154,129,129) c=(277.5,218.5)
+16:16:53.629 DEBUG pose_match dist=27.6
+16:16:53.630 INFO arm_cmd side=both ang=(-19,-14,18,25) pul=(6:379 7:494 14:641 15:500)
+16:16:53.646 DEBUG face_hit score=0.88 box=(213,155,128,128) c=(277.0,219.0)
+16:16:53.715 DEBUG pose_match dist=19.3
+16:16:53.716 INFO arm_cmd side=both ang=(-22,-19,17,24) pul=(6:379 7:494 14:641 15:500)
+16:16:53.717 DEBUG head_hold raw=(277.0,219.0) sm=(274.3,218.0) err=(-45.7,-22.0) yaw=1492 pitch=1496
+16:16:53.717 INFO heartbeat fps=11.7 frames=240 face_lock=240/100% head={'moves': 45, 'holds': 76, 'recenters': 0}
+16:16:53.733 DEBUG face_hit score=0.90 box=(213,154,130,130) c=(278.0,219.0)
+16:16:53.799 DEBUG pose_match dist=23.7
+16:16:53.801 INFO arm_cmd side=both ang=(-21,-38,15,35) pul=(6:379 7:494 14:641 15:500)
+16:16:53.816 DEBUG face_hit score=0.92 box=(214,154,129,129) c=(278.5,218.5)
+16:16:53.882 DEBUG pose_match dist=24.6
+16:16:53.883 INFO arm_cmd side=both ang=(-20,-38,16,27) pul=(6:379 7:494 14:641 15:500)
+16:16:53.883 DEBUG head_hold raw=(278.5,218.5) sm=(275.3,218.2) err=(-44.7,-21.8) yaw=1492 pitch=1496
+16:16:53.900 DEBUG face_hit score=0.90 box=(214,154,129,129) c=(278.5,218.5)
+16:16:53.967 DEBUG pose_match dist=28.3
+16:16:53.968 INFO arm_cmd side=both ang=(-20,-35,14,39) pul=(6:379 7:494 14:641 15:500)
+16:16:53.985 DEBUG face_hit score=0.91 box=(214,154,131,131) c=(279.5,219.5)
+16:16:54.055 DEBUG pose_match dist=26.8
+16:16:54.056 INFO arm_cmd side=both ang=(-22,-30,14,35) pul=(6:379 7:494 14:641 15:500)
+16:16:54.056 DEBUG head_hold raw=(279.5,219.5) sm=(276.4,218.5) err=(-43.6,-21.5) yaw=1492 pitch=1496
+16:16:54.071 DEBUG face_hit score=0.92 box=(213,153,132,132) c=(279.0,219.0)
+16:16:54.140 DEBUG pose_match dist=24.4
+16:16:54.141 INFO arm_cmd side=both ang=(-19,-25,13,29) pul=(6:379 7:494 14:641 15:500)
+16:16:54.157 DEBUG face_hit score=0.91 box=(212,152,133,133) c=(278.5,218.5)
+16:16:54.223 DEBUG pose_match dist=26.3
+16:16:54.224 INFO arm_cmd side=both ang=(-17,-38,7,37) pul=(6:379 7:494 14:641 15:500)
+16:16:54.224 DEBUG head_hold raw=(278.5,218.5) sm=(276.9,218.5) err=(-43.1,-21.5) yaw=1492 pitch=1496
+16:16:54.239 DEBUG face_hit score=0.91 box=(217,151,131,131) c=(282.5,216.5)
+16:16:54.305 DEBUG pose_match dist=29.8
+16:16:54.306 INFO arm_cmd side=both ang=(-16,-35,9,34) pul=(6:379 7:494 14:641 15:500)
+16:16:54.322 DEBUG face_hit score=0.91 box=(216,154,131,131) c=(281.5,219.5)
+16:16:54.389 DEBUG pose_match dist=26.5
+16:16:54.390 INFO arm_cmd side=both ang=(-10,-23,0,30) pul=(6:379 7:494 14:641 15:500)
+16:16:54.390 DEBUG head_hold raw=(281.5,219.5) sm=(278.0,218.7) err=(-42.0,-21.3) yaw=1492 pitch=1496
+16:16:54.406 DEBUG face_hit score=0.92 box=(216,153,132,132) c=(282.0,219.0)
+16:16:54.471 DEBUG pose_match dist=25.3
+16:16:54.472 INFO arm_cmd side=both ang=(-3,-28,-6,34) pul=(6:379 7:494 14:641 15:500)
+16:16:54.488 DEBUG face_hit score=0.92 box=(217,154,131,131) c=(282.5,219.5)
+16:16:54.555 DEBUG pose_match dist=31.4
+16:16:54.556 INFO arm_cmd side=both ang=(0,-27,-13,41) pul=(6:379 7:494 14:641 15:500)
+16:16:54.557 DEBUG head_hold raw=(282.5,219.5) sm=(279.2,218.9) err=(-40.8,-21.1) yaw=1492 pitch=1496
+16:16:54.572 DEBUG face_hit score=0.91 box=(217,155,130,130) c=(282.0,220.0)
+16:16:54.642 DEBUG pose_match dist=26.2
+16:16:54.643 INFO arm_cmd side=both ang=(0,-30,-21,45) pul=(6:379 7:494 14:641 15:500)
+16:16:54.660 DEBUG face_hit score=0.93 box=(217,152,132,132) c=(283.0,218.0)
+16:16:54.729 DEBUG pose_match dist=26.3
+16:16:54.730 INFO arm_cmd side=both ang=(17,-37,-26,45) pul=(6:379 7:494 14:641 15:473)
+16:16:54.730 DEBUG head_hold raw=(283.0,218.0) sm=(280.1,218.7) err=(-39.9,-21.3) yaw=1492 pitch=1496
+16:16:54.745 DEBUG face_hit score=0.91 box=(217,151,132,132) c=(283.0,217.0)
+16:16:54.811 DEBUG pose_match dist=28.4
+16:16:54.812 INFO arm_cmd side=both ang=(21,-16,-39,53) pul=(6:379 7:494 14:641 15:439)
+16:16:54.828 DEBUG face_hit score=0.94 box=(218,155,132,132) c=(284.0,221.0)
+16:16:54.897 DEBUG pose_match dist=30.8
+16:16:54.898 INFO arm_cmd side=both ang=(21,2,-41,46) pul=(6:411 7:494 14:641 15:412)
+16:16:54.898 DEBUG head_hold raw=(284.0,221.0) sm=(281.1,219.3) err=(-38.9,-20.7) yaw=1492 pitch=1496
+16:16:54.913 DEBUG face_hit score=0.93 box=(217,152,131,131) c=(282.5,217.5)
+16:16:54.981 DEBUG pose_match dist=19.5
+16:16:54.982 INFO arm_cmd side=both ang=(35,-6,-45,36) pul=(6:411 7:532 14:641 15:387)
+16:16:54.999 DEBUG face_hit score=0.92 box=(217,151,132,132) c=(283.0,217.0)
+16:16:55.065 DEBUG pose_match dist=25.2
+16:16:55.066 INFO arm_cmd side=both ang=(38,-8,-44,20) pul=(6:411 7:564 14:641 15:387)
+16:16:55.066 DEBUG head_hold raw=(283.0,217.0) sm=(281.6,218.7) err=(-38.4,-21.3) yaw=1492 pitch=1496
+16:16:55.081 DEBUG face_hit score=0.93 box=(217,155,128,128) c=(281.0,219.0)
+16:16:55.147 DEBUG pose_match dist=19.7
+16:16:55.149 INFO arm_cmd side=both ang=(39,1,-45,24) pul=(6:411 7:564 14:641 15:387)
+16:16:55.165 DEBUG face_hit score=0.93 box=(217,154,131,131) c=(282.5,219.5)
+16:16:55.232 DEBUG pose_match dist=22.4
+16:16:55.233 INFO arm_cmd side=both ang=(42,-8,-51,4) pul=(6:411 7:592 14:610 15:362)
+16:16:55.233 DEBUG head_hold raw=(282.5,219.5) sm=(281.8,218.9) err=(-38.2,-21.1) yaw=1492 pitch=1496
+16:16:55.248 DEBUG face_hit score=0.93 box=(218,155,129,129) c=(282.5,219.5)
+16:16:55.316 DEBUG pose_match dist=32.3
+16:16:55.317 INFO arm_cmd side=both ang=(43,-3,-51,-8) pul=(6:411 7:592 14:574 15:362)
+16:16:55.331 DEBUG face_hit score=0.93 box=(217,152,131,131) c=(282.5,217.5)
+16:16:55.398 DEBUG pose_match dist=33.7
+16:16:55.400 INFO arm_cmd side=both ang=(47,20,-57,-6) pul=(6:454 7:618 14:549 15:337)
+16:16:55.400 DEBUG head_hold raw=(282.5,217.5) sm=(282.0,218.6) err=(-38.0,-21.4) yaw=1492 pitch=1496
+16:16:55.416 DEBUG face_hit score=0.94 box=(218,152,130,130) c=(283.0,217.0)
+16:16:55.485 DEBUG pose_match dist=28.9
+16:16:55.486 INFO arm_cmd side=both ang=(48,16,-59,-1) pul=(6:482 7:618 14:549 15:337)
+16:16:55.500 DEBUG face_hit score=0.94 box=(217,152,131,131) c=(282.5,217.5)
+16:16:55.567 DEBUG pose_match dist=32.8
+16:16:55.568 INFO arm_cmd side=both ang=(51,18,-62,-10) pul=(6:482 7:618 14:549 15:337)
+16:16:55.568 DEBUG head_hold raw=(282.5,217.5) sm=(282.1,218.3) err=(-37.9,-21.7) yaw=1492 pitch=1496
+16:16:55.588 DEBUG face_hit score=0.92 box=(218,152,130,130) c=(283.0,217.0)
+16:16:55.667 DEBUG pose_match dist=28.3
+16:16:55.668 INFO arm_cmd side=both ang=(51,23,-65,-10) pul=(6:510 7:618 14:549 15:310)
+16:16:55.687 DEBUG face_hit score=0.92 box=(218,153,127,127) c=(281.5,216.5)
+16:16:55.765 DEBUG pose_match dist=26.0
+16:16:55.766 INFO arm_cmd side=both ang=(51,23,-60,-11) pul=(6:510 7:618 14:549 15:310)
+16:16:55.766 DEBUG head_hold raw=(281.5,216.5) sm=(282.0,217.8) err=(-38.0,-22.2) yaw=1492 pitch=1496
+16:16:55.783 DEBUG face_hit score=0.91 box=(216,153,132,132) c=(282.0,219.0)
+16:16:55.855 DEBUG pose_match dist=24.2
+16:16:55.856 INFO arm_cmd side=both ang=(52,26,-64,-19) pul=(6:510 7:618 14:517 15:310)
+16:16:55.872 DEBUG face_hit score=0.93 box=(217,154,132,132) c=(283.0,220.0)
+16:16:55.939 DEBUG pose_match dist=17.3
+16:16:55.940 INFO arm_cmd side=both ang=(52,28,-60,-8) pul=(6:536 7:618 14:517 15:310)
+16:16:55.940 DEBUG head_hold raw=(283.0,220.0) sm=(282.2,218.4) err=(-37.8,-21.6) yaw=1492 pitch=1496
+16:16:55.958 DEBUG face_hit score=0.94 box=(218,152,131,131) c=(283.5,217.5)
+16:16:56.024 DEBUG pose_match dist=27.2
+16:16:56.025 INFO arm_cmd side=both ang=(52,24,-63,-14) pul=(6:536 7:618 14:517 15:310)
+16:16:56.040 DEBUG face_hit score=0.92 box=(216,154,131,131) c=(281.5,219.5)
+16:16:56.109 DEBUG pose_match dist=26.7
+16:16:56.110 INFO arm_cmd side=both ang=(52,28,-62,-11) pul=(6:536 7:618 14:517 15:310)
+16:16:56.111 DEBUG head_hold raw=(281.5,219.5) sm=(282.0,218.7) err=(-38.0,-21.3) yaw=1492 pitch=1496
+16:16:56.126 DEBUG face_hit score=0.92 box=(216,155,131,131) c=(281.5,220.5)
+16:16:56.194 DEBUG pose_match dist=19.6
+16:16:56.195 INFO arm_cmd side=both ang=(52,22,-63,-12) pul=(6:536 7:618 14:517 15:310)
+16:16:56.211 DEBUG face_hit score=0.89 box=(211,153,134,134) c=(278.0,220.0)
+16:16:56.279 DEBUG pose_match dist=29.8
+16:16:56.280 INFO arm_cmd side=both ang=(51,28,-65,-12) pul=(6:536 7:618 14:517 15:310)
+16:16:56.281 DEBUG head_hold raw=(278.0,220.0) sm=(281.0,219.0) err=(-39.0,-21.0) yaw=1492 pitch=1496
+16:16:56.281 INFO heartbeat fps=11.5 frames=270 face_lock=270/100% head={'moves': 45, 'holds': 91, 'recenters': 0}
+16:16:56.296 DEBUG face_hit score=0.85 box=(205,144,141,141) c=(275.5,214.5)
+16:16:56.362 DEBUG pose_match dist=15.5
+16:16:56.364 INFO arm_cmd side=both ang=(53,26,-65,-22) pul=(6:536 7:644 14:490 15:310)
+16:16:56.380 DEBUG face_hit score=0.84 box=(207,141,139,139) c=(276.5,210.5)
+16:16:56.448 DEBUG pose_match dist=24.0
+16:16:56.449 INFO arm_cmd side=both ang=(52,26,-66,-9) pul=(6:536 7:644 14:490 15:310)
+16:16:56.449 DEBUG head_hold raw=(276.5,210.5) sm=(279.9,216.9) err=(-40.1,-23.1) yaw=1492 pitch=1496
+16:16:56.464 DEBUG face_hit score=0.86 box=(206,135,141,141) c=(276.5,205.5)
+16:16:56.532 DEBUG pose_match dist=26.1
+16:16:56.533 INFO arm_cmd side=both ang=(52,22,-57,-23) pul=(6:536 7:644 14:490 15:310)
+16:16:56.549 DEBUG face_hit score=0.79 box=(197,120,153,153) c=(273.5,196.5)
+16:16:56.616 DEBUG pose_match dist=24.7
+16:16:56.617 INFO arm_cmd side=both ang=(51,25,-51,-18) pul=(6:536 7:644 14:490 15:310)
+16:16:56.617 DEBUG head_hold raw=(273.5,196.5) sm=(278.3,211.8) err=(-41.7,-28.2) yaw=1492 pitch=1496
+16:16:56.633 DEBUG face_hit score=0.82 box=(195,111,158,158) c=(274.0,190.0)
+16:16:56.697 DEBUG pose_match dist=16.8
+16:16:56.698 INFO arm_cmd side=both ang=(53,26,-46,-29) pul=(6:536 7:644 14:462 15:310)
+16:16:56.714 DEBUG face_hit score=0.83 box=(195,95,159,159) c=(274.5,174.5)
+16:16:56.783 DEBUG pose_match dist=22.1
+16:16:56.784 INFO arm_cmd side=both ang=(50,26,-48,-25) pul=(6:536 7:644 14:462 15:310)
+16:16:56.785 DEBUG head_hold raw=(274.5,174.5) sm=(277.3,202.5) err=(-42.7,-37.5) yaw=1492 pitch=1496
+16:16:56.800 DEBUG face_hit score=0.84 box=(193,84,166,166) c=(276.0,167.0)
+16:16:56.868 DEBUG pose_match dist=22.0
+16:16:56.869 INFO arm_cmd side=both ang=(54,23,-53,-16) pul=(6:536 7:644 14:462 15:310)
+16:16:56.884 DEBUG face_hit score=0.92 box=(196,64,169,169) c=(280.5,148.5)
+16:16:56.952 DEBUG pose_match dist=29.1
+16:16:56.953 INFO arm_cmd side=both ang=(51,22,-52,-14) pul=(6:536 7:644 14:462 15:310)
+16:16:56.954 DEBUG head_hold raw=(280.5,148.5) sm=(278.1,189.0) err=(-41.9,-51.0) yaw=1492 pitch=1496
+16:16:56.969 DEBUG face_hit score=0.91 box=(196,57,174,174) c=(283.0,144.0)
+16:16:57.036 DEBUG pose_match dist=21.8
+16:16:57.037 INFO arm_cmd side=both ang=(51,24,-52,-17) pul=(6:536 7:644 14:462 15:310)
+16:16:57.053 DEBUG face_hit score=0.94 box=(194,65,174,174) c=(281.0,152.0)
+16:16:57.122 DEBUG pose_match dist=25.2
+16:16:57.123 INFO arm_cmd side=both ang=(50,18,-56,-18) pul=(6:536 7:644 14:462 15:310)
+16:16:57.123 DEBUG head_hold raw=(281.0,152.0) sm=(278.9,179.7) err=(-41.1,-60.3) yaw=1492 pitch=1496
+16:16:57.138 DEBUG face_hit score=0.88 box=(192,76,174,174) c=(279.0,163.0)
+16:16:57.204 DEBUG pose_match dist=18.2
+16:16:57.205 INFO arm_cmd side=both ang=(56,19,-54,-23) pul=(6:536 7:644 14:462 15:310)
+16:16:57.219 DEBUG face_hit score=0.76 box=(188,84,172,172) c=(274.0,170.0)
+16:16:57.286 DEBUG pose_match dist=19.7
+16:16:57.287 INFO arm_cmd side=both ang=(56,20,-55,-20) pul=(6:536 7:644 14:462 15:310)
+16:16:57.288 DEBUG head_hold raw=(274.0,170.0) sm=(277.6,177.3) err=(-42.4,-62.7) yaw=1492 pitch=1496
+16:16:57.303 DEBUG face_hit score=0.89 box=(190,96,160,160) c=(270.0,176.0)
+16:16:57.371 DEBUG pose_match dist=24.8
+16:16:57.372 INFO arm_cmd side=both ang=(58,12,-56,-20) pul=(6:536 7:644 14:462 15:310)
+16:16:57.388 DEBUG face_hit score=0.90 box=(193,102,153,153) c=(269.5,178.5)
+16:16:57.455 DEBUG pose_match dist=21.3
+16:16:57.456 INFO arm_cmd side=both ang=(60,11,-60,-9) pul=(6:536 7:670 14:462 15:310)
+16:16:57.456 DEBUG head_hold raw=(269.5,178.5) sm=(275.6,177.6) err=(-44.4,-62.4) yaw=1492 pitch=1496
+16:16:57.471 DEBUG face_hit score=0.85 box=(197,111,144,144) c=(269.0,183.0)
+16:16:57.536 DEBUG pose_match dist=24.5
+16:16:57.537 INFO arm_cmd side=both ang=(64,11,-62,-22) pul=(6:536 7:670 14:462 15:310)
+16:16:57.552 DEBUG face_hit score=0.92 box=(200,118,140,140) c=(270.0,188.0)
+16:16:57.617 DEBUG pose_match dist=20.4
+16:16:57.618 INFO arm_cmd side=both ang=(65,10,-63,-17) pul=(6:536 7:695 14:462 15:310)
+16:16:57.618 DEBUG head_hold raw=(270.0,188.0) sm=(274.2,180.2) err=(-45.8,-59.8) yaw=1492 pitch=1496
+16:16:57.633 DEBUG face_hit score=0.94 box=(201,122,136,136) c=(269.0,190.0)
+16:16:57.700 DEBUG pose_match dist=22.4
+16:16:57.701 INFO arm_cmd side=both ang=(65,13,-62,-20) pul=(6:536 7:695 14:462 15:310)
+16:16:57.716 DEBUG face_hit score=0.94 box=(204,125,133,133) c=(270.5,191.5)
+16:16:57.785 DEBUG pose_match dist=21.4
+16:16:57.786 INFO arm_cmd side=both ang=(65,20,-67,-20) pul=(6:536 7:695 14:462 15:310)
+16:16:57.786 DEBUG head_hold raw=(270.5,191.5) sm=(273.3,183.0) err=(-46.7,-57.0) yaw=1492 pitch=1496
+16:16:57.802 DEBUG face_hit score=0.91 box=(204,125,139,139) c=(273.5,194.5)
+16:16:57.870 DEBUG pose_match dist=18.0
+16:16:57.871 INFO arm_cmd side=both ang=(68,11,-66,-22) pul=(6:536 7:695 14:462 15:310)
+16:16:57.887 DEBUG face_hit score=0.91 box=(208,132,138,138) c=(277.0,201.0)
+16:16:57.953 DEBUG pose_match dist=24.2
+16:16:57.954 INFO arm_cmd side=both ang=(72,7,-71,-17) pul=(6:536 7:721 14:462 15:284)
+16:16:57.954 DEBUG head_hold raw=(277.0,201.0) sm=(274.2,187.5) err=(-45.8,-52.5) yaw=1492 pitch=1496
+16:16:57.970 DEBUG face_hit score=0.91 box=(207,130,140,140) c=(277.0,200.0)
+16:16:58.037 DEBUG pose_match dist=20.1
+16:16:58.038 INFO arm_cmd side=both ang=(68,13,-69,-16) pul=(6:536 7:721 14:462 15:284)
+16:16:58.053 DEBUG face_hit score=0.85 box=(203,126,143,143) c=(274.5,197.5)
+16:16:58.121 DEBUG pose_match dist=21.0
+16:16:58.122 INFO arm_cmd side=both ang=(61,11,-61,-23) pul=(6:536 7:721 14:462 15:284)
+16:16:58.122 DEBUG head_hold raw=(274.5,197.5) sm=(274.3,190.0) err=(-45.7,-50.0) yaw=1492 pitch=1496
+16:16:58.138 DEBUG face_hit score=0.84 box=(201,123,147,147) c=(274.5,196.5)
+16:16:58.205 DEBUG pose_match dist=22.7
+16:16:58.205 INFO arm_cmd side=both ang=(59,12,-57,-26) pul=(6:536 7:721 14:462 15:284)
+16:16:58.222 DEBUG face_hit score=0.92 box=(195,126,154,154) c=(272.0,203.0)
+16:16:58.290 DEBUG pose_match dist=18.6
+16:16:58.291 INFO arm_cmd side=both ang=(58,17,-56,-29) pul=(6:536 7:721 14:462 15:284)
+16:16:58.292 DEBUG head_hold raw=(272.0,203.0) sm=(273.7,193.3) err=(-46.3,-46.7) yaw=1492 pitch=1496
+16:16:58.307 DEBUG face_hit score=0.90 box=(193,123,156,156) c=(271.0,201.0)
+16:16:58.375 DEBUG pose_match dist=19.9
+16:16:58.376 INFO arm_cmd side=both ang=(62,16,-62,-36) pul=(6:536 7:721 14:434 15:284)
+16:16:58.392 DEBUG face_hit score=0.91 box=(191,119,155,155) c=(268.5,196.5)
+16:16:58.458 DEBUG pose_match dist=27.3
+16:16:58.460 INFO arm_cmd side=both ang=(67,12,-66,-23) pul=(6:536 7:721 14:434 15:284)
+16:16:58.460 DEBUG head_hold raw=(268.5,196.5) sm=(272.4,194.1) err=(-47.6,-45.9) yaw=1492 pitch=1496
+16:16:58.475 DEBUG face_hit score=0.91 box=(193,125,155,155) c=(270.5,202.5)
+16:16:58.547 DEBUG pose_match dist=20.7
+16:16:58.548 INFO arm_cmd side=both ang=(67,11,-64,-26) pul=(6:536 7:721 14:434 15:284)
+16:16:58.567 DEBUG face_hit score=0.88 box=(192,123,160,160) c=(272.0,203.0)
+16:16:58.643 DEBUG pose_match dist=29.6
+16:16:58.644 INFO arm_cmd side=both ang=(65,16,-64,-24) pul=(6:536 7:721 14:434 15:284)
+16:16:58.644 DEBUG head_hold raw=(272.0,203.0) sm=(272.3,196.3) err=(-47.7,-43.7) yaw=1492 pitch=1496
+16:16:58.660 DEBUG face_hit score=0.85 box=(195,123,160,160) c=(275.0,203.0)
+16:16:58.728 DEBUG pose_match dist=25.4
+16:16:58.729 INFO arm_cmd side=both ang=(63,22,-62,-35) pul=(6:536 7:721 14:434 15:284)
+16:16:58.744 DEBUG face_hit score=0.86 box=(200,128,150,150) c=(275.0,203.0)
+16:16:58.811 DEBUG pose_match dist=27.6
+16:16:58.812 INFO arm_cmd side=both ang=(65,27,-64,-37) pul=(6:536 7:721 14:434 15:284)
+16:16:58.813 DEBUG head_hold raw=(275.0,203.0) sm=(273.0,198.0) err=(-47.0,-42.0) yaw=1492 pitch=1496
+16:16:58.813 INFO heartbeat fps=11.9 frames=300 face_lock=300/100% head={'moves': 45, 'holds': 106, 'recenters': 0}
+16:16:58.830 DEBUG face_hit score=0.89 box=(201,128,149,149) c=(275.5,202.5)
+16:16:58.897 DEBUG pose_match dist=22.7
+16:16:58.898 INFO arm_cmd side=both ang=(61,34,-67,-33) pul=(6:562 7:721 14:434 15:284)
+16:16:58.913 DEBUG face_hit score=0.90 box=(202,127,148,148) c=(276.0,201.0)
+16:16:58.981 DEBUG pose_match dist=20.3
+16:16:58.982 INFO arm_cmd side=both ang=(62,26,-68,-30) pul=(6:562 7:721 14:434 15:284)
+16:16:58.982 DEBUG head_hold raw=(276.0,201.0) sm=(273.7,198.7) err=(-46.3,-41.3) yaw=1492 pitch=1496
+16:16:58.997 DEBUG face_hit score=0.88 box=(200,126,152,152) c=(276.0,202.0)
+16:16:59.063 DEBUG pose_match dist=20.0
+16:16:59.064 INFO arm_cmd side=L ang=(62,34,-67,-40) pul=(6:562 7:721 14:409 15:284)
+16:16:59.079 DEBUG face_hit score=0.86 box=(197,121,154,154) c=(274.0,198.0)
+16:16:59.145 DEBUG pose_match dist=27.4
+16:16:59.146 INFO arm_cmd side=L ang=(63,40,-69,-34) pul=(6:588 7:721 14:409 15:284)
+16:16:59.146 DEBUG head_hold raw=(274.0,198.0) sm=(273.8,198.5) err=(-46.2,-41.5) yaw=1492 pitch=1496
+16:16:59.163 DEBUG face_hit score=0.86 box=(202,126,148,148) c=(276.0,200.0)
+16:16:59.232 DEBUG pose_match dist=18.1
+16:16:59.233 DEBUG arm_skip reach x1=-0.012 x2=-0.003
+16:16:59.249 DEBUG face_hit score=0.86 box=(201,124,147,147) c=(274.5,197.5)
+16:16:59.315 DEBUG pose_match dist=17.2
+16:16:59.316 INFO arm_cmd side=R ang=(64,43,-67,-32) pul=(6:632 7:721 14:409 15:284)
+16:16:59.316 DEBUG head_hold raw=(274.5,197.5) sm=(274.0,198.3) err=(-46.0,-41.7) yaw=1492 pitch=1496
+16:16:59.332 DEBUG face_hit score=0.84 box=(201,120,148,148) c=(275.0,194.0)
+16:16:59.399 DEBUG pose_match dist=26.2
+16:16:59.401 INFO arm_cmd side=both ang=(68,32,-65,-29) pul=(6:632 7:721 14:409 15:284)
+16:16:59.417 DEBUG face_hit score=0.85 box=(205,119,141,141) c=(275.5,189.5)
+16:16:59.483 DEBUG pose_match dist=23.9
+16:16:59.484 DEBUG arm_skip reach x1=-0.015 x2=-0.000
+16:16:59.484 DEBUG head_hold raw=(275.5,189.5) sm=(274.4,196.1) err=(-45.6,-43.9) yaw=1492 pitch=1496
+16:16:59.499 DEBUG face_hit score=0.88 box=(205,118,142,142) c=(276.0,189.0)
+16:16:59.565 DEBUG pose_match dist=31.8
+16:16:59.566 DEBUG arm_skip reach x1=-0.001 x2=-0.006
+16:16:59.582 DEBUG face_hit score=0.86 box=(203,108,144,144) c=(275.0,180.0)
+16:16:59.651 DEBUG pose_match dist=20.7
+16:16:59.652 DEBUG arm_skip reach x1=-0.025 x2=-0.005
+16:16:59.652 DEBUG head_hold raw=(275.0,180.0) sm=(274.5,192.1) err=(-45.5,-47.9) yaw=1492 pitch=1496
+16:16:59.668 DEBUG face_hit score=0.91 box=(204,107,139,139) c=(273.5,176.5)
+16:16:59.735 DEBUG pose_match dist=20.5
+16:16:59.736 DEBUG arm_skip reach x1=-0.024 x2=-0.000
+16:16:59.752 DEBUG face_hit score=0.85 box=(205,105,130,130) c=(270.0,170.0)
+16:16:59.817 DEBUG pose_match dist=23.8
+16:16:59.818 INFO arm_cmd side=R ang=(74,43,-76,-8) pul=(6:632 7:762 14:409 15:222)
+16:16:59.818 DEBUG head_hold raw=(270.0,170.0) sm=(273.4,186.6) err=(-46.6,-53.4) yaw=1492 pitch=1496
+16:16:59.833 DEBUG face_hit score=0.84 box=(205,103,131,131) c=(270.5,168.5)
+16:16:59.901 DEBUG pose_match dist=24.6
+16:16:59.902 INFO arm_cmd side=R ang=(77,32,-76,-10) pul=(6:632 7:762 14:409 15:222)
+16:16:59.918 DEBUG face_hit score=0.88 box=(205,104,127,127) c=(268.5,167.5)
+16:16:59.986 DEBUG pose_match dist=27.3
+16:16:59.987 INFO arm_cmd side=R ang=(75,45,-67,-26) pul=(6:632 7:762 14:409 15:222)
+16:16:59.987 DEBUG head_hold raw=(268.5,167.5) sm=(272.2,181.8) err=(-47.8,-58.2) yaw=1492 pitch=1496
+16:17:00.002 DEBUG face_hit score=0.92 box=(205,101,126,126) c=(268.0,164.0)
+16:17:00.069 DEBUG pose_match dist=20.9
+16:17:00.070 DEBUG arm_skip reach x1=-0.045 x2=-0.007
+16:17:00.085 DEBUG face_hit score=0.94 box=(205,101,127,127) c=(268.5,164.5)
+16:17:00.152 DEBUG pose_match dist=16.7
+16:17:00.153 DEBUG arm_skip reach x1=-0.039 x2=-0.010
+16:17:00.153 DEBUG head_hold raw=(268.5,164.5) sm=(271.2,177.5) err=(-48.8,-62.5) yaw=1492 pitch=1496
+16:17:00.168 DEBUG face_hit score=0.94 box=(212,105,115,115) c=(269.5,162.5)
+16:17:00.234 DEBUG pose_match dist=12.6
+16:17:00.235 DEBUG arm_skip reach x1=-0.042 x2=-0.028
+16:17:00.253 DEBUG face_hit score=0.95 box=(210,104,118,118) c=(269.0,163.0)
+16:17:00.321 DEBUG pose_match dist=12.6
+16:17:00.322 DEBUG arm_skip reach x1=-0.052 x2=-0.018
+16:17:00.322 INFO head_move err=(-49.3,-66.2) d=(+0,+3) -> yaw=1492 pitch=1499 dur=40ms
+16:17:00.337 DEBUG face_hit score=0.95 box=(210,104,118,118) c=(269.0,163.0)
+16:17:00.404 DEBUG pose_match dist=10.7
+16:17:00.405 DEBUG arm_skip reach x1=-0.056 x2=-0.017
+16:17:00.421 DEBUG face_hit score=0.92 box=(209,105,116,116) c=(267.0,163.0)
+16:17:00.489 DEBUG pose_match dist=11.8
+16:17:00.490 DEBUG arm_skip reach x1=-0.058 x2=-0.022
+16:17:00.490 INFO head_move err=(-50.2,-68.9) d=(+0,+4) -> yaw=1492 pitch=1503 dur=40ms
+16:17:00.504 DEBUG face_hit score=0.92 box=(210,105,114,114) c=(267.0,162.0)
+16:17:00.570 DEBUG pose_match dist=13.8
+16:17:00.572 DEBUG arm_skip reach x1=-0.058 x2=-0.015
+16:17:00.587 DEBUG face_hit score=0.92 box=(210,103,115,115) c=(267.5,160.5)
+16:17:00.654 DEBUG pose_match dist=14.4
+16:17:00.655 DEBUG arm_skip reach x1=-0.061 x2=-0.019
+16:17:00.655 INFO head_move err=(-50.8,-71.5) d=(+0,+4) -> yaw=1492 pitch=1507 dur=40ms
+16:17:00.671 DEBUG face_hit score=0.93 box=(207,103,118,118) c=(266.0,162.0)
+16:17:00.749 DEBUG pose_match dist=13.7
+16:17:00.750 DEBUG arm_skip reach x1=-0.058 x2=-0.019
+16:17:00.768 DEBUG face_hit score=0.92 box=(211,104,116,116) c=(269.0,162.0)
+16:17:00.834 DEBUG pose_match dist=11.1
+16:17:00.835 DEBUG arm_skip reach x1=-0.052 x2=-0.022
+16:17:00.835 INFO head_move err=(-50.9,-73.1) d=(+0,+4) -> yaw=1492 pitch=1511 dur=40ms
+16:17:00.850 DEBUG face_hit score=0.95 box=(213,105,113,113) c=(269.5,161.5)
+16:17:00.922 DEBUG pose_match dist=13.8
+16:17:00.924 DEBUG arm_skip reach x1=-0.043 x2=-0.025
+16:17:00.946 DEBUG face_hit score=0.93 box=(212,104,115,115) c=(269.5,161.5)
+16:17:01.015 DEBUG pose_match dist=11.6
+16:17:01.016 DEBUG arm_skip reach x1=-0.021 x2=-0.004
+16:17:01.016 INFO head_move err=(-50.8,-74.5) d=(+0,+4) -> yaw=1492 pitch=1515 dur=40ms
+16:17:01.031 DEBUG face_hit score=0.93 box=(212,105,113,113) c=(268.5,161.5)
+16:17:01.101 DEBUG pose_match dist=15.1
+16:17:01.102 INFO arm_cmd side=both ang=(50,43,-46,-38) pul=(6:749 7:762 14:277 15:222)
+16:17:01.118 DEBUG face_hit score=0.89 box=(212,101,113,113) c=(268.5,157.5)
+16:17:01.184 DEBUG pose_match dist=19.9
+16:17:01.185 INFO arm_cmd side=both ang=(50,35,-43,-16) pul=(6:723 7:762 14:316 15:222)
+16:17:01.185 INFO head_move err=(-50.9,-76.5) d=(+0,+4) -> yaw=1492 pitch=1519 dur=40ms
+16:17:01.199 DEBUG face_hit score=0.89 box=(213,103,115,115) c=(270.5,160.5)
+16:17:01.266 DEBUG pose_match dist=15.7
+16:17:01.267 INFO arm_cmd side=both ang=(40,12,-38,3) pul=(6:680 7:762 14:365 15:252)
+16:17:01.282 DEBUG face_hit score=0.90 box=(215,105,112,112) c=(271.0,161.0)
+16:17:01.354 DEBUG pose_match dist=23.1
+16:17:01.356 INFO arm_cmd side=both ang=(36,-10,-32,11) pul=(6:624 7:734 14:410 15:280)
+16:17:01.356 INFO head_move err=(-50.5,-77.1) d=(+0,+4) -> yaw=1492 pitch=1523 dur=40ms
+16:17:01.356 INFO heartbeat fps=11.6 frames=330 face_lock=330/100% head={'moves': 52, 'holds': 114, 'recenters': 0}
+16:17:01.373 DEBUG face_hit score=0.93 box=(214,105,114,114) c=(271.0,162.0)
+16:17:01.450 DEBUG pose_match dist=21.5
+16:17:01.451 INFO arm_cmd side=both ang=(31,-4,-29,12) pul=(6:589 7:708 14:445 15:305)
+16:17:01.466 DEBUG face_hit score=0.89 box=(216,106,111,111) c=(271.5,161.5)
+16:17:01.534 DEBUG pose_match dist=11.2
+16:17:01.534 INFO arm_cmd side=both ang=(31,30,-31,-12) pul=(6:589 7:708 14:445 15:305)
+16:17:01.535 INFO head_move err=(-50.0,-77.5) d=(+0,+4) -> yaw=1492 pitch=1527 dur=40ms
+16:17:01.550 DEBUG face_hit score=0.89 box=(216,106,112,112) c=(272.0,162.0)
+16:17:01.620 DEBUG pose_match dist=24.2
+16:17:01.621 INFO arm_cmd side=both ang=(22,-20,-20,24) pul=(6:546 7:679 14:484 15:333)
+16:17:01.637 DEBUG face_hit score=0.91 box=(217,106,112,112) c=(273.0,162.0)
+16:17:01.706 DEBUG pose_match dist=32.5
+16:17:01.707 INFO arm_cmd side=both ang=(21,3,-26,35) pul=(6:546 7:679 14:524 15:333)
+16:17:01.708 INFO head_move err=(-49.2,-77.6) d=(+0,+4) -> yaw=1492 pitch=1531 dur=40ms
+16:17:01.722 DEBUG face_hit score=0.89 box=(214,105,114,114) c=(271.0,162.0)
+16:17:01.793 DEBUG pose_match dist=24.4
+16:17:01.795 INFO arm_cmd side=both ang=(15,-27,-21,26) pul=(6:506 7:650 14:524 15:333)
+16:17:01.810 DEBUG face_hit score=0.93 box=(213,105,117,117) c=(271.5,163.5)
+16:17:01.877 DEBUG pose_match dist=24.5
+16:17:01.878 INFO arm_cmd side=both ang=(19,0,-13,20) pul=(6:506 7:650 14:524 15:361)
+16:17:01.878 INFO head_move err=(-49.0,-77.3) d=(+0,+4) -> yaw=1492 pitch=1535 dur=40ms
+16:17:01.893 DEBUG face_hit score=0.93 box=(212,104,117,117) c=(270.5,162.5)
+16:17:01.959 DEBUG pose_match dist=26.4
+16:17:01.960 INFO arm_cmd side=both ang=(18,4,-19,26) pul=(6:506 7:650 14:524 15:361)
+16:17:01.975 DEBUG face_hit score=0.83 box=(212,112,117,117) c=(270.5,170.5)
+16:17:02.042 DEBUG pose_match dist=25.2
+16:17:02.043 INFO arm_cmd side=both ang=(15,-13,-14,22) pul=(6:506 7:650 14:524 15:361)
+16:17:02.044 INFO head_move err=(-49.2,-75.4) d=(+0,+4) -> yaw=1492 pitch=1539 dur=40ms
+16:17:02.058 DEBUG face_hit score=0.80 box=(215,113,115,115) c=(272.5,170.5)
+16:17:02.127 DEBUG pose_match dist=29.5
+16:17:02.128 INFO arm_cmd side=both ang=(16,-36,-13,19) pul=(6:467 7:650 14:524 15:361)
+16:17:02.143 DEBUG face_hit score=0.85 box=(213,113,115,115) c=(270.5,170.5)
+16:17:02.211 DEBUG pose_match dist=25.5
+16:17:02.212 INFO arm_cmd side=both ang=(14,-9,-13,23) pul=(6:467 7:650 14:524 15:361)
+16:17:02.212 INFO head_move err=(-49.2,-73.9) d=(+0,+4) -> yaw=1492 pitch=1543 dur=40ms
+16:17:02.228 DEBUG face_hit score=0.86 box=(215,116,116,116) c=(273.0,174.0)
+16:17:02.295 DEBUG pose_match dist=24.8
+16:17:02.296 INFO arm_cmd side=both ang=(11,-28,-19,31) pul=(6:467 7:624 14:550 15:361)
+16:17:02.312 DEBUG face_hit score=0.82 box=(213,113,115,115) c=(270.5,170.5)
+16:17:02.377 DEBUG pose_match dist=24.3
+16:17:02.378 INFO arm_cmd side=both ang=(12,-33,-31,55) pul=(6:441 7:624 14:595 15:361)
+16:17:02.379 INFO head_move err=(-49.3,-72.8) d=(+0,+4) -> yaw=1492 pitch=1547 dur=40ms
+16:17:02.395 DEBUG face_hit score=0.81 box=(216,116,115,115) c=(273.5,173.5)
+16:17:02.460 DEBUG pose_match dist=23.0
+16:17:02.461 INFO arm_cmd side=both ang=(11,-26,-22,36) pul=(6:441 7:624 14:595 15:361)
+16:17:02.477 DEBUG face_hit score=0.79 box=(214,112,117,117) c=(272.5,170.5)
+16:17:02.543 DEBUG pose_match dist=28.8
+16:17:02.544 INFO arm_cmd side=both ang=(10,-33,-15,26) pul=(6:441 7:624 14:595 15:361)
+16:17:02.545 INFO head_move err=(-48.9,-72.0) d=(+0,+4) -> yaw=1492 pitch=1551 dur=40ms
+16:17:02.562 DEBUG face_hit score=0.83 box=(209,119,124,124) c=(271.0,181.0)
+16:17:02.627 DEBUG pose_match dist=24.3
+16:17:02.628 INFO arm_cmd side=both ang=(13,-36,-16,31) pul=(6:441 7:624 14:595 15:361)
+16:17:02.645 DEBUG face_hit score=0.90 box=(214,131,116,116) c=(272.0,189.0)
+16:17:02.715 DEBUG pose_match dist=20.9
+16:17:02.716 INFO arm_cmd side=both ang=(10,-48,-17,24) pul=(6:406 7:624 14:595 15:361)
+16:17:02.716 INFO head_move err=(-48.6,-66.7) d=(+0,+3) -> yaw=1492 pitch=1554 dur=40ms
+16:17:02.731 DEBUG face_hit score=0.91 box=(214,131,116,116) c=(272.0,189.0)
+16:17:02.797 DEBUG pose_match dist=23.5
+16:17:02.798 INFO arm_cmd side=both ang=(14,-27,-18,29) pul=(6:406 7:624 14:595 15:361)
+16:17:02.814 DEBUG face_hit score=0.92 box=(213,132,115,115) c=(270.5,189.5)
+16:17:02.879 DEBUG pose_match dist=22.2
+16:17:02.881 INFO arm_cmd side=both ang=(17,-27,-19,29) pul=(6:406 7:624 14:595 15:361)
+16:17:02.881 DEBUG head_hold raw=(270.5,189.5) sm=(271.1,177.3) err=(-48.9,-62.7) yaw=1492 pitch=1554
+16:17:02.896 DEBUG face_hit score=0.90 box=(215,132,113,113) c=(271.5,188.5)
+16:17:02.961 DEBUG pose_match dist=22.9
+16:17:02.962 INFO arm_cmd side=both ang=(15,-33,-21,36) pul=(6:406 7:624 14:595 15:361)
+16:17:02.977 DEBUG face_hit score=0.91 box=(215,132,114,114) c=(272.0,189.0)
+16:17:03.045 DEBUG pose_match dist=29.0
+16:17:03.046 INFO arm_cmd side=both ang=(11,-25,-29,55) pul=(6:406 7:624 14:628 15:361)
+16:17:03.046 DEBUG head_hold raw=(272.0,189.0) sm=(271.4,180.2) err=(-48.6,-59.8) yaw=1492 pitch=1554
+16:17:03.061 DEBUG face_hit score=0.89 box=(216,131,115,115) c=(273.5,188.5)
+16:17:03.128 DEBUG pose_match dist=21.4
+16:17:03.129 INFO arm_cmd side=both ang=(13,-40,-17,25) pul=(6:406 7:624 14:628 15:361)
+16:17:03.145 DEBUG face_hit score=0.92 box=(215,133,113,113) c=(271.5,189.5)
+16:17:03.212 DEBUG pose_match dist=27.2
+16:17:03.214 INFO arm_cmd side=both ang=(16,-28,-28,42) pul=(6:406 7:624 14:628 15:361)
+16:17:03.214 DEBUG head_hold raw=(271.5,189.5) sm=(271.4,182.6) err=(-48.6,-57.4) yaw=1492 pitch=1554
+16:17:03.229 DEBUG face_hit score=0.93 box=(215,133,114,114) c=(272.0,190.0)
+16:17:03.295 DEBUG pose_match dist=23.4
+16:17:03.296 INFO arm_cmd side=both ang=(18,-31,-22,34) pul=(6:406 7:624 14:628 15:361)
+16:17:03.311 DEBUG face_hit score=0.91 box=(215,133,114,114) c=(272.0,190.0)
+16:17:03.379 DEBUG pose_match dist=28.1
+16:17:03.380 INFO arm_cmd side=both ang=(17,-27,-29,43) pul=(6:406 7:624 14:628 15:361)
+16:17:03.380 DEBUG head_hold raw=(272.0,190.0) sm=(271.5,184.4) err=(-48.5,-55.6) yaw=1492 pitch=1554
+16:17:03.380 INFO duration reached (30.0s) — stopping
+16:17:03.380 INFO summary elapsed=30.0s frames=354 face_lock=354 (100%) head_stats={'updates': 178, 'holds': 118, 'moves': 60, 'sum_abs_dyaw': 207, 'sum_abs_dpitch': 62, 'max_abs_err_x': 210.5, 'max_abs_err_y': 77.59561272937077, 'recenters': 0}
+16:17:03.633 INFO human_stats {'face_hits': 354, 'face_misses': 0, 'pose_hits': 354, 'arm_cmds': 305, 'arm_skips_delta': 0}
+16:17:03.636 INFO stopped — log written to /home/pi/tonypro/scripts/face_track.log

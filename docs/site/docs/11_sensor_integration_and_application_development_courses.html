@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>11. Sensor Integration and Application Development Courses &mdash; TonyPi &amp; TonyPi Pro v2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=31ac2de9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=731f67d5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script src="../_static/custom.js?v=fd93d8dd"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="12. AI Large Model Course" href="12_aI_large_model_course.html" />
+    <link rel="prev" title="10. Sensor Development Basics Courses" href="10_sensor_development_basics_courses.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="tonypi-pro" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/docs/11_sensor_integration_and_application_development_courses.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #f98800" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            TonyPi & TonyPi Pro
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">TonyPi &amp; TonyPi Pro</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1_getting_ready.html">1. Getting Ready</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_quick_user_experience.html">2. Quick User Experience</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3_remote_desktop_tool_installation_and_connection.html">3. Remote Desktop Tool Installation and Connection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_pc_software_action_control_courses.html">4. PC Software Action Control Courses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5_ai_vision_course.html">5. AI Vision Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6_ai_voice_interaction_course.html">6. AI Voice Interaction Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7_pc_software_control.html">7. PC Software Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8_vision_gripping_lessons.html">8. Vision Gripping Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="9_athletics_sport_lessons.html">9. Athletics Sport Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="10_sensor_development_basics_courses.html">10. Sensor Development Basics Courses</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">11. Sensor Integration and Application Development Courses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#face-activated-fan">11.1 Face-Activated Fan</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#assembly">11.1.1 Assembly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">11.1.2 Face-Activated Fan</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#obstacle-avoidance">11.2 Obstacle Avoidance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">11.2.1 Assembly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">11.2.2 Obstacle Avoidance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#shape-recognition">11.3 Shape Recognition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">11.3.1 Assembly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">11.3.2 Shape Recognition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#intelligent-fill-light">11.4 Intelligent Fill Light</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">11.4.1 Assembly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">11.4.2 Intelligent Fill Light</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mask-recognition">11.5 Mask Recognition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">11.5.1 Assembly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">11.5.2 Mask Recognition</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#intelligent-temperature-control">11.6 Intelligent Temperature Control</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">11.6.1 Assembly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">11.6.2 Intelligent Temperature Control</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="12_aI_large_model_course.html">12. AI Large Model Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13_group_control_lessons.html">13. Group Control Lessons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14_network_configuration.html">14. Raspberry Pi Series Robot Network Configuration Instruction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_Group%20Control%20Course.html">15 Group Control Course</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources_download.html">Appendix</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1EJppBKT0G0KF8uXjyMVlsAD1MwwAzq_2?usp=sharing">TonyPi Download</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://drive.google.com/drive/folders/1HsYi21H4fkIuNB8lpkcdnTRUkJyE4ObE?usp=sharing">TonyPi Pro Download</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #f98800" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TonyPi & TonyPi Pro</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">11. Sensor Integration and Application Development Courses</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/docs/11_sensor_integration_and_application_development_courses.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="sensor-integration-and-application-development-courses">
+<h1>11. Sensor Integration and Application Development Courses<a class="headerlink" href="#sensor-integration-and-application-development-courses" title="Link to this heading"></a></h1>
+<section id="face-activated-fan">
+<h2>11.1 Face-Activated Fan<a class="headerlink" href="#face-activated-fan" title="Link to this heading"></a></h2>
+<p id="anchor_11_1_1"></p>
+<section id="assembly">
+<h3>11.1.1 Assembly<a class="headerlink" href="#assembly" title="Link to this heading"></a></h3>
+<img src="../_static/media/chapter_11/section_1/image1.png" style="width:500px" class="common_img" />
+<img src="../_static/media/chapter_11/section_1/image2.png" style="width:500px" class="common_img" />
+</section>
+<section id="id1">
+<h3>11.1.2 Face-Activated Fan<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Getting Ready</strong></p></li>
+</ul>
+<p>Prepare a fan module and install it on the expansion hole of the robot’s right arm. The specific installation method can refer to the section <a class="reference internal" href="#anchor_11_1_1"><span class="xref myst"><strong>“11.1.1 Assembly”</strong></span></a>.</p>
+<img src="../_static/media/chapter_11/section_1/image3.png" style="width:500px"  class="common_img" />
+<ul class="simple">
+<li><p><strong>Working Principle</strong></p></li>
+</ul>
+<p>Let’s look at the working principle of this lesson:</p>
+<p>Firstly, scale the screen to detect the human face. Then convert the recognized face coordinates into the coordinates before scaling, and then judge whether it is the biggest face, and frame the recognized face.</p>
+<p>When the camera detects a face, raise the arm, align the fan with the face, and activate the fan module. If the camera cannot detect a face, deactivate the fan module, and rotate the camera’s pan-tilt servo left and right to locate a face.</p>
+<ul class="simple">
+<li><p><strong>Operation Steps</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The entered command must pay attention to case sensitivity and space.</p>
+</div>
+<p>(1) Turn on the robot and connect to Raspberry Pi desktop with VNC.</p>
+<p>(2) Click the icon on the upper left corner of the desktop to open the command line terminal.</p>
+<img src="../_static/media/chapter_11/section_1/image5.png" class="common_img" />
+<p>(3) Enter the following command and press <strong>“Enter”</strong> to come to the directory of the game programmings.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/home/pi/TonyPi/Extend/sensor_course/sensor_development/
+</pre></div>
+</div>
+<p>(4) Enter the command below, and then press <strong>“Enter”</strong> to start the game.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>face_track_and_fan.py
+</pre></div>
+</div>
+<p>(5) If want to exit the game, press <strong>“Ctrl+C”</strong> in the LX terminal. Please try multiple times if fail to exit.</p>
+<ul class="simple">
+<li><p><strong>Project Outcome</strong></p></li>
+</ul>
+<p>After the program is started, TonyPi Pro raises left arm and detects face. When the human face is detected, the fan revolves, vice verse.</p>
+<ul class="simple">
+<li><p><strong>Program Analysis</strong></p></li>
+</ul>
+<p><a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">Source Code</span></a></p>
+<p>The source code of this program is saved in: <a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">/home/pi/TonyPi/Extend/sensor_course/sensor_development/face_track_and_fan.py</span></a></p>
+<ul class="simple">
+<li><p><strong>Module Parameter Import</strong></p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th><strong>Imported Module</strong></th>
+<th><strong>Function</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>import sys</code></td>
+<td>Imports Python's built-in sys module to access system-specific parameters and functions.</td>
+</tr>
+<tr>
+<td><code>import cv2</code></td>
+<td>Imports the OpenCV library for image processing and computer vision tasks.</td>
+</tr>
+<tr>
+<td><code>import time</code></td>
+<td>Imports the time module for handling time-related operations such as delays.</td>
+</tr>
+<tr>
+<td><code>import math</code></td>
+<td>Provides access to fundamental mathematical functions and constants.</td>
+</tr>
+<tr>
+<td><code>import threading</code></td>
+<td>Enables multithreaded execution within the program.</td>
+</tr>
+<tr>
+<td><code>import np</code></td>
+<td>Imports NumPy, a powerful library for numerical operations, especially arrays and matrices.</td>
+</tr>
+<tr>
+<td><code>from hiwonder.PID import PID</code></td>
+<td>Imports the PID control module for implementing proportional–integral–derivative control.</td>
+</tr>
+<tr>
+<td><code>from hiwonder import Misc as Misc</code></td>
+<td>Imports the Misc module, used for handling recognized rectangle data.</td>
+</tr>
+<tr>
+<td><code>from hiwonder import Board as Board</code></td>
+<td>Imports the Board module for controlling hardware like servos and buzzers.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.camera as camera</code></td>
+<td>Imports the camera module to interface with video input devices.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.ActionGroupControl as AGC</code></td>
+<td>Imports the action group module for executing pre-defined robot movements.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.yaml_handle</code></td>
+<td>Provides tools for reading and handling YAML configuration files.</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><strong>Functional Logic</strong></p></li>
+</ul>
+<p>The system starts by capturing image data using a camera. To prepare the image for facial detection, it first converts the color space, making it easier to identify facial features.</p>
+<p>It then uses MediaPipe’s face detection model to analyze the image and detect any faces present. Once a face is recognized, the system triggers predefined action groups to respond accordingly.</p>
+<ul class="simple">
+<li><p><strong>Program Logic and Code Analysis</strong></p></li>
+</ul>
+<p>(1) Initialization</p>
+<p>① Importing Libraries</p>
+<p>The first step in initialization is importing the necessary libraries to enable various functions throughout the program. For details on the imported modules, please refer to section 5.1.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">mediapipe</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="kn">import</span> <span class="nn">gpiod</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ros_robot_controller_sdk</span> <span class="k">as</span> <span class="nn">rrc</span>
+<span class="kn">from</span> <span class="nn">hiwonder.Controller</span> <span class="kn">import</span> <span class="n">Controller</span>
+<span class="kn">import</span> <span class="nn">hiwonder.Misc</span> <span class="k">as</span> <span class="nn">Misc</span>
+<span class="kn">import</span> <span class="nn">hiwonder.Camera</span> <span class="k">as</span> <span class="nn">Camera</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ActionGroupControl</span> <span class="k">as</span> <span class="nn">AGC</span>
+<span class="kn">import</span> <span class="nn">hiwonder.yaml_handle</span> <span class="k">as</span> <span class="nn">yaml_handle</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>② Setting Initial States</p>
+<p>This step involves configuring the system’s default settings, including the initial position of the servos, the face detection module, and the minimum confidence level required for facial recognition.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">face</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">face_detection</span>
+<span class="n">face_detection</span> <span class="o">=</span> <span class="n">face</span><span class="o">.</span><span class="n">FaceDetection</span><span class="p">(</span><span class="n">min_detection_confidence</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">servo_data</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">def</span> <span class="nf">load_config</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">servo_data</span>
+    
+    <span class="n">servo_data</span> <span class="o">=</span> <span class="n">yaml_handle</span><span class="o">.</span><span class="n">get_yaml_data</span><span class="p">(</span><span class="n">yaml_handle</span><span class="o">.</span><span class="n">servo_file_path</span><span class="p">)</span>
+
+<span class="n">load_config</span><span class="p">()</span>
+<span class="n">servo2_pulse</span> <span class="o">=</span> <span class="n">servo_data</span><span class="p">[</span><span class="s1">&#39;servo2&#39;</span><span class="p">]</span>
+
+<span class="n">board</span> <span class="o">=</span> <span class="n">rrc</span><span class="o">.</span><span class="n">Board</span><span class="p">()</span>
+<span class="n">ctl</span> <span class="o">=</span> <span class="n">Controller</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">initMove</span><span class="p">():</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_pwm_servo_pulse</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1600</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_pwm_servo_pulse</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">servo2_pulse</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(2) Image Processing</p>
+<p>① Color Space Conversion</p>
+<p>The BGR image is converted to RGB format to prepare it for face detection.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">135</span>
+<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">image_rgb</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img_copy</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2RGB</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">face_detection</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">image_rgb</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>② Face Detection Using MediaPipe</p>
+<p>The system uses MediaPipe’s face detection model to identify faces within the frame. Once a face is detected, a bounding box is drawn around it. If the center of the detected face is aligned with the center of the image, the variable <code class="docutils literal notranslate"><span class="pre">start_greet</span></code> is set to True, which triggers the execution of a predefined action group.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">if</span> <span class="n">results</span><span class="o">.</span><span class="n">detections</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">detection</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">detections</span><span class="p">):</span>
+        <span class="n">bboxC</span> <span class="o">=</span> <span class="n">detection</span><span class="o">.</span><span class="n">location_data</span><span class="o">.</span><span class="n">relative_bounding_box</span>
+        
+        <span class="n">bbox</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bboxC</span><span class="o">.</span><span class="n">xmin</span> <span class="o">*</span> <span class="n">img_w</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">bboxC</span><span class="o">.</span><span class="n">ymin</span> <span class="o">*</span> <span class="n">img_h</span><span class="p">),</span>
+               <span class="nb">int</span><span class="p">(</span><span class="n">bboxC</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">img_w</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">bboxC</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="n">img_h</span><span class="p">))</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">bbox</span>
+        <span class="n">center_x</span> <span class="o">=</span>  <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">center_x</span> <span class="o">-</span> <span class="n">img_w</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">img_w</span><span class="o">/</span><span class="mi">4</span><span class="p">:</span>
+            <span class="n">start_greet</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">set_fan</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">start_greet</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(3) Face Recognition</p>
+<p>If no face is detected, the pan-tilt servos will rotate left and right in search of a face.<br />
+Once a face is recognized, the <code class="docutils literal notranslate"><span class="pre">Board.setBusServoPulse</span></code> function is called to raise the robotic arm and activate the fan.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">def</span> <span class="nf">move</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">start_greet</span><span class="p">,</span> <span class="n">start_</span>
+    <span class="k">global</span> <span class="n">d_pulse</span><span class="p">,</span> <span class="n">servo2_pulse</span>     
+    
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">robot_is_running</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">start_greet</span><span class="p">:</span>
+                <span class="n">start_greet</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">pulse</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Misc</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">servo2_pulse</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
+                <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">700</span><span class="p">,</span><span class="mi">1500</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pulse</span> <span class="o">&lt;</span> <span class="mi">500</span><span class="p">:</span>
+                    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">600</span><span class="p">)</span>
+                    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="n">pulse</span><span class="p">,</span><span class="mi">600</span><span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.6</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="n">pulse</span><span class="o">-</span><span class="mi">300</span><span class="p">,</span><span class="mi">600</span><span class="p">)</span>
+                    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="mi">445</span><span class="p">,</span><span class="mi">500</span><span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.6</span><span class="p">)</span>
+                <span class="n">set_fan</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+              
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">set_fan</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">servo2_pulse</span> <span class="o">&gt;</span> <span class="mi">2000</span> <span class="ow">or</span> <span class="n">servo2_pulse</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">:</span>
+                    <span class="n">d_pulse</span> <span class="o">=</span> <span class="o">-</span><span class="n">d_pulse</span>
+                <span class="n">servo2_pulse</span> <span class="o">+=</span> <span class="n">d_pulse</span>        
+                <span class="n">ctl</span><span class="o">.</span><span class="n">set_pwm_servo_pulse</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">servo2_pulse</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.06</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+</section>
+</section>
+<section id="obstacle-avoidance">
+<h2>11.2 Obstacle Avoidance<a class="headerlink" href="#obstacle-avoidance" title="Link to this heading"></a></h2>
+<p id="anchor_11_2_1"></p>
+<section id="id2">
+<h3>11.2.1 Assembly<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<img src="../_static/media/chapter_11/section_2/image0.png" style="width:500px" class="common_img" />
+<img src="../_static/media/chapter_11/section_2/image1.png" style="width:500px" class="common_img" />
+</section>
+<section id="id3">
+<h3>11.2.2 Obstacle Avoidance<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Getting Ready</strong></p></li>
+</ul>
+<p>Prepare an ultrasonic sensor and install it on the expansion hole of robot’s left hand. The specific installation method can refer to the file <a class="reference internal" href="#anchor_11_2_1"><span class="xref myst"><strong>11.2.1 Assembly</strong></span></a> under the same directory.</p>
+<img src="../_static/media/chapter_11/section_2/image2.png" style="width:500px" class="common_img" />
+<ul class="simple">
+<li><p><strong>Working Principle</strong></p></li>
+</ul>
+<p>Let’s look at the working principle:</p>
+<p>Firstly, the distance to the obstacle ahead is detected by the ultrasonic sensor, and then set the ultrasonic measurement threshold. When the conditions are met, the robot automatically avoids the obstacle, otherwise it moves forward directly.</p>
+<ul class="simple">
+<li><p><strong>Operation Steps</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The entered command must pay attention to case sensitivity and space.</p>
+</div>
+<p>(1) Turn on the robot and connect to the Raspberry Pi desktop through VNC.</p>
+<p>(2) Click on the upper left corner of the desktop to open command line terminal. Then execute the following command to navigate to the directory containing programs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_development</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(3) Enter the command below, and then press <strong>“Enter”</strong> to start the game.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">sonar_barrier</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(4) If want to exit the game, press <strong>“Ctrl+C”</strong> in the LX terminal. Please try multiple times if fail to exit.</p>
+<ul class="simple">
+<li><p><strong>Project Outcome</strong></p></li>
+</ul>
+<p>After the program is started, if the distance between the ultrasonic wave and the object ahead is less than or equal to 30cm, it is determined to be an obstacle. TonyPi Pro will raise its left hand to detect whether there is an obstacle ahead. If not, the robot will move forward; If there is an obstacle, the ultrasonic sensor will detect the robot of the left and right sides to control the movement of the robot.</p>
+<ul class="simple">
+<li><p><strong>Function Extension</strong></p></li>
+</ul>
+<p>The default distance of obstacle avoidance is 300mm. If want to modify the distance value (this section takes setting the distance as 100mm as example), please refer to the following steps:</p>
+<p>(1) Enter the following command and press <strong>“Enter”</strong> to come to the directory of the game programs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_development</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(2) Enter the following command, then press <strong>“Enter”</strong> to open the game programming file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vim</span> <span class="n">sonar_barrier</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(3) Find the code in the program interface as the figure shown below.</p>
+<img src="../_static/media/chapter_11/section_2/image8.png" class="common_img" />
+<p>(4) Press <strong>“i”</strong> on keyboard. When <strong>“Insert”</strong> appears in the lower left corner, which means it has entered the editing mode.</p>
+<img src="../_static/media/chapter_11/section_2/image9.png" class="common_img" />
+<p>(5) Modify <strong>“300”</strong> in <strong>“if distance &lt;= 300”</strong> to <strong>“100”</strong>, as the figure shown below:</p>
+<img src="../_static/media/chapter_11/section_2/image10.png" class="common_img" />
+<p>(6) After modification, press <strong>“Esc”</strong> and then enter <strong>“:wq”</strong> (Please note that the colon is in front of wq). Then press <strong>“Enter”</strong> to save and exit the modified content.</p>
+<img src="../_static/media/chapter_11/section_2/image11.png" class="common_img" />
+<ul class="simple">
+<li><p><strong>Program Analysis</strong></p></li>
+</ul>
+<p><a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">Source Code</span></a></p>
+<p>The source code is saved in: <a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">home/pi/TonyPi/Extend/sensor_course/sensor_development/sonar_barrier.py</span></a></p>
+<img src="../_static/media/chapter_11/section_2/image12.png" class="common_img" />
+<ul class="simple">
+<li><p><strong>Module Parameter Import</strong></p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th><strong>Imported Module</strong></th>
+<th><strong>Function</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>import sys</code></td>
+<td>Imports Python's built-in sys module to access system-specific parameters and functions.</td>
+</tr>
+<tr>
+<td><code>import cv2</code></td>
+<td>Imports the OpenCV library for image processing and computer vision tasks.</td>
+</tr>
+<tr>
+<td><code>import time</code></td>
+<td>Imports the time module for handling time-related operations such as delays.</td>
+</tr>
+<tr>
+<td><code>import math</code></td>
+<td>Provides access to fundamental mathematical functions and constants.</td>
+</tr>
+<tr>
+<td><code>import threading</code></td>
+<td>Enables multithreaded execution within the program.</td>
+</tr>
+<tr>
+<td><code>import np</code></td>
+<td>Imports NumPy, a powerful library for numerical operations, especially arrays and matrices.</td>
+</tr>
+<tr>
+<td><code>from hiwonder.PID import PID</code></td>
+<td>Imports the PID control module for implementing proportional–integral–derivative control.</td>
+</tr>
+<tr>
+<td><code>from hiwonder import Misc as Misc</code></td>
+<td>Imports the Misc module, used for handling recognized rectangle data.</td>
+</tr>
+<tr>
+<td><code>from hiwonder import Board as Board</code></td>
+<td>Imports the Board module for controlling hardware like servos and buzzers.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.camera as camera</code></td>
+<td>Imports the camera module to interface with video input devices.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.ActionGroupControl as AGC</code></td>
+<td>Imports the action group module for executing pre-defined robot movements.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.yaml_handle</code></td>
+<td>Provides tools for reading and handling YAML configuration files.</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><strong>Functional Logic</strong></p></li>
+</ul>
+<p>The robot uses data from the ultrasonic sensor to detect obstacles and performs corresponding avoidance maneuvers based on the measured distance.</p>
+<ul class="simple">
+<li><p><strong>Program Logic and Code Analysis</strong></p></li>
+</ul>
+<p>(1) Initialization</p>
+<p>① Import Required Libraries</p>
+<p>At the beginning of the program, all necessary libraries are imported to enable various functionalities. For a detailed list of the imported modules, please refer to Section 6.1.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ros_robot_controller_sdk</span> <span class="k">as</span> <span class="nn">rrc</span>
+<span class="kn">from</span> <span class="nn">hiwonder.Controller</span> <span class="kn">import</span> <span class="n">Controller</span>
+<span class="kn">import</span> <span class="nn">hiwonder.Sonar</span> <span class="k">as</span> <span class="nn">Sonar</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ActionGroupControl</span> <span class="k">as</span> <span class="nn">AGC</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>② Set Initial State</p>
+<p>The robot’s initial posture is configured, including basic predefined movements to prepare for obstacle avoidance behavior.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">board</span> <span class="o">=</span> <span class="n">rrc</span><span class="o">.</span><span class="n">Board</span><span class="p">()</span>
+<span class="n">ctl</span> <span class="o">=</span> <span class="n">Controller</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">hand_up</span><span class="p">():</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">330</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">860</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">860</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hand_down</span><span class="p">():</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">800</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">575</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">725</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hand_left</span><span class="p">():</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">330</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">500</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_bus_servo_pulse</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">920</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>Some basic actions have been set for the robot.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">AGC</span><span class="o">.</span><span class="n">runActionGroup</span><span class="p">(</span><span class="s1">&#39;stand_slow&#39;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">hand_up</span><span class="p">()</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(2) Acquiring Ultrasonic Sensor Data</p>
+<p>The program reads distance values from the ultrasonic sensor. To ensure stability and accuracy, it performs six consecutive readings, stores them in a list, and calculates the average value.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    
+    <span class="n">distance_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">getDistance</span><span class="p">())</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">distance_list</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">6</span><span class="p">:</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">distance_list</span><span class="p">))))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="s1">&#39;mm&#39;</span><span class="p">)</span>
+        <span class="n">distance_list</span> <span class="o">=</span> <span class="p">[]</span>
+        
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(3) Obstacle Avoidance</p>
+<p>When an obstacle is detected in front of the robot:</p>
+<p>① The robot first turns to the left and extends its arm.</p>
+<p>② It then scans the distance on the left side.</p>
+<ul class="simple">
+<li><p>If an obstacle is also detected on the left, the robot turns to the right.</p></li>
+<li><p>If both sides are blocked, the robot moves backward to avoid the obstacle.</p></li>
+</ul>
+<p>③ After avoiding the obstacle, the robot raises its arm and continues moving forward.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">distance</span> <span class="o">!=</span> <span class="mi">99999</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">distance</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">:</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="mi">99999</span>
+            <span class="n">hand_left</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">dist_left</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+            <span class="n">distance_left</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dist_left</span><span class="p">)))</span>
+            <span class="n">dist_left</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">hand_up</span><span class="p">()</span>
+            
+            <span class="k">if</span> <span class="n">distance_left</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">:</span>
+                <span class="n">distance_left</span> <span class="o">=</span> <span class="mi">99999</span>
+                <span class="n">hand_down</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+                    <span class="n">AGC</span><span class="o">.</span><span class="n">runActionGroup</span><span class="p">(</span><span class="s1">&#39;turn_right&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;turn_right&quot;</span><span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+                    
+                <span class="n">hand_up</span><span class="p">()</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                    <span class="n">dist_right</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+                    
+                <span class="n">distance_right</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dist_right</span><span class="p">)))</span>
+                <span class="n">dist_right</span> <span class="o">=</span> <span class="p">[]</span>
+                
+                <span class="k">if</span> <span class="n">distance_right</span> <span class="o">&lt;=</span> <span class="mi">300</span><span class="p">:</span>
+                    <span class="n">distance_right</span> <span class="o">=</span> <span class="mi">99999</span>
+                    <span class="n">hand_down</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+                        <span class="n">AGC</span><span class="o">.</span><span class="n">runActionGroup</span><span class="p">(</span><span class="s1">&#39;turn_left&#39;</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;turn_left&quot;</span><span class="p">)</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+                        
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+                        <span class="n">AGC</span><span class="o">.</span><span class="n">runActionGroup</span><span class="p">(</span><span class="s1">&#39;back&#39;</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;back&quot;</span><span class="p">)</span>
+                    <span class="n">hand_up</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">AGC</span><span class="o">.</span><span class="n">runActionGroup</span><span class="p">(</span><span class="s1">&#39;go_hand_up1&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;go&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hand_down</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+                    <span class="n">AGC</span><span class="o">.</span><span class="n">runActionGroup</span><span class="p">(</span><span class="s1">&#39;turn_left&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;turn_left&quot;</span><span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+                <span class="n">hand_up</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">AGC</span><span class="o">.</span><span class="n">runActionGroup</span><span class="p">(</span><span class="s1">&#39;go_hand_up1&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;go&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>    
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+</section>
+</section>
+<section id="shape-recognition">
+<h2>11.3 Shape Recognition<a class="headerlink" href="#shape-recognition" title="Link to this heading"></a></h2>
+<p id="anchor_11_3_1"></p>
+<section id="id4">
+<h3>11.3.1 Assembly<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<img src="../_static/media/chapter_11/section_3/image1.png" style="width:500px"  class="common_img" />
+<img src="../_static/media/chapter_11/section_3/image2.png" style="width:500px"  class="common_img" />
+<img src="../_static/media/chapter_11/section_3/image0.png" style="width:500px"  class="common_img" />
+</section>
+<section id="id5">
+<h3>11.3.2 Shape Recognition<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Getting Ready</strong></p></li>
+</ul>
+<p>Prepare a dot matrix module and install it on the expansion hole of robot’s left arm. The specific installation method can refer to the file <a class="reference internal" href="#anchor_11_3_1"><span class="xref myst"><strong>“11.3.1 Assembly”</strong></span></a> under the same directory.</p>
+<img src="../_static/media/chapter_11/section_3/image3.png" style="width:500px"  class="common_img" />
+<ul class="simple">
+<li><p><strong>Working Principle</strong></p></li>
+</ul>
+<p>Let’s look at the working principle.</p>
+<p>The camera recognizes the object within the visual range. When the shapes of the objects are identified as triangle, rectangles and circles, the dot matrix module will display the graphics shape of the current object, otherwise the dot matrix module does not display.</p>
+<ul class="simple">
+<li><p><strong>Operation Steps</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The entered command must pay attention to case sensitivity and space.</p>
+</div>
+<p>(1) Turn on the robot and connect to the Raspberry Pi desktop through VNC.</p>
+<p>(2) Click the icon on the upper left corner of the desktop to open command line terminal. Enter the following command and press <strong>“Enter”</strong> to come to the directory of the game programmings.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_development</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(3) Enter the following command, and then press <strong>“Enter”</strong> to start the game.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">shape_recognition</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(4) If want to exit the game, press <strong>“Ctrl+C”</strong> in the LX terminal. Please try multiple times if fail to exit.</p>
+<ul class="simple">
+<li><p><strong>Project Outcome</strong></p></li>
+</ul>
+<p>After the program is started, the robot’s camera will recognize the object. When the shape of the object is recognized as triangle, rectangle and circle, the dot matrix module will display the corresponding shape. Otherwise, it will not display.</p>
+<ul class="simple">
+<li><p><strong>Program Analysis</strong></p></li>
+</ul>
+<p><a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">Source Code</span></a></p>
+<p>The source code is saved in: <a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">/home/pi/TonyPi/Extend/sensor_course/sensor_development/shape_recognition.py</span></a></p>
+<img src="../_static/media/chapter_11/section_3/image7.png" class="common_img" />
+<ul class="simple">
+<li><p><strong>Module Parameter Import</strong></p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th><strong>Imported Module</strong></th>
+<th><strong>Function</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>import sys</code></td>
+<td>Imports Python's built-in sys module to access system-specific parameters and functions.</td>
+</tr>
+<tr>
+<td><code>import cv2</code></td>
+<td>Imports the OpenCV library for image processing and computer vision tasks.</td>
+</tr>
+<tr>
+<td><code>import time</code></td>
+<td>Imports the time module for handling time-related operations such as delays.</td>
+</tr>
+<tr>
+<td><code>import math</code></td>
+<td>Provides access to fundamental mathematical functions and constants.</td>
+</tr>
+<tr>
+<td><code>import threading</code></td>
+<td>Enables multithreaded execution within the program.</td>
+</tr>
+<tr>
+<td><code>import np</code></td>
+<td>Imports NumPy, a powerful library for numerical operations, especially arrays and matrices.</td>
+</tr>
+<tr>
+<td><code>from hiwonder.PID import PID</code></td>
+<td>Imports the PID control module for implementing proportional–integral–derivative control.</td>
+</tr>
+<tr>
+<td><code>from hiwonder import Misc as Misc</code></td>
+<td>Imports the Misc module, used for handling recognized rectangle data.</td>
+</tr>
+<tr>
+<td><code>from hiwonder import Board as Board</code></td>
+<td>Imports the Board module for controlling hardware like servos and buzzers.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.camera as camera</code></td>
+<td>Imports the camera module to interface with video input devices.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.ActionGroupControl as AGC</code></td>
+<td>Imports the action group module for executing pre-defined robot movements.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.yaml_handle</code></td>
+<td>Provides tools for reading and handling YAML configuration files.</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><strong>Program Logic and Code Analysis</strong></p></li>
+</ul>
+<p>The core functionality of this program involves image processing and dot matrix display. The following documentation is structured according to the program’s logical flow diagram.</p>
+<p>(1) Initialization</p>
+<p>① Importing Functional Libraries</p>
+<p>In this step, the necessary libraries are imported to enable subsequent program functionality. For more details on the imported modules, refer to section 6.1.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ros_robot_controller_sdk</span> <span class="k">as</span> <span class="nn">rrc</span>
+<span class="kn">from</span> <span class="nn">hiwonder.Controller</span> <span class="kn">import</span> <span class="n">Controller</span>
+<span class="kn">from</span> <span class="nn">hiwonder</span> <span class="kn">import</span> <span class="n">dot_matrix_sensor</span>
+<span class="kn">import</span> <span class="nn">hiwonder.Camera</span> <span class="k">as</span> <span class="nn">Camera</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ActionGroupControl</span> <span class="k">as</span> <span class="nn">AGC</span>
+<span class="kn">import</span> <span class="nn">hiwonder.yaml_handle</span> <span class="k">as</span> <span class="nn">yaml_handle</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>② Setting Initial State</p>
+<p>The robot’s initial position and basic configuration are established.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">def</span> <span class="nf">load_config</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">lab_data</span><span class="p">,</span> <span class="n">servo_data</span>
+    
+    <span class="n">lab_data</span> <span class="o">=</span> <span class="n">yaml_handle</span><span class="o">.</span><span class="n">get_yaml_data</span><span class="p">(</span><span class="n">yaml_handle</span><span class="o">.</span><span class="n">lab_file_path</span><span class="p">)</span>
+    <span class="n">servo_data</span> <span class="o">=</span> <span class="n">yaml_handle</span><span class="o">.</span><span class="n">get_yaml_data</span><span class="p">(</span><span class="n">yaml_handle</span><span class="o">.</span><span class="n">servo_file_path</span><span class="p">)</span>
+
+<span class="n">board</span> <span class="o">=</span> <span class="n">rrc</span><span class="o">.</span><span class="n">Board</span><span class="p">()</span>
+<span class="n">ctl</span> <span class="o">=</span> <span class="n">Controller</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">inidmsove</span><span class="p">():</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_pwm_servo_pulse</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1350</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_pwm_servo_pulse</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">servo_data</span><span class="p">[</span><span class="s1">&#39;servo2&#39;</span><span class="p">],</span> <span class="mi">500</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(2) Image Processing</p>
+<p>Before converting the captured image to the LAB color space, noise reduction is performed. The image is then smoothed using the <code class="docutils literal notranslate"><span class="pre">GaussianBlur()</span></code> function. A binary mask is created with the <code class="docutils literal notranslate"><span class="pre">inRange()</span></code> function. To further minimize noise and enhance contour clarity, morphological operations such as erosion and dilation are applied. Finally, the contour with the largest area is identified.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">if</span> <span class="n">action_finish</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lab_data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="s1">&#39;white&#39;</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="s1">&#39;black&#39;</span><span class="p">:</span>
+            <span class="n">frame_mask</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">inRange</span><span class="p">(</span><span class="n">frame_lab</span><span class="p">,</span>
+                             <span class="p">(</span><span class="n">lab_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;min&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="n">lab_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;min&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                              <span class="n">lab_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;min&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">]),</span>
+                             <span class="p">(</span><span class="n">lab_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;max&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="n">lab_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;max&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                              <span class="n">lab_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;max&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="n">opened</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">frame_mask</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_OPEN</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">))</span>
+            <span class="n">closed</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">opened</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">MORPH_CLOSE</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">))</span>
+            <span class="n">contours</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">findContours</span><span class="p">(</span><span class="n">closed</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">RETR_EXTERNAL</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CHAIN_APPROX_NONE</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">areaMaxContour</span><span class="p">,</span> <span class="n">area_max</span> <span class="o">=</span> <span class="n">getAreaMaxContour</span><span class="p">(</span><span class="n">contours</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">areaMaxContour</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">area_max</span> <span class="o">&gt;</span> <span class="n">max_area</span><span class="p">:</span>
+                    <span class="n">max_area</span> <span class="o">=</span> <span class="n">area_max</span>
+                    <span class="n">color_area_max</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="n">areaMaxContour_max</span> <span class="o">=</span> <span class="n">areaMaxContour</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(3) Shape Recognition</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">cv2.approxPolyDP()</span></code> function is used to approximate contours for shape detection. The number of sides (vertices) of each identified shape is recorded into the <code class="docutils literal notranslate"><span class="pre">shape_list</span></code>. Once 30 values are collected, the program calculates and prints the average number of sides to determine the dominant shape.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">if</span> <span class="n">max_area</span> <span class="o">&gt;</span> <span class="mi">200</span><span class="p">:</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">areaMaxContour_max</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.035</span> <span class="o">*</span> <span class="n">cv2</span><span class="o">.</span><span class="n">arcLength</span><span class="p">(</span><span class="n">areaMaxContour_max</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">approx</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">approxPolyDP</span><span class="p">(</span><span class="n">areaMaxContour_max</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">shape_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">approx</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">30</span><span class="p">:</span>
+        <span class="n">shape_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">shape_list</span><span class="p">)))</span>
+        <span class="n">shape_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">shape_length</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(4) Result Display</p>
+<p>Based on the previously identified shape (<code class="docutils literal notranslate"><span class="pre">shape_length</span></code>), a conditional check is performed and the corresponding shape is displayed on the screen.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">def</span> <span class="nf">run</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">shape_length</span>
+    
+    <span class="k">while</span> <span class="n">move_st</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">shape_length</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;三角形&#39;</span><span class="p">)</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">display_buf</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x05</span><span class="p">,</span> <span class="mh">0x09</span><span class="p">,</span> <span class="mh">0x11</span><span class="p">,</span> <span class="mh">0x21</span><span class="p">,</span> <span class="mh">0x41</span><span class="p">,</span> <span class="mh">0x81</span><span class="p">,</span>
+                              <span class="mh">0x41</span><span class="p">,</span> <span class="mh">0x21</span><span class="p">,</span> <span class="mh">0x11</span><span class="p">,</span> <span class="mh">0x09</span><span class="p">,</span> <span class="mh">0x05</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">)</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">update_display</span><span class="p">()</span>
+            
+        <span class="k">elif</span> <span class="n">shape_length</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;矩形&#39;</span><span class="p">)</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">display_buf</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0xff</span><span class="p">,</span> <span class="mh">0x81</span><span class="p">,</span> <span class="mh">0x81</span><span class="p">,</span> <span class="mh">0x81</span><span class="p">,</span>
+                              <span class="mh">0x81</span><span class="p">,</span> <span class="mh">0x81</span><span class="p">,</span> <span class="mh">0x81</span><span class="p">,</span><span class="mh">0xff</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">)</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">update_display</span><span class="p">()</span>
+            
+        <span class="k">elif</span> <span class="n">shape_length</span> <span class="o">&gt;=</span> <span class="mi">6</span><span class="p">:</span>            
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;圆&#39;</span><span class="p">)</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">display_buf</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x1c</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">,</span> <span class="mh">0x41</span><span class="p">,</span> <span class="mh">0x41</span><span class="p">,</span>
+                              <span class="mh">0x41</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">,</span> <span class="mh">0x1c</span><span class="p">,</span><span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">)</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">update_display</span><span class="p">()</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">display_buf</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">16</span>
+            <span class="n">dms</span><span class="o">.</span><span class="n">update_display</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;None&#39;</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+</section>
+</section>
+<section id="intelligent-fill-light">
+<h2>11.4 Intelligent Fill Light<a class="headerlink" href="#intelligent-fill-light" title="Link to this heading"></a></h2>
+<p id="anchor_11_4_1"></p>
+<section id="id6">
+<h3>11.4.1 Assembly<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<img src="../_static/media/chapter_11/section_4/image1.png" style="width:500px"  class="common_img" />
+<img src="../_static/media/chapter_11/section_4/image2.png" style="width:500px"  class="common_img" />
+<img src="../_static/media/chapter_11/section_4/image3.png" style="width:500px"  class="common_img" />
+<img src="../_static/media/chapter_11/section_4/image4.png" style="width:500px"  class="common_img" />
+</section>
+<section id="id7">
+<h3>11.4.2 Intelligent Fill Light<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Getting Ready</strong></p></li>
+</ul>
+<p>Prepare a light and an ultrasonic sensor, and then install the light sensor on the expansion hole of robot’s shoulder and install the ultrasonic sensor on the expansion hole of left arm. The installation method can refer to the file <a class="reference internal" href="#anchor_11_4_1"><span class="xref myst">11.4.1 Assembly</span></a> under the same directory.</p>
+<img src="../_static/media/chapter_11/section_4/image0.png" style="width:500px"  class="common_img" />
+<ul class="simple">
+<li><p><strong>Working Principle</strong></p></li>
+</ul>
+<p>Let’s look at the working principle:</p>
+<p>When the vision recognition is started and the external light detected by the light sensor is dark, the ultrasonic sensor emits the white light to fill light, otherwise, the ultrasonic sensor turns off the light.</p>
+<ul class="simple">
+<li><p><strong>Operation Steps</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The entered command must pay attention to case sensitivity and space.</p>
+</div>
+<p>(1) Turn on the robot and connect to the Raspberry Pi desktop through VNC.</p>
+<p>(2) Click the icon on the upper left corner of the desktop to open command line terminal. Then enter the following command and press <strong>“Enter”</strong> to come to the directory of the game programmings.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_development</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(3) Enter the following command, and then press <strong>“Enter”</strong> to start the game.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">photo_sensor_demo</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(4) If want to exit the game, press <strong>“Ctrl+C”</strong> in the LX terminal. Please try multiple times if fail to exit.</p>
+<ul class="simple">
+<li><p><strong>Project Outcome</strong></p></li>
+</ul>
+<p>After the program is started, the robot raises its left hand and recognizes the label card within the visual range. When the ambient light gets dark, the buzzer will make a <strong>“Beep”</strong> sound. At the same time, the ultrasonic sensor will emit white light, which allows the robot to recognize the label card in dark environment.</p>
+<ul class="simple">
+<li><p><strong>Function Extension</strong></p></li>
+</ul>
+<p>(1) Adjusting the Fill Light</p>
+<p>When the ambient light gets dark, the ultrasonic module will emit white light to fill light. You can modify the light color and brightness of the ultrasonic sensor, the specific operation is as follow:</p>
+<p>① Enter the following command and press <strong>“Enter”</strong> to come to the directory of the game programs.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_development</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>② Enter the following command to come to the program editing interface.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vim</span> <span class="n">photo_sensor_demo</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>③ Find the code in the program interface as the figure shown below.</p>
+<img src="../_static/media/chapter_11/section_4/image7.png" class="common_img" />
+<p>④ Press <strong>“i”</strong> on keyboard to enter the editing mode.</p>
+<img src="../_static/media/chapter_11/section_4/image8.png" class="common_img" />
+<p>⑤ Modify <strong>“(255,255,255)”</strong> to <strong>“(255,0,0)”</strong> (the range of three parameter is 0-255), as the figure shown below:</p>
+<img src="../_static/media/chapter_11/section_4/image9.png" class="common_img" />
+<p>⑥ After modification, press <strong>“Esc”</strong> and then enter <strong>“:wq”</strong> (Please note that the colon is in front of wq). Then press <strong>“Enter”</strong> to save and exit the modified content.</p>
+<img src="../_static/media/chapter_11/section_4/image10.png" class="common_img" />
+<p>⑦ Enter the following command to restart the game, and observe the effect.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">photo_sensor_demo</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(2) Adjusting the Beep Duration</p>
+<p>When this mode is activated, if the ambient light is low, the buzzer will emit a <strong>“beep”</strong> sound as an alert. You can change the duration of this beep by modifying the program. Follow the steps below:</p>
+<p>① Refer to steps (1) and (2) in section <strong>Adjusting the Fill Light</strong> to enter the program editing interface. Locate the code section highlighted in the image below.</p>
+<img src="../_static/media/chapter_11/section_4/image11.png" class="common_img" />
+<p>② Following step (4) in <strong>Adjusting the Fill Light</strong>, change the value <strong>“0.1”</strong> to <strong>“0.3”</strong>, as shown in the image.</p>
+<img src="../_static/media/chapter_11/section_4/image12.png" class="common_img" />
+<p>③ As in step (5) of section <strong>Adjusting the Fill Light</strong>, save and exit the file. Then, re-run the program by entering the following command to observe the updated effect:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">photo_sensor_demo</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(3) Sensitivity Adjustment</p>
+<p>If the performance of this activity is affected due to the sensitivity of the light sensor, you can adjust it by rotating the potentiometer on the sensor. Follow these steps:</p>
+<p>① Locate the sensitivity adjustment potentiometer. Its position on the sensor is shown in the image below:</p>
+<img src="../_static/media/chapter_11/section_4/image13.png" class="common_img" style="width:400px;"/>
+<p>② Use a screwdriver to gently rotate the potentiometer while observing the status of LED1. The sensor reaches its optimal sensitivity when LED1 is at the threshold between turning on and off—this indicates the sensor is responding most accurately at the current threshold setting.</p>
+<ul class="simple">
+<li><p><strong>Program Analysis</strong></p></li>
+</ul>
+<p><a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">Source Code</span></a></p>
+<p>The source code is saved in: <a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">/home/pi/TonyPi/Extend/sensor_course/sensor_development/photo_sensor_demo.py</span></a></p>
+<img src="../_static/media/chapter_11/section_4/image14.png" class="common_img" />
+<ul class="simple">
+<li><p><strong>Module Parameter Import</strong></p></li>
+</ul>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th><strong>Imported Module</strong></th>
+<th><strong>Function</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>import sys</code></td>
+<td>Imports Python's built-in sys module to access system-specific parameters and functions.</td>
+</tr>
+<tr>
+<td><code>import cv2</code></td>
+<td>Imports the OpenCV library for image processing and computer vision tasks.</td>
+</tr>
+<tr>
+<td><code>import time</code></td>
+<td>Imports the time module for handling time-related operations such as delays.</td>
+</tr>
+<tr>
+<td><code>import math</code></td>
+<td>Provides access to fundamental mathematical functions and constants.</td>
+</tr>
+<tr>
+<td><code>import threading</code></td>
+<td>Enables multithreaded execution within the program.</td>
+</tr>
+<tr>
+<td><code>import np</code></td>
+<td>Imports NumPy, a powerful library for numerical operations, especially arrays and matrices.</td>
+</tr>
+<tr>
+<td><code>from hiwonder.PID import PID</code></td>
+<td>Imports the PID control module for implementing proportional–integral–derivative control.</td>
+</tr>
+<tr>
+<td><code>from hiwonder import Misc as Misc</code></td>
+<td>Imports the Misc module, used for handling recognized rectangle data.</td>
+</tr>
+<tr>
+<td><code>from hiwonder import Board as Board</code></td>
+<td>Imports the Board module for controlling hardware like servos and buzzers.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.camera as camera</code></td>
+<td>Imports the camera module to interface with video input devices.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.ActionGroupControl as AGC</code></td>
+<td>Imports the action group module for executing pre-defined robot movements.</td>
+</tr>
+<tr>
+<td><code>import hiwonder.yaml_handle</code></td>
+<td>Provides tools for reading and handling YAML configuration files.</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p><strong>Functional Overview</strong></p></li>
+</ul>
+<p>This module implements AprilTag detection and intelligent lighting compensation in low-light conditions.</p>
+<ul class="simple">
+<li><p><strong>Program Logic and Code Explanation</strong></p></li>
+</ul>
+<p>(1) Initialization</p>
+<p>① Importing Required Libraries</p>
+<p>In this step, all necessary libraries are imported to ensure proper functionality throughout the program. For details on the imported modules, please refer to section 6.1.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gpiod</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ros_robot_controller_sdk</span> <span class="k">as</span> <span class="nn">rrc</span>
+<span class="kn">from</span> <span class="nn">hiwonder.Controller</span> <span class="kn">import</span> <span class="n">Controller</span>
+<span class="kn">import</span> <span class="nn">hiwonder.Camera</span> <span class="k">as</span> <span class="nn">Camera</span>
+<span class="kn">import</span> <span class="nn">hiwonder.Sonar</span> <span class="k">as</span> <span class="nn">Sonar</span>
+<span class="kn">import</span> <span class="nn">hiwonder.apriltag</span> <span class="k">as</span> <span class="nn">apriltag</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ActionGroupControl</span> <span class="k">as</span> <span class="nn">AGC</span>
+<span class="kn">import</span> <span class="nn">hiwonder.yaml_handle</span> <span class="k">as</span> <span class="nn">yaml_handle</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>② Setting Initial State</p>
+<p>The robot’s initial state is configured, including default positions and parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">board</span> <span class="o">=</span> <span class="n">rrc</span><span class="o">.</span><span class="n">Board</span><span class="p">()</span>
+<span class="n">ctl</span> <span class="o">=</span> <span class="n">Controller</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">initMove</span><span class="p">():</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_pwm_servo_pulse</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">ctl</span><span class="o">.</span><span class="n">set_pwm_servo_pulse</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">servo_data</span><span class="p">[</span><span class="s1">&#39;servo2&#39;</span><span class="p">],</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">AGC</span><span class="o">.</span><span class="n">runActionGroup</span><span class="p">(</span><span class="s1">&#39;lift_up&#39;</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(2) AprilTag Detection</p>
+<p>A function named <code class="docutils literal notranslate"><span class="pre">apriltagDetect</span></code> is defined to detect AprilTag markers within an image and return relevant tag information.
+Using the AprilTag detector on a grayscale image, the function returns a list of detected tags. Each entry includes the tag family, tag ID, and the coordinates of the tag’s center point (<code class="docutils literal notranslate"><span class="pre">objective_x</span></code>, <code class="docutils literal notranslate"><span class="pre">objective_y</span></code>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">def</span> <span class="nf">apriltagDetect</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>    
+    <span class="n">gray</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+    <span class="n">detections</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="n">return_image</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">detections</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">detection</span> <span class="ow">in</span> <span class="n">detections</span><span class="p">:</span>                        
+            <span class="n">corners</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int0</span><span class="p">(</span><span class="n">detection</span><span class="o">.</span><span class="n">corners</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">corners</span><span class="p">,</span> <span class="nb">int</span><span class="p">)],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="n">tag_family</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">detection</span><span class="o">.</span><span class="n">tag_family</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+            <span class="n">tag_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">detection</span><span class="o">.</span><span class="n">tag_id</span><span class="p">)</span>
+
+            <span class="n">objective_x</span><span class="p">,</span> <span class="n">objective_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">detection</span><span class="o">.</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">detection</span><span class="o">.</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            
+            <span class="n">object_angle</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">corners</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">corners</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">corners</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">corners</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])))</span>
+            
+            <span class="k">return</span> <span class="p">[</span><span class="n">tag_family</span><span class="p">,</span> <span class="n">tag_id</span><span class="p">,</span> <span class="n">objective_x</span><span class="p">,</span> <span class="n">objective_y</span><span class="p">]</span>
+            
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>(3) Intelligent Lighting Compensation</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">move</span></code> function continuously monitors the status of GPIO pin 24.</p>
+<p>When a high signal is detected, the buzzer sounds and the RGB light turns white.</p>
+<p>When a low signal is detected, the buzzer is turned off and the RGB light is disabled.</p>
+<p>The variable <code class="docutils literal notranslate"><span class="pre">st</span></code> is used to prevent the buzzer from triggering repeatedly.</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">def</span> <span class="nf">move</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">st</span>
+    
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">light</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="n">state</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">state</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">st</span> <span class="p">:</span>
+                    <span class="n">st</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">board</span><span class="o">.</span><span class="n">set_buzzer</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">st</span><span class="p">:</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">setRGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+            
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+</section>
+</section>
+<section id="mask-recognition">
+<h2>11.5 Mask Recognition<a class="headerlink" href="#mask-recognition" title="Link to this heading"></a></h2>
+<p id="anchor_11_5_1"></p>
+<section id="id8">
+<h3>11.5.1 Assembly<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<img src="../_static/media/chapter_11/section_5/image2.png" class="common_img" />
+</section>
+<section id="id9">
+<h3>11.5.2 Mask Recognition<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Getting Ready</strong></p></li>
+</ul>
+<p>Prepare MP3 module and install it on the expansion hole of robot’s shoulder. The specific installation method can refer to the file <a class="reference internal" href="#anchor_11_5_1"><span class="xref myst"><strong>“11.5.1 Assembly”</strong></span></a> under the same directory.</p>
+<img src="../_static/media/chapter_11/section_5/image2.png" class="common_img" />
+<ul class="simple">
+<li><p><strong>Working Principle</strong></p></li>
+</ul>
+<p>Let’s look at the working principle:</p>
+<p>Firstly, scale the screen to detect the human face. Then convert the recognized face coordinates into the coordinates before scaling, and then judge whether it is the biggest face, and frame the recognized face.</p>
+<p>If the human face does not wear mask, AI voice interaction box will play <strong>“no mask, please wear mask”</strong>. If the human face is wearing a mask, AI voice interaction box will play <strong>“Mask is on, please this way”</strong>.</p>
+<ul class="simple">
+<li><p><strong>Operation Steps</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The entered command must pay attention to case sensitivity and space.</p>
+</div>
+<p>(1) Turn on the robot and connect to the Raspberry Pi desktop through VNC.</p>
+<p>(2) Click the icon on the upper left corner of the desktop to open command line terminal. Enter the following command and press <strong>“Enter”</strong> to come to the directory of the game programmings.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">pi</span><span class="o">/</span><span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_development</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>(3) Enter the command below, and then press <strong>“Enter”</strong> to start the game.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">mask_detect</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(4) If want to exit the game, press <strong>“Ctrl+C”</strong> in the LX terminal. Please try multiple times if fail to exit.</p>
+<ul class="simple">
+<li><p><strong>Project Outcome</strong></p></li>
+</ul>
+<p>After the program is started, TonyPi Pro starts search for the face. If the face with no mask is recognized, AI voice interaction box will play <strong>“No mask, please wear mask”</strong>. If the face with a mask is recognized, AI voice interaction box will play <strong>“Wear mask, please pass”</strong>.</p>
+<ul class="simple">
+<li><p><strong>Program Analysis</strong></p></li>
+</ul>
+<p><a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">Source Code</span></a></p>
+<p>The source code is saved in: <a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">/home/pi/TonyPi/Extend/sensor_course/sensor_example/mask_detect.py</span></a></p>
+<p>(1) Importing Functional Modules</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">speech</span> <span class="kn">import</span> <span class="n">speech</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ActionGroupControl</span> <span class="k">as</span> <span class="nn">AGC</span>
+<span class="kn">import</span> <span class="nn">hiwonder.yaml_handle</span> <span class="k">as</span> <span class="nn">yaml_handle</span>
+<span class="kn">import</span> <span class="nn">hiwonder.ros_robot_controller_sdk</span> <span class="k">as</span> <span class="nn">rrc</span>
+<span class="kn">from</span> <span class="nn">hiwonder.Controller</span> <span class="kn">import</span> <span class="n">Controller</span>
+<span class="kn">import</span> <span class="nn">torch.backends.cudnn</span> <span class="k">as</span> <span class="nn">cudnn</span>
+<span class="kn">from</span> <span class="nn">utils.plots</span> <span class="kn">import</span> <span class="n">Annotator</span><span class="p">,</span> <span class="n">colors</span>
+<span class="kn">from</span> <span class="nn">models.experimental</span> <span class="kn">import</span> <span class="n">attempt_load</span>
+<span class="kn">from</span> <span class="nn">utils.datasets</span> <span class="kn">import</span> <span class="n">LoadImages</span><span class="p">,</span> <span class="n">LoadStreams</span>
+<span class="kn">from</span> <span class="nn">utils.torch_utils</span> <span class="kn">import</span> <span class="n">load_classifier</span><span class="p">,</span> <span class="n">select_device</span><span class="p">,</span> <span class="n">time_sync</span>
+<span class="kn">from</span> <span class="nn">utils.general</span> <span class="kn">import</span> <span class="n">apply_classifier</span><span class="p">,</span> <span class="n">check_img_size</span><span class="p">,</span> <span class="n">check_imshow</span><span class="p">,</span> \
+     <span class="n">check_requirements</span><span class="p">,</span> <span class="n">check_suffix</span><span class="p">,</span> <span class="n">colorstr</span><span class="p">,</span> <span class="n">increment_path</span><span class="p">,</span> <span class="n">non_max_suppression</span><span class="p">,</span> \
+     <span class="n">print_args</span><span class="p">,</span> <span class="n">save_one_box</span><span class="p">,</span> <span class="n">scale_coords</span><span class="p">,</span> <span class="n">set_logging</span><span class="p">,</span> <span class="n">strip_optimizer</span><span class="p">,</span> <span class="n">xyxy2xywh</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>① <code class="docutils literal notranslate"><span class="pre">torch</span></code>: Used to load the YOLOv5 model and perform inference.</p>
+<p>② <code class="docutils literal notranslate"><span class="pre">cv2</span></code>: Used for reading images, displaying inference results, and controlling image output.</p>
+<p>③ <code class="docutils literal notranslate"><span class="pre">speech</span></code>: Used for playing audio files to notify users about mask-wearing status.</p>
+<p>④ <code class="docutils literal notranslate"><span class="pre">hiwonder</span></code>: Used to control hardware components such as servos.</p>
+<p>⑤ <code class="docutils literal notranslate"><span class="pre">time</span></code>: Provides time-related functions, including delays within the program.</p>
+<p>(2) Inference Workflow</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">for</span> <span class="o">*</span><span class="n">xyxy</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">det</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">view_img</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">hide_labels</span> <span class="k">else</span> <span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">if</span> <span class="n">hide_conf</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">names</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">conf</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;without_mask&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span> <span class="n">times</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="n">speech</span><span class="o">.</span><span class="n">play_audio</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">code_path</span><span class="p">,</span> <span class="s1">&#39;audio&#39;</span><span class="p">,</span> <span class="s1">&#39;without_mask.wav&#39;</span><span class="p">))</span>
+                <span class="n">times</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            
+        <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;withmask&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span> <span class="n">times</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="n">speech</span><span class="o">.</span><span class="n">play_audio</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">code_path</span><span class="p">,</span> <span class="s1">&#39;audio&#39;</span><span class="p">,</span> <span class="s1">&#39;with_mask.wav&#39;</span><span class="p">))</span>
+                <span class="n">times</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            
+        <span class="n">annotator</span><span class="o">.</span><span class="n">box_label</span><span class="p">(</span><span class="n">xyxy</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>① YOLOv5 Inference:</p>
+<p>The program uses PyTorch to load a pre-trained YOLOv5 model to detect whether a person is wearing a mask or not in the input image.</p>
+<p>② Voice Prompt Based on Detection:</p>
+<p>Based on the inference results, the program plays a corresponding voice prompt to remind the user to wear a mask or confirm that they are wearing one.</p>
+<p>③ Playback Frequency Control:</p>
+<p>To avoid repetitive alerts, the prompt is played once every 5 seconds when a <strong>“no mask”</strong> or <strong>“mask detected”</strong> condition is continuously observed.</p>
+</section>
+</section>
+<section id="intelligent-temperature-control">
+<h2>11.6 Intelligent Temperature Control<a class="headerlink" href="#intelligent-temperature-control" title="Link to this heading"></a></h2>
+<section id="id10">
+<h3>11.6.1 Assembly<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<p>(1) Remove two M2*6 screws.</p>
+<img src="../_static/media/chapter_11/section_6/image11.png" style="width:500px"  class="common_img"/>
+<p>(2) Use two M2×6 screws to secure the black shoulder bracket to the robot’s shoulder. Then, use two M4×5+6 single-pass nylon standoffs and two M4×6 round-head screws to attach the temperature and humidity sensor to the shoulder bracket.</p>
+<img src="../_static/media/chapter_11/section_6/image12.png" style="width:500px"  class="common_img"/>
+<p>(3) Secure the fan module to the robot hand using 1 M4 * 6 screw, 1 M4 * 5+6 single-pass nylon standoff and 1 M4 screw.</p>
+<img src="../_static/media/chapter_11/section_6/image1.png" style="width:500px"  class="common_img"/>
+<img src="../_static/media/chapter_11/section_6/image14.png" style="width:500px"  class="common_img"/>
+<p>(4) Connect the sensor wires to the corresponding positions shown in the diagram below:</p>
+<img src="../_static/media/chapter_11/section_6/image15.png" style="width:500px"  class="common_img"/>
+</section>
+<section id="id11">
+<h3>11.6.2 Intelligent Temperature Control<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Preparation</strong></p></li>
+</ul>
+<p>Connect the temperature and humidity sensor to the I2C port on the TonyPi expansion board, Then, connect the fan module to the IO7 and IO8 ports on the TonyPi expansion board:</p>
+<img src="../_static/media/chapter_11/section_6/image15.png" style="width:500px"  class="common_img"/>
+<ul class="simple">
+<li><p><strong>Module Introduction</strong></p></li>
+</ul>
+<p>(1) Temperature and Humidity Sensor</p>
+<p>This sensor detects ambient temperature and humidity, providing accurate feedback of the measured data.</p>
+<img src="../_static/media/chapter_11/section_6/image4.png" style="width:400px"  class="common_img"/>
+<p>The temperature and humidity module (AHT10) converts the surrounding air’s temperature and humidity into digital signals, which are transmitted to the control board via I2C communication.</p>
+<p>(2) Fan Module</p>
+<p>The fan module operates without the need for an additional motor driver board. It uses PWM (Pulse Width Modulation) signals to control rotation. By sending PWM pulses in two directions, the fan’s rotation direction can be controlled. Additionally, adjusting the PWM duty cycle allows you to set the fan’s speed.</p>
+<img src="../_static/media/chapter_11/section_6/image5.png" style="width:600px"  class="common_img" />
+<ul class="simple">
+<li><p><strong>Operation Steps</strong></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Commands must be entered with exact case sensitivity and spacing.</p>
+</div>
+<p>(1) Power on the TonyPi and connect to the Raspberry Pi desktop remotely via VNC.</p>
+<p>(2) On the Raspberry Pi desktop, double-click the <strong>“Terminator”</strong> icon to open the command terminal.</p>
+<p>(3) Enter the command to navigate to the game directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">TonyPi</span><span class="o">/</span><span class="n">Extend</span><span class="o">/</span><span class="n">sensor_course</span><span class="o">/</span><span class="n">sensor_development</span>
+</pre></div>
+</div>
+<p>(4) Open a new terminal window and enter the command to start the game:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">temperature_control</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>(5) To stop the game, press <strong>Ctrl+C</strong> in the LX terminal. If it does not stop immediately, press <strong>Ctrl+C</strong> multiple times until it closes.</p>
+<ul class="simple">
+<li><p><strong>Program Outcome</strong></p></li>
+</ul>
+<p>Once the program starts, the temperature and humidity sensor will begin monitoring the surrounding environment and display the readings on the terminal. When the temperature exceeds 20°C, the fan module will automatically turn on; otherwise, it will turn off.</p>
+<img src="../_static/media/chapter_11/section_6/image10.png" class="common_img" />
+<ul class="simple">
+<li><p><strong>Program Analysis</strong></p></li>
+</ul>
+<p><a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">Source Code</span></a></p>
+<p>The source code is saved in: <a class="reference download internal" download="" href="../_downloads/1cedad40bf6c7cc8eb0cfb2161adad55/sensor_development.zip"><span class="xref download myst">/home/pi/TonyPi/Extend/sensor_course/sensor_example/temperature_detection.py</span></a></p>
+<p>(1) Importing Modules</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><span class="kn">import</span> <span class="nn">smbus</span>
+<span class="kn">import</span> <span class="nn">gpiod</span>
+<span class="kn">import</span> <span class="nn">time</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>Use import statements to load the required modules:</p>
+<p>① <code class="docutils literal notranslate"><span class="pre">smbus</span></code>: For communicating with I2C devices, enabling data read/write operations.</p>
+<p>② <code class="docutils literal notranslate"><span class="pre">gpiod</span></code>: For controlling GPIO pins, used to operate hardware devices like the fan.</p>
+<p>③ <code class="docutils literal notranslate"><span class="pre">time</span></code>: Provides time-related functions for delays in the program.</p>
+<p>(2) Sensor Data Acquisition and Processing</p>
+<p>① Sensor Class Definition</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">class</span> <span class="nc">AHT10</span><span class="p">:</span>
+    <span class="n">CONFIG</span> <span class="o">=</span> <span class="p">[</span><span class="mh">0x08</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">]</span>
+    <span class="n">MEASURE</span> <span class="o">=</span> <span class="p">[</span><span class="mh">0x33</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">]</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>Define the AHT10 class to retrieve data from the AHT10 sensor.</p>
+<p>Class attributes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CONFIG</span></code>: Configuration parameter set to [0x08, 0x00]</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MEASURE</span></code>: Measurement command parameter set to [0x33, 0x00]</p></li>
+</ul>
+<p>② Initialization Method <code class="docutils literal notranslate"><span class="pre">__init__</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bus</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="mh">0x38</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bus</span> <span class="o">=</span> <span class="n">smbus</span><span class="o">.</span><span class="n">SMBus</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="n">addr</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<ul class="simple">
+<li><p>Initialize the <code class="docutils literal notranslate"><span class="pre">smbus.SMBus</span></code> object for I2C communication with the AHT10 sensor.</p></li>
+<li><p>Store the sensor’s I2C address.</p></li>
+<li><p>Delay for 0.2 seconds to ensure sensor initialization.</p></li>
+</ul>
+<p>③ Data Acquisition Method <code class="docutils literal notranslate"><span class="pre">getData</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">write_i2c_block_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">,</span> <span class="mh">0xAC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MEASURE</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="o">.</span><span class="n">read_i2c_block_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+    
+    <span class="n">temp</span> <span class="o">=</span> <span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x0F</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span> <span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="n">ctemp</span> <span class="o">=</span> <span class="p">((</span><span class="n">temp</span> <span class="o">*</span> <span class="mi">200</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1048576</span><span class="p">)</span> <span class="o">-</span> <span class="mi">50</span>
+    
+    <span class="n">hum</span> <span class="o">=</span> <span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span> <span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span>
+    <span class="n">chum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hum</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="mi">1048576</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="p">(</span><span class="n">ctemp</span><span class="p">,</span> <span class="n">chum</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<ul class="simple">
+<li><p>Read one byte of data initially.</p></li>
+<li><p>Send the measurement command to the sensor.</p></li>
+<li><p>Delay for 0.5 seconds to allow the sensor to complete the measurement.</p></li>
+<li><p>Read the returned data from the sensor.</p></li>
+<li><p>Process the data to calculate temperature and humidity values.</p></li>
+<li><p>Return the calculated temperature and humidity.</p></li>
+</ul>
+<p>④ GPIO Pin Initialization</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">chip</span> <span class="o">=</span> <span class="n">gpiod</span><span class="o">.</span><span class="n">Chip</span><span class="p">(</span><span class="s2">&quot;gpiochip4&quot;</span><span class="p">)</span>
+<span class="n">fanPin1</span> <span class="o">=</span> <span class="n">chip</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">fanPin1</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">consumer</span><span class="o">=</span><span class="s2">&quot;pin1&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_DIR_OUT</span><span class="p">)</span>
+
+<span class="n">fanPin2</span> <span class="o">=</span> <span class="n">chip</span><span class="o">.</span><span class="n">get_line</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">fanPin2</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">consumer</span><span class="o">=</span><span class="s2">&quot;pin2&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">gpiod</span><span class="o">.</span><span class="n">LINE_REQ_DIR_OUT</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<ul class="simple">
+<li><p>Initialize the GPIO chip <code class="docutils literal notranslate"><span class="pre">gpiochip4</span></code>.</p></li>
+<li><p>Acquire pins 8 and 7 and set them as outputs to control the two fan pins.</p></li>
+</ul>
+<p>⑤ Fan Control Function</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><span class="k">def</span> <span class="nf">set_fan</span><span class="p">(</span><span class="n">start</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">fanPin1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fanPin2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fanPin1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">fanPin2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>Define the function <code class="docutils literal notranslate"><span class="pre">set_fan</span></code> to control the fan’s on/off state.</p>
+<p>If the input parameter <code class="docutils literal notranslate"><span class="pre">start</span></code> equals 1, turn on the fan by setting pin 8 to HIGH and pin 7 to LOW.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">start</span></code> is not 1, turn off the fan by setting both pins 8 and 7 to LOW.</p>
+<p>(3) Temperature Control Logic</p>
+<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">temp</span><span class="p">,</span> <span class="n">hum</span> <span class="o">=</span> <span class="n">aht10</span><span class="o">.</span><span class="n">getData</span><span class="p">()</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;温度: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">°C, 湿度: </span><span class="si">{</span><span class="n">hum</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="n">set_fan</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">set_fan</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">set_fan</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">break</span>
+</pre></div></td></tr></table></div>
+</div>
+<p>① Initialize a counter <code class="docutils literal notranslate"><span class="pre">count</span></code> to 0.</p>
+<p>② Enter an infinite loop to continuously read temperature data from the sensor.</p>
+<p>③ If the temperature exceeds 20°C, increment the counter by 1. When the counter exceeds 5, turn on the fan and reset the counter to 0.</p>
+<p>④ If the temperature is less than or equal to 20°C, reset the counter to 0 and turn off the fan.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="10_sensor_development_basics_courses.html" class="btn btn-neutral float-left" title="10. Sensor Development Basics Courses" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="12_aI_large_model_course.html" class="btn btn-neutral float-right" title="12. AI Large Model Course" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Hiwonder.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
