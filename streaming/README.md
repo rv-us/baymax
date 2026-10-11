@@ -2,6 +2,8 @@
 
 GX10-side tools for streaming the TonyPi camera to the GX10.
 
+Step-by-step usage: [docs/running-the-stream.md](../docs/running-the-stream.md). Network setup and troubleshooting: [docs/streaming-setup.md](../docs/streaming-setup.md).
+
 | File | What it does |
 |---|---|
 | `config.env` | All settings (Pi SSH host, interface names, Wi-Fi connection, video settings) |
