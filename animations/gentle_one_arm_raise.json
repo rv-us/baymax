@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "name": "Gentle One-Arm Raise",
+  "kind": "exercise",
+  "keyframes": [
+    {
+      "ms": 2000,
+      "hold_ms": 500,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 350,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 2000,
+      "hold_ms": 500,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 350,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 650,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 2000,
+      "hold_ms": 500,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 650,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 2000,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    }
+  ],
+  "exercise": {
+    "cue": "Let's lift one arm at a time, slowly and gently.",
+    "sets": 2,
+    "reps": 8,
+    "mirror": "arms",
+    "track_joint": "shoulder_elevation",
+    "targets": {}
+  },
+  "source": "generated",
+  "loop": false,
+  "speed": 1.0,
+  "prompt": "raise the left arm up, then raise the right arm up, then put left arm down, and put right arm down strictly in that order. dont raise right arm until left arm is raised",
+  "generator": "gx10:qwen3.6:35b",
+  "updated": 1791732318.5638118
+}

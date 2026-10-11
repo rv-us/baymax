@@ -1,0 +1,144 @@
+{
+  "version": 1,
+  "name": "Wave hello",
+  "kind": "emote",
+  "keyframes": [
+    {
+      "ms": 1400,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 900,
+        "right_shoulder_roll": 242,
+        "right_elbow": 342
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1570
+      }
+    },
+    {
+      "ms": 450,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 900,
+        "right_shoulder_roll": 367,
+        "right_elbow": 238
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1570
+      }
+    },
+    {
+      "ms": 450,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 900,
+        "right_shoulder_roll": 242,
+        "right_elbow": 342
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1570
+      }
+    },
+    {
+      "ms": 450,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 900,
+        "right_shoulder_roll": 367,
+        "right_elbow": 238
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1570
+      }
+    },
+    {
+      "ms": 450,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 900,
+        "right_shoulder_roll": 242,
+        "right_elbow": 342
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1570
+      }
+    },
+    {
+      "ms": 450,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 900,
+        "right_shoulder_roll": 367,
+        "right_elbow": 238
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1570
+      }
+    },
+    {
+      "ms": 450,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 900,
+        "right_shoulder_roll": 242,
+        "right_elbow": 342
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1570
+      }
+    },
+    {
+      "ms": 1400,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    }
+  ],
+  "exercise": {
+    "cue": "",
+    "sets": 2,
+    "reps": 8,
+    "mirror": "arms",
+    "track_joint": "shoulder_elevation",
+    "targets": {}
+  },
+  "source": "starter",
+  "loop": false,
+  "speed": 1.0,
+  "description": "A friendly wave with the right hand.",
+  "updated": 1791710193.222516
+}

@@ -89,7 +89,11 @@ class TonyPiDigitalTwin:
 
     def update_arms(self, l_pitch_deg=0.0, l_roll_deg=0.0, l_elbow_deg=180.0,
                     r_pitch_deg=0.0, r_roll_deg=0.0, r_elbow_deg=180.0, **_legacy) -> None:
-        """Shoulder angles in URDF degrees, elbows as interior angles (180 = straight)."""
+        """Shoulder angles in URDF degrees; elbows sweep inward (180 = straight).
+
+        The physical elbow has one hinge, so it cannot independently curl forward.
+        Raw pulses and this convenience API share the same URDF chain.
+        """
         self.set_angles({
             "l_shoulder_pitch": l_pitch_deg, "l_shoulder_roll": l_roll_deg, "l_elbow": -(180.0 - l_elbow_deg),
             "r_shoulder_pitch": r_pitch_deg, "r_shoulder_roll": r_roll_deg, "r_elbow": -(180.0 - r_elbow_deg),

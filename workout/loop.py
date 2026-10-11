@@ -21,6 +21,7 @@ from dataclasses import asdict, dataclass, field
 
 from robot_api.errors import RobotError
 from workout.parts import classify_ready, classify_trouble, is_pain
+from workout.session import SCHEMA, set_record
 
 log = logging.getLogger("workout")
 
@@ -55,6 +56,7 @@ INTERRUPTS = {
     "pain": SAFETY_STOP,
     "left_frame": PAUSED,         # only acted on during MIRROR
     "no_response": END,
+    "operator_stop": END,         # the therapist pressed Stop in the dashboard
 }
 
 
@@ -73,7 +75,7 @@ class Session:
     """Everything the handlers share, and what gets saved."""
     plan: str
     started: float = field(default_factory=time.time)
-    status: str = "running"       # completed | not_started | stopped_pain | no_response
+    status: str = "running"       # completed | not_started | stopped_pain | stopped_operator | no_response
     flagged: bool = False         # the therapist should look at this session
     exercise: int = 0             # index into plan.exercises
     set_number: int = 1
@@ -83,6 +85,10 @@ class Session:
     transitions: list = field(default_factory=list)
     sets: list = field(default_factory=list)
     notes: list = field(default_factory=list)
+    # Version 2 of the log; every field is described in workout/session.py.
+    schema: int = SCHEMA
+    events: list = field(default_factory=list)
+    interrupted: list = field(default_factory=list)
 
 
 class Workout:
@@ -112,10 +118,21 @@ class Workout:
 
     def post(self, event: str):
         """Raise an interrupt from any thread."""
-        if event == "pain":
+        if event in ("pain", "operator_stop"):
             self.robot.stop_now()  # don't wait for the engine: freeze the servos now
+        if event == "operator_stop" and self.session.status == "running":
+            self.session.status = "stopped_operator"
+        self.log_event({"pain": "safety_stop"}.get(event, event))
         self.interrupts.put(event)
         self._cancel.set()
+
+    def log_event(self, kind: str, **detail):
+        """Add to the session's event list (workout/session.py). Safe from any thread."""
+        s = self.session
+        entry = {"t": round(time.time() - s.started, 2), "type": kind, **detail}
+        if self.state in (MIRROR, PAUSED):
+            entry.setdefault("set", len(s.sets) + 1)
+        s.events.append(entry)
 
     def run(self) -> Session:
         try:
@@ -152,7 +169,7 @@ class Workout:
         pending = [event]
         while not self.interrupts.empty():
             pending.append(self.interrupts.get_nowait())
-        for e in ("pain", "no_response", "left_frame"):
+        for e in ("pain", "operator_stop", "no_response", "left_frame"):
             if e in pending:
                 return e
         return pending[0]
@@ -191,6 +208,7 @@ class Workout:
         """Everything the mic hears, from the listener's thread (#10 adds the LLM check)."""
         if is_pain(text):
             log.warning("pain words heard: %r", text)
+            self.log_event("pain_word", transcript=text)
             self.post("pain")
 
     def ask(self, question: str, retry: str = None):
@@ -203,6 +221,7 @@ class Workout:
             if answer:
                 log.info("PATIENT: %s", answer)
                 if is_pain(answer):
+                    self.log_event("pain_word", transcript=answer)
                     self.post("pain")
                 return answer
         self.post("no_response")
@@ -226,6 +245,7 @@ class Workout:
         if answer:
             log.info("PATIENT: %s", answer)
             if is_pain(answer):
+                self.log_event("pain_word", transcript=answer)
                 self.post("pain")
                 return "not_ready"
         verdict = classify_ready(answer)
@@ -280,7 +300,16 @@ class Workout:
                                      reps_done=self.session.reps_done))
         self.session.reps_done = result.reps
         self._result = result
+        if not result.finished and "left_frame" not in list(self.interrupts.queue):
+            # Cut short by a stop: the set is never reviewed, but keep what was tracked.
+            self.session.interrupted.append(self._set_entry(result))
         return "set_done"
+
+    def _set_entry(self, result) -> dict:
+        ex, s = self.exercise, self.session
+        return {"exercise": ex.name, "set": s.set_number, "reps": result.reps,
+                "target_reps": result.target_reps, "deviations": result.deviations,
+                **set_record(ex, result, s.started)}
 
     def set_review(self) -> str:
         ex, s, result = self.exercise, self.session, self._result
@@ -288,9 +317,7 @@ class Workout:
         self.robot.say(self.coach.feedback(ex, result))
         answer = self.ask("Did you have any trouble with that set?")
         trouble = classify_trouble(answer)
-        s.sets.append({"exercise": ex.name, "set": s.set_number, "reps": result.reps,
-                       "target_reps": result.target_reps, "deviations": result.deviations,
-                       "answer": answer, "trouble": trouble})
+        s.sets.append({**self._set_entry(result), "answer": answer, "trouble": trouble})
         if trouble == "pain":
             self.post("pain")
             return "next_set"  # overridden by the interrupt
@@ -315,6 +342,7 @@ class Workout:
                 return "resume"  # overridden by the interrupt
             self.sleep(1)
             waited += 1
+        self.log_event("returned")
         self.robot.say("There you are. Let's keep going.")
         return "resume"
 
@@ -336,11 +364,13 @@ class Workout:
             s.status = "no_response"
             s.flagged = True
             self.robot.say("I haven't heard from you, so let's stop for today.")
+        if s.status == "stopped_operator":
+            s.flagged = True
         if s.status == "completed":
             self.robot.say("That's the whole workout, great job! " + self.summary())
         # After a pain stop the robot stays frozen where it is: "stop" means no more
         # moving until a person decides otherwise.
-        if s.status != "stopped_pain" and self.interrupts.empty():
+        if s.status not in ("stopped_pain", "stopped_operator") and self.interrupts.empty():
             try:
                 self.robot.stand()
             except RobotError as e:

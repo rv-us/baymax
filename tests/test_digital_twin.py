@@ -3,6 +3,7 @@ import json
 import math
 import threading
 import urllib.request
+from itertools import combinations
 
 import pytest
 
@@ -121,6 +122,69 @@ def test_fk_elbow_bends_forearm_sideways(state):
         pulses[sid] += 250
         tip, rest = hand_tip(state.robot.fk(mapping.pulses_to_angles(pulses)), side), hand_tip(stand, side)
         assert abs(tip[0] - rest[0]) < 0.01 and abs(tip[1] - rest[1]) > 0.05
+
+
+@pytest.mark.parametrize("side,sid,delta", [("l", 6, 250), ("r", 14, -250)])
+def test_fk_elbow_sweeps_forearm_inward(state, side, sid, delta):
+    pulses = dict(mapping.STAND_POSE)
+    pulses[sid] += delta
+    links = state.robot.fk(mapping.pulses_to_angles(pulses))
+    rot, elbow = links[f"{side}_forearm"]
+    direction = tuple(-rot[i][2] for i in range(3))
+    assert direction[0] == pytest.approx(0, abs=1e-6)
+    assert direction[1] * (1 if side == "l" else -1) < -0.8
+
+
+@pytest.mark.parametrize("pitch,roll", [(0, 0), (-90, 0), (-30, 65)])
+def test_elbow_axes_follow_shoulders_and_mirror(state, pitch, roll):
+    angles = {"l_shoulder_pitch": pitch, "r_shoulder_pitch": pitch,
+              "l_shoulder_roll": roll, "r_shoulder_roll": -roll,
+              "l_elbow": -60, "r_elbow": -60}
+    links = state.robot.fk(angles)
+    left, right = hand_tip(links, "l"), hand_tip(links, "r")
+    assert right == pytest.approx((left[0], -left[1], left[2]))
+
+
+def test_actual_elbow_readings_are_not_clamped():
+    s = TwinState()
+    s.set_actual({6: 930, 14: 33})
+    snap = s.snapshot()["channels"]["actual"]
+    assert snap["servos"]["6"] == 930 and snap["servos"]["14"] == 33
+    assert snap["angles"]["l_elbow"] == pytest.approx(-85.2)
+    assert snap["angles"]["r_elbow"] == pytest.approx(-94.08)
+
+
+def test_standing_model_has_no_overlapping_coplanar_box_faces(state):
+    # Same-facing, overlapping box faces fight for depth. Opposite-facing faces
+    # may touch (e.g. sole and pad) because they are back-face culled.
+    links = state.robot.fk()
+    boxes = []
+    for link, visuals in state.robot.links.items():
+        for index, visual in enumerate(visuals):
+            if visual["type"] != "box" or any(visual["rpy"]):
+                continue
+            center = [links[link][1][k] + visual["xyz"][k] for k in range(3)]
+            bounds = [(center[k] - visual["size"][k] / 2,
+                       center[k] + visual["size"][k] / 2) for k in range(3)]
+            boxes.append((link, index, bounds))
+    for a, b in combinations(boxes, 2):
+        for axis in range(3):
+            same_plane = any(abs(a[2][axis][face] - b[2][axis][face]) < 1e-8 for face in (0, 1))
+            overlap = all(min(a[2][k][1], b[2][k][1]) - max(a[2][k][0], b[2][k][0]) > 1e-6
+                          for k in range(3) if k != axis)
+            assert not (same_plane and overlap), (a[:2], b[:2], axis)
+
+
+def test_sole_pad_is_below_plate_and_ground_contact_uses_it(state):
+    links = state.robot.fk()
+    base = state.robot.ground_contact(links)
+    for side in "lr":
+        _, plate, pad = state.robot.links[f"{side}_foot"]
+        plate_bottom = plate["xyz"][2] - plate["size"][2] / 2
+        pad_top = pad["xyz"][2] + pad["size"][2] / 2
+        assert pad_top <= plate_bottom + 1e-9
+        points = state.robot.link_points(f"{side}_foot", links[f"{side}_foot"])
+        assert min(p[2] for p in points) + base["pos"][2] == pytest.approx(0)
 
 
 # ---------------------------------------------------------------- state / limits

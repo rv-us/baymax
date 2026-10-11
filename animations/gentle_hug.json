@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "name": "Gentle hug",
+  "kind": "emote",
+  "keyframes": [
+    {
+      "ms": 1800,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 392,
+        "left_shoulder_roll": 550,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 608,
+        "right_shoulder_roll": 450,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 1600,
+      "hold_ms": 1200,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 371,
+        "left_shoulder_roll": 779,
+        "left_elbow": 804,
+        "right_shoulder_pitch": 629,
+        "right_shoulder_roll": 221,
+        "right_elbow": 196
+      }
+    },
+    {
+      "ms": 1800,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    }
+  ],
+  "exercise": {
+    "cue": "",
+    "sets": 2,
+    "reps": 8,
+    "mirror": "arms",
+    "track_joint": "shoulder_elevation",
+    "targets": {}
+  },
+  "source": "starter",
+  "loop": false,
+  "speed": 1.0,
+  "description": "Arms open wide, then close in a hug.",
+  "updated": 1791710193.2269816
+}

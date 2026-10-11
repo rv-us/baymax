@@ -1,0 +1,8 @@
+# Dashboard server (python -m dashboard). The web app is prebuilt in dashboard/web/dist.
+fastapi
+uvicorn
+httpx
+pyyaml
+# Optional, for the laptop webcam in a dry run (--webcam): the camera and arm tracking.
+opencv-python
+mediapipe

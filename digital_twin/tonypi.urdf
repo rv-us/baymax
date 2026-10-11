@@ -239,15 +239,15 @@
     <visual>
       <origin xyz="0 0.004 -0.020" rpy="0 0 0"/>
       <geometry>
-        <box size="0.032 0.026 0.032"/>
+        <box size="0.034 0.026 0.032"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
     <!-- Elbow Servo Horn Accent at bottom of upper arm -->
     <visual>
-      <origin xyz="0 0.004 -0.075" rpy="1.5708 0 0"/>
+      <origin xyz="0 0.004 -0.075" rpy="0 1.5708 0"/>
       <geometry>
-        <cylinder radius="0.012" length="0.028"/>
+        <cylinder radius="0.012" length="0.032"/>
       </geometry>
       <material name="metal_grey"/>
     </visual>
@@ -259,7 +259,8 @@
     </collision>
   </link>
 
-  <!-- Left Elbow Joint (Servo 6: Flexion / Extension) -->
+  <!-- Servo 6 sweeps inward about local +X; negative angle bends toward the centre.
+       This is a single hinge, with no independent forward-curl degree of freedom. -->
   <joint name="l_elbow" type="revolute">
     <parent link="l_upper_arm"/>
     <child link="l_forearm"/>
@@ -377,15 +378,15 @@
     <visual>
       <origin xyz="0 -0.004 -0.020" rpy="0 0 0"/>
       <geometry>
-        <box size="0.032 0.026 0.032"/>
+        <box size="0.034 0.026 0.032"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
     <!-- Elbow Servo Horn Accent -->
     <visual>
-      <origin xyz="0 -0.004 -0.075" rpy="1.5708 0 0"/>
+      <origin xyz="0 -0.004 -0.075" rpy="0 1.5708 0"/>
       <geometry>
-        <cylinder radius="0.012" length="0.028"/>
+        <cylinder radius="0.012" length="0.032"/>
       </geometry>
       <material name="metal_grey"/>
     </visual>
@@ -397,7 +398,7 @@
     </collision>
   </link>
 
-  <!-- Right Elbow Joint (Servo 14: Flexion / Extension) -->
+  <!-- Servo 14 mirrors servo 6 about local -X; negative angle bends inward. -->
   <joint name="r_elbow" type="revolute">
     <parent link="r_upper_arm"/>
     <child link="r_forearm"/>
@@ -501,7 +502,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.034 0.034 0.034"/>
+        <box size="0.032 0.032 0.034"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
@@ -569,7 +570,7 @@
     <visual>
       <origin xyz="0 0 -0.060" rpy="0 0 0"/>
       <geometry>
-        <box size="0.038 0.034 0.028"/>
+        <box size="0.038 0.036 0.028"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
@@ -599,7 +600,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.034 0.034 0.034"/>
+        <box size="0.032 0.032 0.034"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
@@ -639,7 +640,7 @@
     </visual>
     <!-- Rubber Sole Pads -->
     <visual>
-      <origin xyz="0.015 0 -0.014" rpy="0 0 0"/>
+      <origin xyz="0.015 0 -0.016" rpy="0 0 0"/>
       <geometry>
         <box size="0.108 0.064 0.004"/>
       </geometry>
@@ -672,7 +673,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.034 0.034 0.034"/>
+        <box size="0.032 0.032 0.034"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
@@ -740,7 +741,7 @@
     <visual>
       <origin xyz="0 0 -0.060" rpy="0 0 0"/>
       <geometry>
-        <box size="0.038 0.034 0.028"/>
+        <box size="0.038 0.036 0.028"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
@@ -770,7 +771,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.034 0.034 0.034"/>
+        <box size="0.032 0.032 0.034"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
@@ -810,7 +811,7 @@
     </visual>
     <!-- Rubber Sole Pads -->
     <visual>
-      <origin xyz="0.015 0 -0.014" rpy="0 0 0"/>
+      <origin xyz="0.015 0 -0.016" rpy="0 0 0"/>
       <geometry>
         <box size="0.108 0.064 0.004"/>
       </geometry>

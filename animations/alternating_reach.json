@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "name": "Alternating reach",
+  "kind": "exercise",
+  "keyframes": [
+    {
+      "ms": 2000,
+      "hold_ms": 400,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 100,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      },
+      "head": {
+        "pan": 1630,
+        "tilt": 1500
+      }
+    },
+    {
+      "ms": 1800,
+      "hold_ms": 200,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 2000,
+      "hold_ms": 400,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 900,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      },
+      "head": {
+        "pan": 1370,
+        "tilt": 1500
+      }
+    },
+    {
+      "ms": 1800,
+      "hold_ms": 300,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    }
+  ],
+  "exercise": {
+    "cue": "Reach one arm up toward the ceiling, lower it, then reach with the other.",
+    "sets": 2,
+    "reps": 6,
+    "mirror": "arms",
+    "track_joint": "shoulder_elevation",
+    "targets": {
+      "shoulder_elevation": {
+        "top": 150,
+        "bottom": 15,
+        "tolerance": 20
+      }
+    }
+  },
+  "source": "starter",
+  "loop": false,
+  "speed": 1.0,
+  "description": "Reach one arm up overhead, lower it, then the other.",
+  "updated": 1791710193.2158208
+}

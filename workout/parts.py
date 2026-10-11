@@ -112,6 +112,11 @@ class SetResult:
     deviations: list = field(default_factory=list)   # e.g. "left elbow bent 30° at the top"
     seconds: float = 0.0
     finished: bool = True                            # False if interrupted
+    # Optional detail for the session log (workout/session.py). A pose tracker fills
+    # `trace`, or `rep_details` if it counts reps itself; the stand-in leaves them empty.
+    started: float = 0.0                             # epoch seconds the set began
+    trace: dict = None                               # {hz, patient: [deg], reference: [deg]}
+    rep_details: list = field(default_factory=list)  # [{n, t_start, t_end, peak_deg, trough_deg}]
 
 
 class FakeTracker:
@@ -135,11 +140,12 @@ class FakeTracker:
                 post_event(event)
                 event = None
             if cancelled():
-                return SetResult(reps, exercise.reps, [], time.time() - started, finished=False)
+                return SetResult(reps, exercise.reps, [], time.time() - started, finished=False,
+                                 started=started)
             time.sleep(self.rep_seconds)
             reps += 1
         notes = self.deviations.pop(0) if self.deviations else []
-        return SetResult(reps, exercise.reps, notes, time.time() - started)
+        return SetResult(reps, exercise.reps, notes, time.time() - started, started=started)
 
     def patient_visible(self) -> bool:
         return True

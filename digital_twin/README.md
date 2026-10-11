@@ -59,12 +59,22 @@ Feeding it from Python: `TonyPiDigitalTwin().update_servos({...})` (same payload
 are the regression data: T-pose gives roll ±75°, zombie gives pitch ≈ -97° (forward), scorpion gives a 72° backward torso lean.
 
 * Arms follow `laptop_mvp/retarget.py`; `laptop_mvp/test_retarget.py` (independent math) passes against the twin.
+  Elbows 6/14 are mirrored single hinges about local +X/-X: increasing 6 or decreasing 14
+  sweeps the forearm toward the robot's centre. They have no independent forward-curl axis.
+  Stand pulses 575/425 mean straight forearms; shoulder pitch aims the entire arm forward.
+  This mounting correction follows the observed hardware motion, rather than inferring axes
+  from the API's joint names. The API reports pulses, not hinge axes or Cartesian arm poses.
+  With the current command limits, inward elbow travel from stand is 72 degrees;
+  actual readback remains unclamped so commanded and measured positions can differ.
 * Leg pitch directions are inferred from `scorpion_pose_bending_backwards`; the **leg/ankle roll** servos (1, 5, 9, 13) and the
   **head** (PWM, 0.09°/µs) barely or never move in the recordings, so their direction is a guess (marked ⚠ in the viewer).
 * The twin shows exactly what the pulses say. `mediapose_est.map_leg_servos` uses ~2.7 pulses/deg while the servos are 4.17 pulses/deg,
   so estimator leg angles appear ~20–60 % smaller (knee 0.8×, ankle 0.64×, hip 0.4×) on the twin (and on the robot) than the estimator intends.
 * "Floor contact": torso pitch/roll and height are solved so both soles lie flat on the floor, so a pose like the scorpion
   shows a leaning torso, not floating feet. Toggle it off in the panel to see the raw joint chain.
+  The renderer adds 1 mm clearance above the floor/grid, and the sole pad sits below the metal plate.
+  Overlapping casing faces have different dimensions; ghost surfaces use a depth offset to
+  avoid fighting with the main model when the two channels agree.
 * Hands (servos 17/18) are shown in the table only; the URDF has no gripper model, and they cannot be read back from the robot.
 
 ## Layout

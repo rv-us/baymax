@@ -47,7 +47,12 @@ class Robot:
         for _ in range(demo.get("times", 1)):
             if cancelled():
                 return
-            if "arm" in demo:
+            if "keyframes" in demo:
+                from workout.keyframes import play
+
+                if not play(self._call, demo["keyframes"], cancelled=cancelled):
+                    return
+            elif "arm" in demo:
                 self.say("Up...")
                 self._call("actions/arm", side="both", position=demo["arm"])
                 if cancelled():
