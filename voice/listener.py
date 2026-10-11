@@ -91,7 +91,6 @@ class WhisperTranscriber:
         self.processor = WhisperProcessor.from_pretrained(model)
         self.model = WhisperForConditionalGeneration.from_pretrained(model, dtype=self.dtype)
         self.model.to(self.device).eval()
-        self.model.generation_config.max_length = None  # max_new_tokens below is the limit
         tok = self.processor.tokenizer
         self._sot = tok.convert_tokens_to_ids("<|startoftranscript|>")
         # English-only models call the no-speech token <|nocaptions|>.
@@ -99,6 +98,9 @@ class WhisperTranscriber:
                                           ("<|nospeech|>", "<|nocaptions|>")) if i != tok.unk_token_id)
         self._prompt = (torch.tensor(self.processor.get_prompt_ids(prompt), device=self.device)
                         if prompt else None)
+        # Up to 64 answer tokens after the prompt. (max_new_tokens makes transformers warn
+        # on every call, because Whisper also sets max_length.)
+        self._max_length = (0 if self._prompt is None else len(self._prompt)) + 68
         self(b"\x00\x00" * RATE)  # warm up, so the first real answer isn't slow
 
     def no_speech_prob(self, features) -> float:
@@ -116,7 +118,7 @@ class WhisperTranscriber:
             if self.no_speech_prob(features) > NO_SPEECH:
                 return ""
             kwargs = {"prompt_ids": self._prompt} if self._prompt is not None else {}
-            ids = self.model.generate(features, max_new_tokens=64, **kwargs)
+            ids = self.model.generate(features, max_length=self._max_length, **kwargs)
         text = self.processor.batch_decode(ids, skip_special_tokens=True)[0].strip()
         return "" if _normalize(text) in HALLUCINATIONS else text
 

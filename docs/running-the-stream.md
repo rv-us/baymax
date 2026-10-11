@@ -62,6 +62,40 @@ To hear what the robot hears: `python3 audio_receiver.py --wav test.wav --second
 
 Like the video, only one program can receive the audio at a time. If the robot API's `mic_level` says "Device or resource busy," start the API with `BAYMAX_MIC_PCM=mic_shared`.
 
+## Speech to text (`voice.Listener`)
+
+Turns the mic stream into the patient's answers as text. Silero VAD finds where speech starts and stops, and Whisper (`small.en`) transcribes it on the GX10's GPU in about 50 ms. Everything runs on the GX10; nothing goes to an online API.
+
+Install once, in the venv:
+
+```bash
+cd ~/baymax && source .venv/bin/activate
+pip install silero-vad transformers   # Whisper's weights (~1 GB) download on first use
+```
+
+Check it with the robot's mic (talk to the robot; Ctrl+C to stop):
+
+```bash
+python -m voice.listener     # prints each transcript and how long after you stopped talking it arrived
+```
+
+In your own code:
+
+```python
+from voice import Listener
+
+listener = Listener().start()                    # loads the models, about 3 s
+with listener.robot_speaking():                  # wrap every say/play_sound, so the robot doesn't hear itself
+    backend.call("sensors/voice/say", text="Are you ready?")
+text = listener.listen(timeout_s=10)             # the next answer, or None if nobody spoke
+
+listener.on_transcript(lambda t: print(t.text))  # every transcript, even between listen() calls
+```
+
+- `listen()` returns the first utterance that ends after you call it. An answer still being spoken at the timeout is waited for.
+- An answer ends after 0.8 s of silence, so text arrives about 0.9 s after the patient stops talking. Most of that is the silence wait (`END_SILENCE_MS` in `voice/segmenter.py`).
+- `Listener` starts its own `AudioReceiver`, so stop `audio_receiver.py` first: only one program can receive the audio.
+
 ## When you're done
 
 ```bash
