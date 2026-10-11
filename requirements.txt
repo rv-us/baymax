@@ -1,0 +1,24 @@
+# PT robot brain — runs on the ASUS Ascent GX10 (ARM64, CUDA)
+# Setup:
+#   python3 -m venv ~/ptrobot && source ~/ptrobot/bin/activate
+#   pip install -r requirements.txt
+# Then check the GPU build:
+#   python -c "import torch; print(torch.cuda.is_available())"   # should print True
+
+# GPU builds of PyTorch for the GX10 come from PyTorch's own package index
+--extra-index-url https://download.pytorch.org/whl/cu130
+
+# Deep learning / pose estimation
+torch
+torchvision
+ultralytics          # YOLO pose models (yolo11n-pose.pt, yolo11m-pose.pt)
+
+# Video and math
+opencv-python
+numpy
+
+# Local LLM coach (talks to the Ollama service on the GX10)
+ollama
+
+# Optional: spoken feedback
+piper-tts
