@@ -67,6 +67,11 @@ python -m robot_api --dry-run -p "how far is the wall?"              # fake hard
   `ANTHROPIC_API_KEY`. `.env` is gitignored.
 - **Defaults:** `--model claude-haiku-5-5` and `--thinking low` (1024-token budget; also
   `off`, `medium`, `high`).
+- **Local model:** any `--model` not starting with `claude-` runs on Ollama, no API key needed:
+  `python -m robot_api --model qwen3.6:35b --ollama-url http://<gx10-ip>:11434` (or set
+  `OLLAMA_HOST`). Ollama on the GX10 listens on localhost only, so from a laptop tunnel it first:
+  `ssh -f -N -L 11434:127.0.0.1:11434 asus@<gx10-ip>`, then use `--ollama-url localhost:11434`.
+  Laptop dependency: `pip install langchain-ollama`.
 - **Other flags:**
   - `--max-steps 40`: caps the agent loop for one task.
   - `--show-thinking`: prints the model's reasoning.
