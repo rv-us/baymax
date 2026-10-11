@@ -84,7 +84,8 @@ class Monitor:
         h = self.health or {}
         return {
             "dry_run": self.settings.dry_run,
-            "webcam": self.gateway.webcam is not None,
+            "webcam": {"pose": self.gateway.webcam.source, "ms": self.gateway.webcam.ms,
+                       "gx10": bool(self.gateway.webcam.pose_url)} if self.gateway.webcam is not None else None,
             "links": {"robot": self.robot, "camera": self.camera, "llm": self.llm},
             "health": {"battery_v": h.get("battery_v"), "battery_pct": h.get("approx_pct"),
                        "needs_charge": h.get("needs_charge"), "hottest": h.get("hottest"),

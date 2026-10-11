@@ -1,58 +1,52 @@
 """The laptop's webcam as the dashboard's camera, with arm pose tracking from arm_mvp.
 
 In a dry run there is no robot camera, so this stands in for it: it reads the webcam on a
-background thread, runs arm_mvp's estimator (MediaPipe landmarks -> calibrated 3D arm ->
-joint angles) on every new frame, and keeps the newest annotated JPEG and the newest pose.
-The dashboard reads from here exactly as it would read the robot's camera and a pose
-tracker: frames from `jpeg()`, where the patient stands from `pose()`, and the tracked
-joint angle a session mirrors from `pose()["angles"]`.
+background thread, tracks the patient's arms on every frame, and keeps the newest annotated
+JPEG and the newest pose. The dashboard reads from here exactly as it would read the robot's
+camera and a pose tracker: frames from `jpeg()`, where the patient stands from `pose()`, and
+the tracked joint angle a session mirrors from `pose()["angles"]`.
 
-OpenCV and MediaPipe are optional. Without them, or without a webcam, `start()` returns
-False and says why in `status`; the dashboard falls back to its fake frame.
+The tracking (MediaPipe landmarks, the 3D arm solve, joint angles) is the heavy part and has
+two homes. With a `pose_url` each frame is sent to the GX10's pose service
+(dashboard/pose_service.py) and its answer is used; without one, or if the GX10 stops
+answering, the same code (dashboard/armtrack.py) runs here when MediaPipe is installed.
+
+OpenCV is needed either way. Without a webcam `start()` returns False and says why in
+`status`; the dashboard falls back to its fake frame.
 """
 from __future__ import annotations
 
-import math
-import os
 import sys
 import threading
 import time
+import urllib.error
+import urllib.request
+import uuid
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ARM_MVP = os.path.join(ROOT, "arm_mvp")
-BODY_TO_SHOULDERS = 4.5   # a standing body is about this many shoulder widths tall
-HOLD_STATES = ("TRACKING", "HOLD")
+from .armtrack import EMPTY_POSE
 
-
-def load_estimator():
-    """arm_mvp's own pieces. They import each other by bare name, so its folder goes on the path."""
-    if ARM_MVP not in sys.path:
-        sys.path.insert(0, ARM_MVP)
-    import arm_mimic  # noqa: PLC0415  (pulls in cv2, mediapipe, solver, calibration, filters)
-    import calibration
-    import solver
-    return arm_mimic, calibration, solver
-
-
-def elevation_deg(shoulder, elbow) -> float | None:
-    """How far the upper arm is lifted from hanging, in the torso frame (forward, left, up)."""
-    d = [e - s for e, s in zip(elbow, shoulder)]
-    n = math.sqrt(sum(c * c for c in d))
-    return None if n < 1e-6 else math.degrees(math.acos(max(-1.0, min(1.0, -d[2] / n))))
+COLORS = {"TRACKING": (80, 220, 80), "HOLD": (0, 210, 255), "LOST": (60, 60, 255)}  # BGR
+REMOTE_TIMEOUT_S = 2.0
+REMOTE_RETRY_S = 5.0     # after a failure, use the local tracker this long before asking the GX10 again
 
 
 class Webcam:
-    def __init__(self, index: str | int | None = "auto", on_pose=None):
+    def __init__(self, index: str | int | None = "auto", on_pose=None, pose_url: str | None = None):
         self.index = index
         self.on_pose = on_pose            # called about 5 times a second with pose()
+        self.pose_url = pose_url.rstrip("/") if pose_url else None
         self.status = {"state": "off", "detail": "Not started"}
-        self.tracking = False             # arm tracking is running (MediaPipe loaded)
+        self.tracking = False             # arm tracking is available (on the GX10 or here)
+        self.source = "none"              # where the newest pose was computed: "gx10", "local" or "none"
+        self.ms = None                    # how long the newest pose took, start to finish
         self._lock = threading.Lock()
         self._jpeg: bytes | None = None
-        self._raw = None
-        self._pose = {"visible": False, "x": 0.0, "size": 0.0, "angles": {}, "arms": {}, "t": 0.0}
+        self._pose = dict(EMPTY_POSE, t=0.0)
         self._alive = False
-        self._thread: threading.Thread | None = None
+        self._local = None                # an ArmTracker, made when first needed
+        self._local_error = ""
+        self._remote_down_until = 0.0
+        self._session = uuid.uuid4().hex[:12]
 
     # ---- lifecycle ----------------------------------------------------------------
 
@@ -68,17 +62,15 @@ class Webcam:
             self.status = {"state": "down", "detail": "No webcam found, or another program is using it."}
             return False
         self._cap = cap
-        self._detect, note = None, ""
-        try:
-            self._arm_mimic, self._calibration, self._solver = load_estimator()
-            self._detect, self._close = self._arm_mimic.make_landmarker()
-            self.tracking = True
-        except Exception as e:  # no mediapipe, no model file: still a camera
-            note = f" (no pose tracking: {str(e)[:70]})"
+        remote = self._remote_health() if self.pose_url else False
+        if self.pose_url and not remote:
+            print(f"webcam: the pose service at {self.pose_url} didn't answer; tracking here instead.")
+        if not remote:
+            self._get_local()
+        self.tracking = remote or self._local is not None
+        self._set_status()
         self._alive = True
-        self.status = {"state": "ok", "detail": "Laptop webcam" + note}
-        self._thread = threading.Thread(target=self._run, name="dashboard-webcam", daemon=True)
-        self._thread.start()
+        threading.Thread(target=self._run, name="dashboard-webcam", daemon=True).start()
         return True
 
     def stop(self) -> None:
@@ -98,16 +90,61 @@ class Webcam:
                 cap.release()
         return None
 
+    def _set_status(self) -> None:
+        if self.source == "gx10" or (self.pose_url and self.source == "none" and not self._local):
+            note = " · pose on the GX10"
+        elif self._local is not None:
+            note = " · pose on this computer" + (" (the GX10 isn't answering)" if self.pose_url else "")
+        else:
+            note = f" (no pose tracking: {self._local_error[:70]})" if self._local_error else " (no pose tracking)"
+        self.status = {"state": "ok", "detail": "Laptop webcam" + note}
+
+    # ---- where the pose is computed -----------------------------------------------
+
+    def _get_local(self):
+        if self._local is None and not self._local_error:
+            try:
+                from .armtrack import ArmTracker
+                self._local = ArmTracker()
+            except Exception as e:  # no mediapipe, no model file: still a camera
+                self._local_error = str(e) or type(e).__name__
+        return self._local
+
+    def _remote_health(self) -> bool:
+        try:
+            with urllib.request.urlopen(f"{self.pose_url}/health", timeout=REMOTE_TIMEOUT_S) as r:
+                return r.status == 200
+        except (OSError, ValueError):
+            return False
+
+    def _remote(self, jpeg: bytes, t: float):
+        import json
+        req = urllib.request.Request(f"{self.pose_url}/track?session={self._session}&t={t:.3f}", data=jpeg,
+                                     headers={"Content-Type": "image/jpeg"}, method="POST")
+        with urllib.request.urlopen(req, timeout=REMOTE_TIMEOUT_S) as r:
+            out = json.loads(r.read())
+        return out["pose"], out["overlay"]
+
+    def _compute(self, frame, jpeg: bytes, t: float):
+        """(pose, overlay, where) for one frame: the GX10 if it's answering, else here."""
+        if self.pose_url and time.monotonic() >= self._remote_down_until:
+            try:
+                pose, overlay = self._remote(jpeg, t)
+                return pose, overlay, "gx10"
+            except (OSError, ValueError, KeyError) as e:
+                self._remote_down_until = time.monotonic() + REMOTE_RETRY_S
+                self._get_local()
+        local = self._get_local()
+        if local is None:
+            return dict(EMPTY_POSE), {"shoulders": None, "arms": {}}, "none"
+        pose, overlay = local.process(frame, t)
+        return pose, overlay, "local"
+
     # ---- the loop -----------------------------------------------------------------
 
     def _run(self) -> None:
-        cv2, np = self._cv2, __import__("numpy")
-        args = self._arm_mimic.parse_args([]) if self.tracking else None
-        if self.tracking:
-            calib = self._calibration.new_state(self._calibration.load())
-            arms = {s: self._arm_mimic.new_arm(s, args) for s in "LR"}
-        t0 = t_prev = time.monotonic()
-        stamp, last_push = -1, 0.0
+        cv2 = self._cv2
+        t0, last_push = time.monotonic(), 0.0
         while self._alive:
             ok, frame = self._cap.read()
             if not ok:
@@ -115,20 +152,21 @@ class Webcam:
                 time.sleep(0.5)
                 continue
             now = time.monotonic()
-            t, dt, t_prev = now - t0, max(now - t_prev, 1e-3), now
-            h, w = frame.shape[:2]
-            lm, pose = None, {"visible": False, "x": 0.0, "size": 0.0, "angles": {}, "arms": {}}
+            pose, overlay, where = dict(EMPTY_POSE), {"shoulders": None, "arms": {}}, "none"
             if self.tracking:
-                stamp = max(stamp + 1, int(t * 1000))
+                ok_enc, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 75])
                 try:
-                    lm = self._detect(frame, stamp)
-                    pose = self._track(lm, calib, arms, args, t, dt, (w, h), np)
+                    pose, overlay, where = self._compute(frame, buf.tobytes(), now - t0)
                 except Exception as e:  # one bad frame must not end tracking
                     self.status = {"state": "ok", "detail": f"Laptop webcam (pose error: {str(e)[:60]})"}
             pose["t"] = time.time()
-            jpeg = self._annotate(frame, lm, arms if self.tracking else {}, pose)
+            self.ms = round((time.monotonic() - now) * 1000)
+            if where != self.source:
+                self.source = where
+                self._set_status()
+            jpeg = self._annotate(frame, overlay)
             with self._lock:
-                self._raw, self._jpeg, self._pose = frame, jpeg, pose
+                self._jpeg, self._pose = jpeg, pose
             if self.on_pose and now - last_push > 0.2:
                 last_push = now
                 try:
@@ -136,51 +174,20 @@ class Webcam:
                 except Exception:
                     pass
         self._cap.release()
-        if self.tracking:
-            self._close()
+        if self._local is not None:
+            self._local.close()
 
-    def _track(self, lm, calib, arms, args, t, dt, size, np) -> dict:
-        w, h = size
-        cal_mod = self._calibration
-        if lm is None:
-            cal_mod.update(calib, None, None, None, t)
-        else:
-            cal_mod.update(calib, lm[0][:, :2] * (w, h), lm[1], lm[2], t)  # in memory only; never saved
-        self._arm_mimic.track_arms(arms, lm, calib["cal"], t, dt, size, args)
-        if lm is None:
-            return {"visible": False, "x": 0.0, "size": 0.0, "angles": {}, "arms": {s: a["state"] for s, a in arms.items()}}
-        px = lm[0][:, :2] * (w, h)
-        l_sh, r_sh = px[11], px[12]
-        seen = lm[2][11] >= args.min_vis and lm[2][12] >= args.min_vis
-        width_px = float(np.linalg.norm(l_sh - r_sh))
-        mid_x = (l_sh[0] + r_sh[0]) / 2
-        elev, flex = [], []
-        for side, arm in arms.items():
-            if arm["state"] in HOLD_STATES and arm["pts"] is not None:
-                e = elevation_deg(arm["pts"][0], arm["pts"][1])
-                if e is not None:
-                    elev.append(e)
-                flex.append(180.0 - arm["angles"][2])
-        return {"visible": bool(seen), "x": float(max(-1.0, min(1.0, mid_x / w * 2 - 1))),
-                "size": float(max(0.0, min(1.0, BODY_TO_SHOULDERS * width_px / h))),
-                "angles": {"shoulder_elevation": sum(elev) / len(elev) if elev else None,
-                           "elbow": sum(flex) / len(flex) if flex else None},
-                "arms": {s: a["state"] for s, a in arms.items()},
-                "calibrated": bool(calib["locked"])}
-
-    def _annotate(self, frame, lm, arms, pose) -> bytes | None:
+    def _annotate(self, frame, overlay) -> bytes | None:
         """The frame with the tracked arms drawn on it, as the dashboard shows it."""
         cv2 = self._cv2
         view = frame.copy()
-        if lm is not None and arms:
-            h, w = view.shape[:2]
-            px = lm[0][:, :2] * (w, h)
-            colors = self._arm_mimic.COLORS
-            cv2.line(view, tuple(map(int, px[11])), tuple(map(int, px[12])), (220, 220, 220), 1, cv2.LINE_AA)
-            for side, arm in arms.items():
-                pts = [tuple(map(int, px[i])) for i in self._arm_mimic.ARM_IDX[side]]
-                for a, b in zip(pts, pts[1:]):
-                    cv2.line(view, a, b, colors[arm["state"]], 3, cv2.LINE_AA)
+        if overlay.get("shoulders"):
+            a, b = (tuple(int(v) for v in p) for p in overlay["shoulders"])
+            cv2.line(view, a, b, (220, 220, 220), 1, cv2.LINE_AA)
+            for arm in overlay["arms"].values():
+                pts = [tuple(int(v) for v in p) for p in arm["pts"]]
+                for p, q in zip(pts, pts[1:]):
+                    cv2.line(view, p, q, COLORS.get(arm["state"], COLORS["LOST"]), 3, cv2.LINE_AA)
                 for p in pts:
                     cv2.circle(view, p, 5, (255, 255, 255), -1)
         ok, buf = cv2.imencode(".jpg", view, [cv2.IMWRITE_JPEG_QUALITY, 80])
@@ -194,11 +201,12 @@ class Webcam:
 
     def jpeg(self, width: int = 640, quality: int = 70) -> bytes | None:
         with self._lock:
-            jpeg, raw = self._jpeg, self._raw
+            jpeg = self._jpeg
         if jpeg is None or width >= 640:
             return jpeg
+        import numpy as np
         cv2 = self._cv2
-        arr = cv2.imdecode(__import__("numpy").frombuffer(jpeg, "uint8"), cv2.IMREAD_COLOR)
+        arr = cv2.imdecode(np.frombuffer(jpeg, "uint8"), cv2.IMREAD_COLOR)
         h = int(arr.shape[0] * width / arr.shape[1])
         ok, buf = cv2.imencode(".jpg", cv2.resize(arr, (width, h)), [cv2.IMWRITE_JPEG_QUALITY, quality])
         return buf.tobytes() if ok else jpeg

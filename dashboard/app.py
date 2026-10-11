@@ -73,7 +73,7 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     if settings.webcam:  # a dry run's camera: the laptop's own, with arm tracking, if it can be opened
         from .webcam import Webcam
 
-        webcam = Webcam(settings.webcam, on_pose=live.apply_pose)
+        webcam = Webcam(settings.webcam, on_pose=live.apply_pose, pose_url=settings.pose_url)
         if webcam.start():
             gateway.webcam = webcam
         else:

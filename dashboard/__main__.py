@@ -12,6 +12,25 @@ import os
 import sys
 
 
+def pose_service_url(choice: str, ollama: str | None) -> str | None:
+    """The GX10 pose service to use: given outright, or found next to the Ollama host."""
+    if choice == "off":
+        return None
+    if choice != "auto":
+        return choice if "://" in choice else f"http://{choice}"
+    from urllib.parse import urlparse
+    host = urlparse(ollama if ollama and "://" in ollama else f"http://{ollama or ''}").hostname
+    if host in (None, "", "localhost", "127.0.0.1"):
+        return None
+    url = f"http://{host}:9000"
+    try:
+        import urllib.request
+        with urllib.request.urlopen(f"{url}/health", timeout=2) as r:
+            return url if r.status == 200 else None
+    except (OSError, ValueError):
+        return None
+
+
 def main():
     ap = argparse.ArgumentParser(description="Baymax physical-therapy dashboard.")
     ap.add_argument("--dry-run", action="store_true",
@@ -22,6 +41,9 @@ def main():
     ap.add_argument("--webcam", default=None, metavar="auto|N|off",
                     help="use the laptop webcam as the robot camera and track the patient's arms with arm_mvp "
                          "(default: auto in a dry run, off with a robot)")
+    ap.add_argument("--pose-url", default="auto", metavar="auto|URL|off",
+                    help="send camera frames to the GX10 pose service and use its answer (default auto: the "
+                         "--ollama-url host on port 9000, if the service answers there)")
     ap.add_argument("--host", default="127.0.0.1", help="0.0.0.0 to serve tablets and phones on the LAN")
     ap.add_argument("--port", type=int, default=8080)
     args = ap.parse_args()
@@ -43,6 +65,7 @@ def main():
         settings.model = args.model
     choice = args.webcam or ("auto" if args.dry_run else "off")
     settings.webcam = None if choice == "off" else choice
+    settings.pose_url = pose_service_url(args.pose_url, args.ollama_url)
     settings.stub_llm = args.dry_run and not args.ollama_url
 
     if args.host not in ("127.0.0.1", "localhost"):
