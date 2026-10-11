@@ -10,7 +10,7 @@ Step-by-step usage: [docs/running-the-stream.md](../docs/running-the-stream.md).
 | `install.sh` | One-time setup: installs packages and checks GStreamer, OpenCV, and SSH to the Pi |
 | `network_setup.sh` | Turns off Wi-Fi power saving on both and pins the GX10 to the Pi's access point |
 | `network_reset.sh` | Removes the access-point pin (run before leaving a venue) |
-| `start_pi_sender.sh` | Starts the camera stream on the Pi, auto-pointed at the GX10's current IP |
+| `start_pi_sender.sh` | Starts the camera stream on the Pi, auto-pointed at the GX10's current IP. Also writes JPEG snapshots on the Pi for the robot API's camera |
 | `stop_pi_sender.sh` | Stops the camera stream on the Pi |
 | `start_receiver.sh` | Headless receiver that prints fps (quick test) |
 | `receiver.py` | `FrameReceiver` class: gives your code the newest frame as a numpy array |

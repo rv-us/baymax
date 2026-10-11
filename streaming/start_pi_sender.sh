@@ -16,9 +16,15 @@ echo "GX10 address on $GX10_IFACE: $GX10_IP"
 ssh "$PI_HOST" "pkill -f '[g]st-launch-1.0.* v4l2src' || true"
 sleep 1
 
+# The camera feed is split (tee): one branch is the H.264 stream to the GX10,
+# the other writes JPEG snapshots on the Pi for the robot API's camera endpoint
+# (only one program can open the camera, so this sender feeds both).
 ssh "$PI_HOST" "nohup gst-launch-1.0 v4l2src device=$VIDEO_DEVICE \
   ! video/x-raw,format=YUY2,width=$VIDEO_WIDTH,height=$VIDEO_HEIGHT,framerate=$VIDEO_FPS/1 \
-  ! videoconvert ! video/x-raw,format=I420 \
+  ! tee name=t \
+  t. ! queue leaky=downstream max-size-buffers=2 ! videorate ! video/x-raw,framerate=$SNAPSHOT_FPS/1 \
+  ! videoconvert ! jpegenc quality=85 ! multifilesink location=$SNAPSHOT_PATH \
+  t. ! queue ! videoconvert ! video/x-raw,format=I420 \
   ! x264enc tune=zerolatency speed-preset=ultrafast bitrate=$VIDEO_BITRATE_KBPS key-int-max=$KEYFRAME_INTERVAL threads=2 \
   ! video/x-h264,profile=baseline ! h264parse ! rtph264pay config-interval=1 pt=96 \
   ! udpsink host=$GX10_IP port=$VIDEO_PORT sync=false \

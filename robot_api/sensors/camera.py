@@ -1,7 +1,7 @@
 """Head camera.
 
-If the shared camera stream is running (tmp/start_camera_stream.sh: one
-GStreamer process feeding both the live H.264 viewer and SHARED_FRAME), frames
+If the camera stream is running (streaming/start_pi_sender.sh: one GStreamer
+process feeding both the H.264 stream to the GX10 and SHARED_FRAME), frames
 come from that file, since only one program can open the camera. Otherwise the
 camera is opened directly like hiwonder.Camera (first device, YUYV), with the
 flip from /boot/camera_setting.yaml applied either way."""

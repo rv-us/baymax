@@ -30,6 +30,7 @@ python3 receiver.py     # prints fps; add --show if a monitor is plugged into th
 
 - `network_setup.sh` turns off Wi-Fi power saving and pins the GX10 to the Pi's access point. Once it's applied at a venue, it stays applied until you run `network_reset.sh`.
 - `start_pi_sender.sh` stops any sender already running on the Pi first, so there is only ever one.
+- The sender also writes 5 fps JPEG snapshots to `/dev/shm/baymax_cam.jpg` on the Pi for the robot API's camera endpoint (`/sensors/camera.jpg`). Only one program can open the camera, so start the stream with this script, not a hand-typed `gst-launch` command, or the robot API loses its camera.
 - You can start the sender and the receiver in either order.
 
 ## Using the frames in your own code
