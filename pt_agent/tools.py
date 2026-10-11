@@ -197,10 +197,7 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         """Speak out loud to the patient. One or two short, warm sentences."""
         return speak(text)
 
-    @tool
-    def listen(timeout_s: float = 10) -> dict:
-        """Wait for the patient to say something and return it ({"heard": null} if they
-        stayed silent). say() your question first; ask one question at a time."""
+    def hear(timeout_s: float) -> dict:
         text = ears.listen(timeout_s)
         session.event("patient", text)
         if text:
@@ -209,6 +206,20 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         if alert.text:
             out["alert"] = f"pain words heard ({alert.text!r}); motors stopped"
         return out
+
+    @tool
+    def ask(question: str, timeout_s: float = 10) -> dict:
+        """Ask the patient one question out loud and wait for the answer, in one step: use it
+        for every question. Returns {"heard": their words} ({"heard": null} if they stayed
+        silent). Put the question itself in `question`, not in your text, so it isn't said twice."""
+        speak(question)
+        return hear(timeout_s)
+
+    @tool
+    def listen(timeout_s: float = 10) -> dict:
+        """Wait for the patient to say something and return it ({"heard": null} if they
+        stayed silent). To ask something, use ask() instead, which speaks and listens."""
+        return hear(timeout_s)
 
     # ---- seeing ------------------------------------------------------------------
 
@@ -506,6 +517,6 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         call("sensors/matrix/icon", name="heart")
         return {"saved": path}
 
-    own = [say, listen, people_in_view, camera_view, follow_person, look, wait_for_patient,
+    own = [say, ask, listen, people_in_view, camera_view, follow_person, look, wait_for_patient,
            approach_patient, take_temperature, safety_demo, clear_alert, record, end_session]
     return [gate(t) for t in base + own]
