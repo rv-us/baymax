@@ -1,6 +1,6 @@
 # Running the TonyPi → GX10 Video and Audio Stream
 
-Everything runs from the **GX10**. The scripts control the Pi over SSH (host alias `tonypi`), so you never need to log into the Pi. For first-time network setup and troubleshooting, see [streaming-setup.md](streaming-setup.md).
+Everything runs from the **GX10**. The camera comes from the robot API on request (H.264 over UDP), and the microphone from a sender the scripts start over SSH (host alias `tonypi`), so you never need to log into the Pi. For first-time network setup and troubleshooting, see [streaming-setup.md](streaming-setup.md).
 
 ## Get the code onto the GX10 (once)
 
