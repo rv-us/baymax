@@ -28,6 +28,7 @@ from .pose_service import SERVICE
 
 COLORS = {"TRACKING": (80, 220, 80), "HOLD": (0, 210, 255), "LOST": (60, 60, 255)}  # BGR
 REMOTE_TIMEOUT_S = 2.0
+SLOW_RTT_S = 0.35        # beyond this smoothed round trip, frames go to the GX10 at half size
 REMOTE_RETRY_S = 5.0     # after a failure, use the local tracker this long before asking the GX10 again
 
 
@@ -48,6 +49,8 @@ class Webcam:
         self._local_error = ""
         self._remote_down_until = 0.0
         self._session = uuid.uuid4().hex[:12]
+        self._conn = None                 # the open connection to the GX10
+        self._rtt = 0.0                   # smoothed seconds per frame to the GX10
 
     # ---- lifecycle ----------------------------------------------------------------
 
@@ -119,19 +122,45 @@ class Webcam:
         except (OSError, ValueError):
             return False
 
-    def _remote(self, jpeg: bytes, t: float):
+    def _remote(self, frame, t: float):
+        """One frame to the GX10 over a connection kept open between frames. On a slow link
+        the frame is sent at half size (the arm solve doesn't depend on the scale) and the
+        overlay is scaled back up to this picture."""
+        import http.client
         import json
-        req = urllib.request.Request(f"{self.pose_url}/track?session={self._session}&t={t:.3f}", data=jpeg,
-                                     headers={"Content-Type": "image/jpeg"}, method="POST")
-        with urllib.request.urlopen(req, timeout=REMOTE_TIMEOUT_S) as r:
-            out = json.loads(r.read())
-        return out["pose"], out["overlay"]
+        from urllib.parse import urlparse
 
-    def _compute(self, frame, jpeg: bytes, t: float):
+        import cv2
+        small = self._rtt > SLOW_RTT_S
+        send = cv2.resize(frame, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA) if small else frame
+        jpeg = cv2.imencode(".jpg", send, [cv2.IMWRITE_JPEG_QUALITY, 70])[1].tobytes()
+        started = time.monotonic()
+        try:
+            if self._conn is None:
+                u = urlparse(self.pose_url)
+                self._conn = http.client.HTTPConnection(u.hostname, u.port or 80, timeout=REMOTE_TIMEOUT_S)
+            self._conn.request("POST", f"/track?session={self._session}&t={t:.3f}", jpeg, {"Content-Type": "image/jpeg"})
+            resp = self._conn.getresponse()
+            body = resp.read()
+            if resp.status != 200:
+                raise OSError(f"pose service answered {resp.status}")
+        except Exception:
+            self._conn = None
+            raise
+        self._rtt = 0.7 * self._rtt + 0.3 * (time.monotonic() - started)
+        out = json.loads(body)
+        k = 2.0 if small else 1.0
+        overlay = out["overlay"]
+        if small and overlay.get("shoulders"):
+            overlay = {"shoulders": [[x * k, y * k] for x, y in overlay["shoulders"]],
+                       "arms": {s: {**a, "pts": [[x * k, y * k] for x, y in a["pts"]]} for s, a in overlay["arms"].items()}}
+        return out["pose"], overlay
+
+    def _compute(self, frame, t: float):
         """(pose, overlay, where) for one frame: the GX10 if it's answering, else here."""
         if self.pose_url and time.monotonic() >= self._remote_down_until:
             try:
-                pose, overlay = self._remote(jpeg, t)
+                pose, overlay = self._remote(frame, t)
                 return pose, overlay, "gx10"
             except (OSError, ValueError, KeyError) as e:
                 self._remote_down_until = time.monotonic() + REMOTE_RETRY_S
@@ -156,9 +185,8 @@ class Webcam:
             now = time.monotonic()
             pose, overlay, where = dict(EMPTY_POSE), {"shoulders": None, "arms": {}}, "none"
             if self.tracking:
-                ok_enc, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, 75])
                 try:
-                    pose, overlay, where = self._compute(frame, buf.tobytes(), now - t0)
+                    pose, overlay, where = self._compute(frame, now - t0)
                 except Exception as e:  # one bad frame must not end tracking
                     self.status = {"state": "ok", "detail": f"Laptop webcam (pose error: {str(e)[:60]})"}
             pose["t"] = time.time()

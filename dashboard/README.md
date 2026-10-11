@@ -10,7 +10,16 @@ BAYMAX_API_TOKEN=secret python -m dashboard --robot-url http://<robot>:8000 --ol
 python -m dashboard --dry-run --host 0.0.0.0                # also reachable from other machines on the LAN
 python -m dashboard --dry-run --webcam off                    # keep the fake camera frame (--webcam 1 picks another camera)
 
-In a dry run the laptop's webcam is used as the robot camera when one can be opened (`--webcam auto`, the default with `--dry-run`; needs `opencv-python` and `mediapipe`). `arm_mvp`'s estimator tracks the patient's arms on every frame: the camera panel shows the skeleton, the patient-in-frame state comes from it, and a live session mirrors a real patient in real time (the log is marked `source: live-webcam`, not synthetic). Exercises that track a joint it can't read (knee, trunk) fall back to the simulated patient and the log says so. Frames are not sent to the GX10 yet.
+In a dry run the laptop's webcam is used as the robot camera when one can be opened (`--webcam auto`, the default with `--dry-run`; needs `opencv-python` and `mediapipe`). `arm_mvp`'s estimator tracks the patient's arms on every frame: the camera panel shows the skeleton, the patient-in-frame state comes from it, and a live session mirrors a real patient in real time (the log is marked `source: live-webcam`, not synthetic). Exercises that track a joint it can't read (knee, trunk) fall back to the simulated patient and the log says so. 
+
+**Offloading the tracking to the GX10.** The tracking is the heavy part, so the GX10 can do it. On the GX10, `./dashboard/start_pose_service.sh` makes a `.venv` the first time and starts `python -m dashboard.pose_service` on port 9100 (log: `~/pose_service.log`). On the dashboard machine, `--pose-url` points at it, and `--pose-url auto` (the default) uses the `--ollama-url` host on port 9100 if the service answers there:
+
+```
+python -m dashboard --dry-run --ollama-url http://<gx10>:11434      # frames go to http://<gx10>:9100
+python -m dashboard --dry-run --pose-url http://<gx10>:9100 / off
+```
+
+The dashboard sends each frame as a JPEG over one open connection (half size when the link is slow), gets the pose and the arm overlay back, and uses them exactly as it uses the local tracker. If the GX10 stops answering it tracks locally and retries every few seconds; the camera tag says where the pose is being computed. The service has no login: use it on a trusted network. The robot's own camera stream can post to the same `/track` endpoint.
 ```
 
 Open http://127.0.0.1:8080. The built web app is committed (`web/dist`), so running needs no node and no internet.

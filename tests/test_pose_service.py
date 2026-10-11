@@ -31,8 +31,11 @@ class StandIn:
         pass
 
 
+FRAME = np.zeros((48, 64, 3), np.uint8)
+
+
 def jpeg():
-    return cv2.imencode(".jpg", np.zeros((48, 64, 3), np.uint8))[1].tobytes()
+    return cv2.imencode(".jpg", FRAME)[1].tobytes()
 
 
 @pytest.fixture
@@ -53,17 +56,33 @@ def test_the_dashboard_gets_the_pose_the_gx10_computed(service):
     url, _ = service
     cam = Webcam(pose_url=url)
     assert cam._remote_health()
-    pose, overlay, where = cam._compute(None, jpeg(), 1.0)
+    pose, overlay, where = cam._compute(FRAME, 1.0)
     assert where == "gx10" and pose["angles"]["shoulder_elevation"] == 10.0 and overlay["shoulders"] == [[1, 2], [3, 4]]
-    assert cam._compute(None, jpeg(), 1.1)[0]["angles"]["shoulder_elevation"] == 20.0  # same patient, same tracker
+    assert cam._compute(FRAME, 1.1)[0]["angles"]["shoulder_elevation"] == 20.0  # same patient, same tracker
 
 
 def test_each_patient_session_has_its_own_tracker(service):
     url, _ = service
     a, b = Webcam(pose_url=url), Webcam(pose_url=url)
-    a._compute(None, jpeg(), 1.0); a._compute(None, jpeg(), 1.1)
-    assert b._compute(None, jpeg(), 1.0)[0]["angles"]["shoulder_elevation"] == 10.0
+    a._compute(FRAME, 1.0); a._compute(FRAME, 1.1)
+    assert b._compute(FRAME, 1.0)[0]["angles"]["shoulder_elevation"] == 10.0
     assert len(StandIn.made) == 2
+
+
+def test_a_slow_link_sends_half_size_frames_and_the_overlay_is_scaled_back(service):
+    url, _ = service
+    cam = Webcam(pose_url=url)
+    cam._cv2 = cv2
+    cam._rtt = 1.0
+    seen = {}
+    orig = StandIn.process
+    StandIn.process = lambda self, frame, t: (seen.setdefault("shape", frame.shape), orig(self, frame, t))[1]
+    try:
+        _, overlay, where = cam._compute(FRAME, 1.0)
+    finally:
+        StandIn.process = orig
+    assert where == "gx10" and seen["shape"][:2] == (24, 32)
+    assert overlay["shoulders"] == [[2, 4], [6, 8]]
 
 
 def test_a_body_that_is_not_a_jpeg_is_refused(service):
@@ -79,12 +98,12 @@ def test_when_the_gx10_stops_answering_tracking_continues_here(service):
     url, server = service
     cam = Webcam(pose_url=url)
     cam._local = StandIn()
-    assert cam._compute(None, jpeg(), 1.0)[2] == "gx10"
+    assert cam._compute(FRAME, 1.0)[2] == "gx10"
     server.should_exit = True
     time.sleep(0.6)
-    pose, _, where = cam._compute(None, jpeg(), 2.0)
+    pose, _, where = cam._compute(FRAME, 2.0)
     assert where == "local" and cam._remote_down_until > time.monotonic()
-    assert cam._compute(None, jpeg(), 2.1)[2] == "local"       # and it doesn't hammer the dead service
+    assert cam._compute(FRAME, 2.1)[2] == "local"       # and it doesn't hammer the dead service
 
 
 def test_the_pose_service_is_found_next_to_the_ollama_host(service):
