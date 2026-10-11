@@ -1,11 +1,13 @@
 """The dashboard's link to the GX10's microphone (voice/service.py): captions in, "the robot is talking" out.
 
-    link = VoiceLink(settings, hear, hub)       # hear(text, age_s) -> what became of it (see app.py)
+    link = VoiceLink(settings, hear, hub)       # hear(text, age_s, final, utt) -> what became of it (see app.py)
     link.start()                                # keeps trying until the voice service answers
     gateway.on_speaking = link.set_speaking     # told whenever the robot starts or stops talking
 
-Everything the patient says is asked for with one waiting request (`/heard?after=SEQ&wait=S`), so a caption
-arrives as soon as Whisper has it. What was said before the link came up, or while it was down, is not replayed:
+Everything the patient says is asked for with one waiting request (`/heard?after=SEQ&wait=S`), so words arrive
+as they are spoken: the GX10 reads the utterance every quarter second while the patient is still talking and sends
+those partial words (`final` false), then the whole utterance when they pause. `hear` can act on the first partial
+that is already an answer, so a session moves on the moment the patient has said it, not after the silence. What was said before the link came up, or while it was down, is not replayed:
 an old "ow" must not stop a session minutes after it was said. The other direction is a small sender that
 makes the GX10 ignore the microphone exactly while the robot talks (it is told before the robot makes a sound).
 
@@ -150,8 +152,10 @@ class VoiceLink:
             outcome = "stale"
         else:
             try:
-                outcome = self.hear(text, age)
+                outcome = self.hear(text, age, bool(item.get("final", True)), item.get("utt"))
             except Exception:   # a bad line must not end listening
                 log.exception("handling %r failed", text)
                 outcome = "error"
+        if outcome == "already":   # the rest of what was said after the answer was taken: caption it, keep the outcome
+            outcome = (self.state["last"] or {}).get("outcome", "answer")
         self._set(last={"text": text, "outcome": outcome, "t": time.time()})

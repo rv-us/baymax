@@ -143,7 +143,7 @@ export const mirror = signal<MirrorState>({ running: false, source: null, pose_o
 /** The microphone on the GX10 (voice service): is it listening, and the last thing it heard and what became of it. */
 export interface VoiceState {
   state: "off" | "connecting" | "listening" | "down"; url: string | null; muted: boolean; error: string | null;
-  last: { text: string; outcome: "answer" | "pain" | "echo" | "unprompted" | "stale" | "error"; t: number } | null;
+  last: { text: string; outcome: "answer" | "pain" | "echo" | "unprompted" | "hearing" | "stale" | "error"; t: number } | null;
 }
 export const voice = signal<VoiceState>({ state: "off", url: null, muted: false, error: null, last: null });
 export const live = signal<Live>({ running: false, frame: { visible: true, x: 0, size: 0.6 }, advice: null });

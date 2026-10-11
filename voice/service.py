@@ -8,8 +8,11 @@ dashboard, wherever it runs (this machine or a laptop), asks for it and tells th
 talking, the same way it gets the camera from the pose service:
 
     GET  /health                       {"ok": true, "service": "baymax-voice", "seq": n, "muted": bool}
-    GET  /heard?after=SEQ&wait=S       {"seq": n, "items": [{"seq", "text", "age", "duration"}]}: what was said after
-                                        SEQ (waits up to S seconds for something); `age` is seconds since it ended
+    GET  /heard?after=SEQ&wait=S       {"seq": n, "items": [{"seq", "utt", "final", "text", "age", "duration"}]}:
+                                        what was said after SEQ (waits up to S seconds for something). Words arrive
+                                        AS THEY ARE SPOKEN: every ~0.25 s the utterance so far (`final` false), then
+                                        the whole of it once the speaker pauses (`final` true); `utt` ties them together.
+                                        `age` is seconds since the speech (so far) ended
     POST /speaking {"on": true|false}  the robot starts or stops talking: the microphone is ignored while it does,
                                         and for --mute-tail seconds after (the sound takes a moment to come back)
 
@@ -28,7 +31,7 @@ import time
 DEFAULT_PORT = 9200
 SERVICE = "baymax-voice"
 MAX_MUTE_S = 90.0        # longer than any one thing the robot says
-KEEP = 100               # transcripts remembered
+KEEP = 300               # transcripts remembered (partials too)
 
 
 class VoiceHub:
@@ -42,11 +45,14 @@ class VoiceHub:
         self._stack = contextlib.ExitStack()
         self._muted_at = None
         listener.on_transcript(self._add)
+        if hasattr(listener, "on_partial"):
+            listener.on_partial(self._add)
 
     def _add(self, t) -> None:
         with self.cond:
             self.seq += 1
-            self.items.append({"seq": self.seq, "text": t.text, "end": t.end, "duration": round(t.end - t.start, 2)})
+            self.items.append({"seq": self.seq, "utt": getattr(t, "utt", 0), "final": getattr(t, "final", True),
+                               "text": t.text, "end": t.end, "duration": round(t.end - t.start, 2)})
             self.cond.notify_all()
 
     def heard(self, after: int = -1, wait: float = 0.0) -> dict:
@@ -56,8 +62,9 @@ class VoiceHub:
                 self.cond.wait(max(0.0, end - time.monotonic()))
             now = time.time()
             return {"seq": self.seq,
-                    "items": [{"seq": i["seq"], "text": i["text"], "age": round(now - i["end"], 2),
-                               "duration": i["duration"]} for i in self.items if i["seq"] > after]}
+                    "items": [{"seq": i["seq"], "utt": i["utt"], "final": i["final"], "text": i["text"],
+                               "age": round(now - i["end"], 2), "duration": i["duration"]}
+                              for i in self.items if i["seq"] > after]}
 
     def speaking(self, on: bool) -> bool:
         """The robot starts (True) or stops (False) talking. Returns whether the microphone is now ignored."""
@@ -108,14 +115,18 @@ def main() -> None:
     ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=DEFAULT_PORT)
     ap.add_argument("--model", default=None, help="Whisper model on Hugging Face (default: voice.listener's)")
-    ap.add_argument("--mute-tail", type=float, default=0.8, metavar="SECONDS",
-                    help="keep ignoring the microphone this long after the robot stops talking (default 0.8)")
+    ap.add_argument("--mute-tail", type=float, default=0.5, metavar="SECONDS",
+                    help="keep ignoring the microphone this long after the robot stops talking (default 0.5)")
+    ap.add_argument("--end-silence", type=float, default=0.6, metavar="SECONDS",
+                    help="a pause this long ends an utterance (default 0.6); answers don't wait for it, they are "
+                         "taken from the partial words as soon as they are complete")
     args = ap.parse_args()
     import uvicorn
 
     from voice.listener import MODEL, Listener
     print("loading Silero VAD and Whisper...", flush=True)
-    listener = Listener(model=args.model or MODEL, mute_after_s=args.mute_tail).start()
+    listener = Listener(model=args.model or MODEL, mute_after_s=args.mute_tail,
+                        end_silence_ms=args.end_silence * 1000).start()
     print(f"Baymax voice service on http://{args.host}:{args.port}", flush=True)
     try:
         uvicorn.run(make_app(VoiceHub(listener)), host=args.host, port=args.port, log_level="warning")

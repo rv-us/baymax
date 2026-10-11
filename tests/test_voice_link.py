@@ -20,7 +20,7 @@ class FakeListener:
     """What voice.service uses of a voice.Listener."""
 
     def __init__(self):
-        self.callbacks, self.events = [], []
+        self.callbacks, self.events, self.partial_callbacks = [], [], []
 
     def on_transcript(self, cb):
         self.callbacks.append(cb)
@@ -33,12 +33,19 @@ class FakeListener:
         finally:
             self.events.append("unmute")
 
-    def say(self, text, age=0.0):
-        """The patient says something that ended `age` seconds ago."""
+    def say(self, text, age=0.0, utt=None, final=True):
+        """The patient says something that ended `age` seconds ago (`final` False: the words so far)."""
         end = time.time() - age
-        t = type("T", (), {"text": text, "start": end - 1.0, "end": end})()
-        for cb in self.callbacks:
+        self.utts = getattr(self, "utts", 0) + (utt is None)
+        t = type("T", (), {"text": text, "start": end - 1.0, "end": end,
+                           "utt": self.utts if utt is None else utt, "final": final})()
+        for cb in (self.callbacks if final else self.partial_callbacks):
             cb(t)
+
+    partial_callbacks = None
+
+    def on_partial(self, cb):
+        self.partial_callbacks.append(cb)
 
 
 @pytest.fixture
@@ -237,3 +244,46 @@ def test_alternating_reach_does_the_left_side_then_the_right_in_a_session(tmp_pa
     assert wait_for(lambda: not parts["live"].running, 60)
     assert parts["live"].state["last"]["status"] == "completed"
     assert reached[:2] == ["left", "right"], reached              # the robot leads with one side, then the other
+
+
+# ---- streaming: the moment it is an answer, move on ----------------------------------------------
+
+def test_the_session_moves_on_the_moment_the_patient_has_answered_not_after_they_pause(mic, tmp_path, fake_robot):
+    url, listener, hub = mic
+    client, parts = dashboard_on(tmp_path, url)
+    tiny_plan(tmp_path)
+    client.post("/api/live/start", json={"plan": "tiny", "simulate": False})
+    assert wait_for(lambda: parts["live"].state.get("waiting"), 10)                 # "Are you ready?"
+    began = time.time()
+    listener.say("Yes", utt=7, final=False)                                          # the first word, mid-sentence
+    assert wait_for(lambda: parts["live"].state.get("state") not in (None, "READY_CHECK"), 5)
+    assert time.time() - began < 1.5                                                  # no waiting for silence
+    assert parts["voice"].state["last"]["outcome"] == "answer"
+    listener.say("Yes I'm ready", utt=7)                                              # the rest arrives; it is not a second answer
+    assert wait_for(lambda: parts["voice"].state["last"]["text"] == "Yes I'm ready", 5)
+    assert parts["voice"].state["last"]["outcome"] == "answer"
+    client.post("/api/live/stop")
+    assert wait_for(lambda: not parts["live"].running, 20)
+    parts["voice"].stop()
+
+
+def test_words_that_may_still_change_are_not_taken_until_they_settle(tmp_path, fake_robot):
+    client, parts = make(tmp_path)
+    tiny_plan(tmp_path)
+    hear = parts["hear"]
+    client.post("/api/live/start", json={"plan": "tiny", "simulate": False})
+    assert wait_for(lambda: parts["live"].state.get("waiting"), 10)
+    assert hear("No", 0.0, False, 1) == "hearing"                                     # "No problem, I'm ready" may follow
+    assert hear("No problem", 0.0, False, 1) == "hearing"
+    assert hear("No problem, I'm ready", 0.0, False, 1) == "answer"
+    assert hear("No problem, I'm ready.", 0.0, True, 1) == "already"
+    assert wait_for(lambda: parts["live"].state.get("state") not in (None, "READY_CHECK"), 10)
+    client.post("/api/live/stop")
+    assert wait_for(lambda: not parts["live"].running, 20)
+
+
+def test_a_pain_word_stops_the_robot_mid_sentence(tmp_path, fake_robot):
+    client, parts = make(tmp_path)
+    assert parts["hear"]("Ow", 0.0, False, 3) == "pain"                               # no waiting for the sentence to end
+    assert client.get("/api/safety").json()["stop"]["kind"] == "pain"
+    assert parts["hear"]("Ow, that really hurts", 0.0, True, 3) == "already"          # and it isn't a second stop

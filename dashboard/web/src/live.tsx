@@ -59,7 +59,7 @@ function LiveTrace() {
 }
 
 const OUTCOME: Record<string, string> = {
-  answer: "taken as the answer", pain: "pain: the robot was stopped", echo: "the robot's own voice, ignored",
+  hearing: "hearing you…", answer: "taken as the answer", pain: "pain: the robot was stopped", echo: "the robot's own voice, ignored",
   unprompted: "nothing was asked, so it was ignored", stale: "too old, ignored", error: "couldn't be handled",
 };
 

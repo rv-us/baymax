@@ -31,13 +31,15 @@ from dataclasses import dataclass
 import numpy as np
 
 from streaming.audio_receiver import AudioReceiver
-from voice.segmenter import RATE, Segmenter, Utterance
+from voice.segmenter import END_SILENCE_MS, RATE, Segmenter, Utterance
 
 MODEL = "openai/whisper-small.en"
 # Words Whisper should expect. Without it, a lone "Stop." came out as "DOP".
 PROMPT = "Stop. Yes. No. Not yet. I'm ready. That hurts. Ow."
 NO_SPEECH = 0.5      # drop audio Whisper thinks is more likely noise than speech
 MUTE_AFTER_S = 0.3   # keep ignoring the mic this long after the robot stops talking
+PARTIAL_EVERY_S = 0.25   # while someone is speaking, transcribe what has been said so far this often...
+MIN_PARTIAL_S = 0.35     # ...once there is this much speech to read
 POLL_S = 0.05
 
 # Whisper sometimes "hears" these in noise or silence; drop them when they are the whole answer.
@@ -49,8 +51,10 @@ HALLUCINATIONS = {"", "you", "thank you", "thanks for watching", "thank you for 
 class Transcript:
     text: str
     start: float            # GX10 time the speech started
-    end: float              # GX10 time the speech stopped
+    end: float              # GX10 time the speech stopped (so far, for a partial)
     transcribed_at: float   # GX10 time the text was ready
+    final: bool = True      # False: a partial, the words so far of an utterance still being spoken
+    utt: int = 0            # which utterance this is part of; a partial and its final share it
 
     @property
     def latency(self) -> float:
@@ -138,9 +142,17 @@ class Listener:
     VAD and transcription, so every utterance is heard even between listen() calls."""
 
     def __init__(self, receiver=None, vad=None, transcribe=None, model: str = MODEL,
-                 mute_after_s: float = MUTE_AFTER_S):
+                 mute_after_s: float = MUTE_AFTER_S, end_silence_ms: float = END_SILENCE_MS,
+                 partial_every_s: float | None = PARTIAL_EVERY_S):
         self.receiver = receiver
         self.mute_after_s = mute_after_s
+        self.end_silence_ms = end_silence_ms
+        self.partial_every_s = partial_every_s     # None: only whole utterances, no partials
+        self._partial_callbacks = []
+        self._utt_id = int(time.time())   # a restarted service never reuses an id the dashboard has seen
+        self._partial_at = 0.0
+        self._partial_text = None
+        self._utt_start = 0.0
         self._vad = vad
         self._transcribe = transcribe
         self._model = model
@@ -161,7 +173,7 @@ class Listener:
             self._transcribe = WhisperTranscriber(self._model)
         if self.receiver is None:
             self.receiver = AudioReceiver().start()
-        self.segmenter = Segmenter(self._vad)
+        self.segmenter = Segmenter(self._vad, self.end_silence_ms)
         self._running = True
         self._thread = threading.Thread(target=self._loop, daemon=True)
         self._thread.start()
@@ -183,6 +195,11 @@ class Listener:
     def on_transcript(self, callback):
         """Call callback(Transcript) for every transcript, from the listener's thread."""
         self._callbacks.append(callback)
+
+    def on_partial(self, callback):
+        """Call callback(Transcript with final=False) as an utterance is spoken: the words so far, about every
+        PARTIAL_EVERY_S, each time they change. The utterance's own final transcript follows when it ends."""
+        self._partial_callbacks.append(callback)
 
     def listen(self, timeout_s: float = 10) -> str | None:
         """Wait for the next utterance whose speech ends after this call. Returns its
@@ -227,16 +244,45 @@ class Listener:
                 if was_muted:
                     self.segmenter.reset()  # start clean after the robot stops talking
                     was_muted = False
-                for utt in self.segmenter.feed(arrival, pcm):
-                    self._handle(utt)
+                was_in = self.segmenter.in_utterance
+                done = self.segmenter.feed(arrival, pcm)
+                if not was_in and (self.segmenter.in_utterance or done):
+                    self._utt_id += 1                      # someone began to speak
+                    self._partial_at, self._partial_text, self._utt_start = time.time(), None, arrival
+                for utt in done:
+                    self._handle(utt, self._utt_id)
+                if self.segmenter.in_utterance:
+                    self._maybe_partial(arrival)
 
-    def _handle(self, utt: Utterance):
+    def _maybe_partial(self, arrival: float):
+        """While someone is speaking: read what has been said so far, and say so if it has changed."""
+        if not self._partial_callbacks or self.partial_every_s is None:
+            return
+        if time.time() - self._partial_at < self.partial_every_s:
+            return
+        pcm = self.segmenter.snapshot()
+        if len(pcm) < MIN_PARTIAL_S * RATE * 2:
+            return
+        self._transcribing = True
+        try:
+            text = self._transcribe(pcm)
+        finally:
+            self._transcribing = False
+            self._partial_at = time.time()
+        if not text or text == self._partial_text or not self.segmenter.in_utterance:
+            return
+        self._partial_text = text
+        t = Transcript(text, self._utt_start, arrival, time.time(), final=False, utt=self._utt_id)
+        for callback in self._partial_callbacks:
+            callback(t)
+
+    def _handle(self, utt: Utterance, utt_id: int = 0):
         self._transcribing = True
         try:
             text = self._transcribe(utt.pcm)
         finally:
             self._transcribing = False
-        t = Transcript(text, utt.start, utt.end, time.time())
+        t = Transcript(text, utt.start, utt.end, time.time(), final=True, utt=utt_id)
         with self._cond:
             if text:
                 self._transcripts.append(t)

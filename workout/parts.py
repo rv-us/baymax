@@ -93,6 +93,33 @@ def classify_ready(text) -> str:
     return "ready" if _has(text, _YES) else "unclear"
 
 
+_FINE = ("fine", "good", "great", "easy", "alright", "all right", "no trouble", "no problem", "not at all",
+         "no issues", "felt good", "felt fine", "was okay", "was ok")
+_SURE_NOT_READY = ("not yet", "not ready", "wait", "hold on", "give me", "one moment", "a minute", "later")
+
+
+def answer_complete(kind: str, text, stable: bool = False) -> bool:
+    """Is what has been said so far already a whole answer to the question (kind: "ready" | "trouble")?
+
+    This lets a session move on the moment the patient has answered, without waiting for them to stop speaking:
+    the words are read as they come. A clear "yes" or "ready" is enough at once. A bare "no", which may be the
+    start of "no problem, I'm ready", counts only once it has stopped changing (`stable`: the same words as the
+    last time they were read). Pain counts at once, always."""
+    if not text:
+        return False
+    if is_pain(text):
+        return True
+    if kind == "ready":
+        text = re.sub(r"\bno (problem|worries)\b", " ", text.lower())      # "no problem, I'm ready" goes on
+        verdict = classify_ready(text)
+        if verdict == "ready":
+            return True
+        return verdict == "not_ready" and (stable or _has(text, _SURE_NOT_READY))
+    if _has(text, _HARD) or _has(text, _FINE):
+        return True
+    return stable and _has(text, _YES + _NO)
+
+
 def classify_trouble(text) -> str:
     """none | difficulty | pain"""
     if is_pain(text):

@@ -17,6 +17,7 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from robot_api.errors import RobotError
 from workout import keyframes
 from workout.plan import EASINGS, KEYFRAME_JOINTS, PlanError, check_keyframes, parse_plan
+from workout.parts import answer_complete
 from workout.session import calories
 
 from . import poses, preview, store, synthetic
@@ -105,21 +106,39 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
             old.stop()
         return True
 
-    def hear(text: str, age: float = 0.0) -> str:
-        """What became of a line from the microphone: "echo" (the robot's own voice coming back, ignored), "pain"
-        (the robot is stopped), "answer" (a session was waiting for one and took it), or "unprompted" (nothing
-        was asked, so it is shown and dropped: a stray remark must never answer a later question)."""
+    spoken = {"done": None, "utt": None, "partial": ""}   # the utterance already acted on; the latest partial words
+
+    def hear(text: str, age: float = 0.0, final: bool = True, utt: int | None = None) -> str:
+        """What became of words from the microphone. They arrive as they are spoken: partial words every quarter
+        second (`final` False), then the whole utterance when the patient pauses. The first words that already
+        make a complete answer to the question being asked are taken at once, so the session doesn't wait for
+        the pause (workout.parts.answer_complete); pain words stop the robot at once, wherever they are.
+
+        "echo": the robot's own voice coming back, ignored. "pain": the robot was stopped. "answer": a session was
+        waiting and took it. "hearing": a partial that isn't an answer yet. "already": the rest of an utterance
+        that was already acted on. "unprompted": nothing was asked, so it is shown and dropped (a stray remark
+        must never answer a later question)."""
         if not text:
             return "unprompted"
         if is_echo(text, list(gateway.said)):
             return "echo"
-        live.update(heard=text)
+        if utt is not None and spoken["done"] == utt:
+            return "already"
+        before = spoken["partial"] if spoken["utt"] == utt else ""
+        stable = bool(before) and before == text.strip().lower()
+        spoken.update(utt=utt, partial="" if final else text.strip().lower())
+        if final:
+            live.update(heard=text)
         if safety.heard(text):
+            spoken["done"] = utt
             return "pain"
         if live.running and live.state.get("waiting") and not live.simulate:
-            live.answer(text[:300])
-            return "answer"
-        return "unprompted"
+            kind = "ready" if "ready" in (live.said or "").lower() else "trouble"
+            if final or answer_complete(kind, text, stable):
+                live.answer(text[:300])
+                spoken["done"] = utt
+                return "answer"
+        return "unprompted" if final else "hearing"
 
     voice = VoiceLink(settings, hear, hub)
     gateway.on_speaking = voice.set_speaking
@@ -134,7 +153,7 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     app.state.parts = dict(settings=settings, hub=hub, gateway=gateway, safety=safety, sessions=sessions,
                            animations=animations, plans=plans, coach=coach, monitor=monitor,
                            twin=twin, player=player, live=live, tunnel=tunnel, profiles=profiles,
-                           recorder=recorder, chat=chat, generator=generator, webcam=gateway.webcam, mirror=mirror, gx10=gx10, voice=voice,
+                           recorder=recorder, chat=chat, generator=generator, webcam=gateway.webcam, mirror=mirror, gx10=gx10, voice=voice, hear=hear,
                            attach_gx10_camera=attach_gx10_camera)
 
     def calibration_state() -> dict:

@@ -63,6 +63,10 @@ class Segmenter:
     def in_utterance(self) -> bool:
         return self._utt is not None
 
+    def snapshot(self) -> bytes:
+        """The audio of the utterance in progress so far (b"" when nobody is speaking), for a partial transcript."""
+        return b"".join(self._utt) if self._utt is not None else b""
+
     def feed(self, arrival: float, pcm: bytes) -> list:
         """Add one chunk that finished arriving at `arrival`. Returns finished Utterances."""
         data = self._pending + pcm

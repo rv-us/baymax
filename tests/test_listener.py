@@ -129,3 +129,22 @@ def test_hallucination_list_matches_after_normalizing():
     assert _normalize(" Thank you. ") in HALLUCINATIONS
     assert _normalize("Yes, I'm ready.") not in HALLUCINATIONS
     assert WhisperTranscriber  # importable without torch or transformers installed
+
+
+def test_words_are_streamed_while_the_patient_is_still_speaking():
+    """Partial transcripts come during the utterance (the words so far), before its final, which shares their id."""
+    rx = FakeReceiver()
+    listener = Listener(receiver=rx, vad=fake_vad, partial_every_s=0.0,
+                        transcribe=lambda pcm: "yes" if len(pcm) < 40000 else "yes I am ready").start()
+    events = []
+    listener.on_partial(lambda t: events.append(("partial", t)))
+    listener.on_transcript(lambda t: events.append(("final", t)))
+    rx.push([(1.5, LOUD), (1.0, QUIET)])           # speech, then the pause that ends it
+    deadline = time.time() + 3
+    while not any(kind == "final" for kind, _ in events) and time.time() < deadline:
+        time.sleep(0.01)
+    listener.stop()
+    assert [(k, t.text) for k, t in events] == [("partial", "yes"), ("partial", "yes I am ready"),
+                                                ("final", "yes I am ready")]
+    assert not events[0][1].final and events[2][1].final
+    assert len({t.utt for _, t in events}) == 1    # one utterance, three views of it
