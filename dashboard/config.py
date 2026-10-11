@@ -28,7 +28,7 @@ class Settings:
     coach_timeout_s: float = field(default_factory=lambda: float(os.environ.get("BAYMAX_COACH_TIMEOUT", "60")))
     webcam: str | None = None       # "auto" or a camera number: the laptop webcam stands in for the robot camera
     gx10_auto: bool = False         # find the GX10 at startup (set by python -m dashboard; off in tests)
-    gx10_host: str = "192.168.1.149"
+    gx10_host: str = "169.233.72.183"
     gx10_user: str = "asus"
     gx10_password: str | None = None  # never stored in code: see dashboard/gx10.py
     pose_url: str | None = None     # the GX10 pose service (python -m dashboard.pose_service); None = track here

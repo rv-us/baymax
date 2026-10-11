@@ -17,7 +17,7 @@ Most GX10 tools need `BAYMAX_API_URL=http://<robot>:8000` and `BAYMAX_API_TOKEN`
 |---|---|---|
 | `robot_api/` | The robot's HTTP API, its safety limits, and a chat agent CLI on top of it | [robot_api/README.md](robot_api/README.md) |
 | `streaming/` | Getting the robot's camera (`RobotCamera`) and microphone (`AudioReceiver`) onto the GX10 | [docs/running-the-stream.md](docs/running-the-stream.md), [streaming/README.md](streaming/README.md) |
-| `voice/` | Speech-to-text on the GX10: `Listener.listen()` (Silero VAD + Whisper on the GPU) | [docs/running-the-stream.md](docs/running-the-stream.md#speech-to-text-voicelistener) |
+| `voice/` | Speech-to-text on the GX10: `Listener.listen()` (Silero VAD + Whisper on the GPU), and `voice.bridge`, which sends what the patient says to the dashboard | [docs/running-the-stream.md](docs/running-the-stream.md#speech-to-text-voicelistener) |
 | `vision/` | Pose estimation on the robot's camera: joint angles, body-in-view (`scripts/pose_server.py --stream`) | [docs/running-the-stream.md](docs/running-the-stream.md#pose-estimation-on-the-stream) |
 | `workout/` | A workout session as a state machine: plans, demos, sets, safety stops, session logs | [workout/README.md](workout/README.md), design: [docs/workout-agent-loop.md](docs/workout-agent-loop.md) |
 | `pt_agent/` | A PT check-in run by an LLM agent: finds the patient, safety demo, temperature, notes | [pt_agent/README.md](pt_agent/README.md) |

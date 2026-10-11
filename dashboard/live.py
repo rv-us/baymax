@@ -328,11 +328,13 @@ class Live:
 
     def _tracking_camera(self):
         """(camera, opened here, why there's no camera). With a robot the session watches through the
-        robot's own camera, tracked on the GX10 (dashboard/feed.py); in a dry run through the webcam the
-        dashboard already holds. With neither the patient is simulated, and the reason is shown."""
+        camera the GX10 owns (dashboard/gx10_camera.py), else through the robot's own camera opened here
+        (dashboard/feed.py); in a dry run through the webcam the dashboard already holds. With neither the patient is simulated, and the reason is shown."""
         webcam = self.gateway.webcam
         if webcam is not None:
-            return (webcam, False, None) if webcam.tracking else (None, False, None)
+            if webcam.tracking:
+                return webcam, False, None
+            return None, False, (webcam.status["detail"] if getattr(webcam, "gx10_camera", False) else None)
         if self.settings.dry_run:
             return None, False, None
         try:

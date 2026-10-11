@@ -43,11 +43,11 @@ def link(tunnel=None, webcam=None, **settings):
 
 
 def test_the_default_target_is_the_gx10_the_user_named():
-    assert parse_target(None) == ("asus", "192.168.1.149")
+    assert parse_target(None) == ("asus", "169.233.72.183")
     assert parse_target("pi@10.0.0.7") == ("pi", "10.0.0.7")
     assert parse_target("10.0.0.7") == ("asus", "10.0.0.7")
     s = Settings()
-    assert (s.gx10_user, s.gx10_host) == ("asus", "192.168.1.149") and s.gx10_auto is False   # off unless the CLI turns it on
+    assert (s.gx10_user, s.gx10_host) == ("asus", "169.233.72.183") and s.gx10_auto is False   # off unless the CLI turns it on
 
 
 def test_the_password_comes_from_the_environment_or_a_local_file_never_the_code(tmp_path, monkeypatch):
@@ -68,12 +68,12 @@ def test_the_password_comes_from_the_environment_or_a_local_file_never_the_code(
 def test_ollama_answering_on_the_gx10_is_used_directly_with_no_tunnel(monkeypatch):
     cam = FakeWebcam()
     lk, s, tun, mon = link(webcam=cam)
-    monkeypatch.setattr(lk, "_ollama_answers", lambda url: url == "http://192.168.1.149:11434")
+    monkeypatch.setattr(lk, "_ollama_answers", lambda url: url == "http://169.233.72.183:11434")
     monkeypatch.setattr(lk, "_pose_service", lambda host: f"http://{host}:9100")
     assert lk.connect() is True
-    assert s.ollama_url == "http://192.168.1.149:11434" and s.stub_llm is False
+    assert s.ollama_url == "http://169.233.72.183:11434" and s.stub_llm is False
     assert tun.calls == [] and mon.polled == 1 and mon.published == 1
-    assert cam.pose_urls == ["http://192.168.1.149:9100"]                  # frames go to its pose service too
+    assert cam.pose_urls == ["http://169.233.72.183:9100"]                  # frames go to its pose service too
     assert lk.state["state"] == "ok" and lk.state["route"] == "direct" and lk.state["pose"] is True
 
 
@@ -83,7 +83,7 @@ def test_otherwise_an_ssh_tunnel_is_opened_with_the_password(monkeypatch):
     monkeypatch.setattr(lk, "_pose_service", lambda host: None)
     monkeypatch.setattr(gx10_module, "_local_port_free", lambda p: True)
     assert lk.connect() is True
-    assert tun.calls == [("192.168.1.149", "asus", "pw", 11434)]
+    assert tun.calls == [("169.233.72.183", "asus", "pw", 11434)]
     assert s.ollama_url == "http://127.0.0.1:11434" and s.stub_llm is False
     assert lk.state["route"] == "tunnel" and lk.state["pose"] is False
 
@@ -98,7 +98,7 @@ def test_the_tunnel_uses_another_local_port_when_a_local_ollama_holds_11434(monk
 
 
 def test_failure_changes_nothing_and_says_why(monkeypatch):
-    lk, s, tun, mon = link(tunnel=FakeTunnel(fail="No connection to 192.168.1.149 after 10 s."))
+    lk, s, tun, mon = link(tunnel=FakeTunnel(fail="No connection to 169.233.72.183 after 10 s."))
     monkeypatch.setattr(lk, "_ollama_answers", lambda url: False)
     monkeypatch.setattr(lk, "_pose_service", lambda host: None)
     monkeypatch.setattr(gx10_module, "_local_port_free", lambda p: True)
@@ -124,3 +124,13 @@ def test_it_keeps_trying_until_the_gx10_answers_and_then_stops(monkeypatch):
     time.sleep(0.1)
     assert len(attempts) == 3                          # two misses, one success, then it stopped trying
     lk.stop()
+
+
+def test_with_no_webcam_the_app_is_told_when_the_gx10s_pose_service_turns_up(monkeypatch):
+    lk, s, tun, mon = link()
+    told = []
+    lk.on_pose_service = told.append
+    monkeypatch.setattr(lk, "_ollama_answers", lambda url: True)
+    monkeypatch.setattr(lk, "_pose_service", lambda host: f"http://{host}:9100")
+    assert lk.connect() is True
+    assert told == ["http://169.233.72.183:9100"]          # it can then take the robot's camera from the GX10

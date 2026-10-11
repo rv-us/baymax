@@ -84,7 +84,9 @@ class Monitor:
         h = self.health or {}
         return {
             "dry_run": self.settings.dry_run,
-            "webcam": {"pose": self.gateway.webcam.source, "ms": self.gateway.webcam.ms,
+            "webcam": {"label": getattr(self.gateway.webcam, "label", "Laptop webcam"),
+                       "owned_by_gx10": bool(getattr(self.gateway.webcam, "gx10_camera", False)),
+                       "pose": self.gateway.webcam.source, "ms": self.gateway.webcam.ms,
                        "gx10": bool(self.gateway.webcam.pose_url), "transport": self.gateway.webcam.transport,
                        "delivery": self.gateway.webcam.delivery} if self.gateway.webcam is not None else None,
             "links": {"robot": self.robot, "camera": self.camera, "llm": self.llm},

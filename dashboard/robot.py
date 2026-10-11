@@ -22,6 +22,7 @@ from .config import Settings
 MOTION = {"servo/set", "servo/set_many", "servo/hold", "servo/head", "servo/head/center",
           "actions/run", "actions/walk", "actions/turn", "actions/side_step", "actions/arm",
           "actions/gripper", "actions/wave", "actions/stand"}
+SPEAKS = {"sensors/voice/say", "sensors/voice/play"}   # calls that block while the robot's speaker is playing
 ARM_SERVOS = ("left_shoulder_pitch", "left_shoulder_roll", "left_elbow",
               "right_shoulder_pitch", "right_shoulder_roll", "right_elbow")
 
@@ -54,6 +55,7 @@ class Gateway:
         self.webcam = None               # a dashboard.webcam.Webcam standing in for the robot's camera
         self.feed = None                 # the robot's camera, opened by a running session (it can only be opened once)
         self.fake_stall: dict = {}       # dry-run only: {servo id: pulse it is stuck at}
+        self._speaking = 0               # calls in flight that make the robot talk (see speaking())
         self._lock = threading.Lock()
         self.link = {"ok": None, "error": None, "last_ok": None, "latency_ms": None}
 
@@ -77,6 +79,9 @@ class Gateway:
             raise Refused(str(e), 409 if "profile" in str(e) else 422) from e
         self._check_local(path, kwargs)
         began = time.monotonic()
+        if path in SPEAKS:
+            with self._lock:
+                self._speaking += 1
         try:
             result = self.backend.call(path, **kwargs)
         except Refused:
@@ -85,6 +90,10 @@ class Gateway:
             status, message = classify(str(e))
             self._seen(status != 502, message if status == 502 else None, began)
             raise Refused(message, status) from e
+        finally:
+            if path in SPEAKS:
+                with self._lock:
+                    self._speaking -= 1
         self._seen(True, None, began)
         if path == "servo/status":
             for s in result.get("servos", []) if self.fake_stall else []:
@@ -116,6 +125,11 @@ class Gateway:
             if ok:
                 self.link["last_ok"] = time.time()
                 self.link["latency_ms"] = round((time.monotonic() - began) * 1000)
+
+    def speaking(self) -> bool:
+        """The robot is talking (or playing a sound) right now: the microphone must not listen."""
+        with self._lock:
+            return self._speaking > 0
 
     def stop_now(self) -> list:
         """Freeze every servo and cancel any action group (as workout.robot.stop_now).

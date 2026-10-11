@@ -1,7 +1,7 @@
 """The dashboard's link to the GX10, made at startup: the coach's model and the pose service.
 
 Unless it was told where Ollama is (--ollama-url, OLLAMA_HOST) or told not to (--gx10 off), the
-dashboard looks for the GX10 at asus@192.168.1.149 as soon as it starts, in the background so
+dashboard looks for the GX10 at asus@169.233.72.183 as soon as it starts, in the background so
 the page is usable straight away, and keeps trying until it gets through (the venue network may
 not be up yet):
 
@@ -29,7 +29,7 @@ from .tunnel import TunnelError
 
 log = logging.getLogger(__name__)
 
-DEFAULT_TARGET = "asus@192.168.1.149"
+DEFAULT_TARGET = "asus@169.233.72.183"
 PASSWORD_FILE = os.path.join(ROOT, ".gx10_password")
 RETRY_S = (5, 10, 20, 30)          # between attempts, then every 30 s
 
@@ -61,9 +61,10 @@ def _local_port_free(port: int) -> bool:
 
 
 class Gx10Link:
-    def __init__(self, settings, tunnel, monitor, hub=None, get_webcam=lambda: None):
+    def __init__(self, settings, tunnel, monitor, hub=None, get_webcam=lambda: None, on_pose_service=None):
         self.settings, self.tunnel, self.monitor, self.hub = settings, tunnel, monitor, hub
         self.get_webcam = get_webcam
+        self.on_pose_service = on_pose_service   # called with the service's URL when it turns up
         self._stop = threading.Event()
         self.state = {"state": "off", "target": None, "route": None, "pose": False, "error": None}
 
@@ -134,8 +135,10 @@ class Gx10Link:
                 except TunnelError as e:
                     error = str(e)
         pose = self._pose_service(host)
-        if pose and self.get_webcam() is not None:
+        if pose and self.get_webcam() is not None and hasattr(self.get_webcam(), "use_pose_service"):
             self.get_webcam().use_pose_service(pose)
+        elif pose and self.on_pose_service:
+            self.on_pose_service(pose)
         if route:
             s.ollama_url, s.stub_llm = url, False
             self.monitor.poll_llm()

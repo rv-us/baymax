@@ -8,6 +8,7 @@ with the robot API's status (409 for a safety refusal), never a generic error.
 from __future__ import annotations
 
 import os
+import threading
 import time
 
 from fastapi import Body, FastAPI, HTTPException, Response
@@ -67,7 +68,8 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     generator = Generator(settings, gateway.limiter)
     monitor = Monitor(settings, gateway, safety, coach, hub)
     tunnel = Tunnel(hub)
-    gx10 = Gx10Link(settings, tunnel, monitor, hub, get_webcam=lambda: gateway.webcam)
+    gx10 = Gx10Link(settings, tunnel, monitor, hub, get_webcam=lambda: gateway.webcam,
+                    on_pose_service=lambda url: attach_gx10_camera(url))
     twin = mount_twin(app, "/twin")
     player = Player(gateway, twin.state, hub)
     live = Live(settings, gateway, safety, sessions, hub)
@@ -81,6 +83,26 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
             gateway.webcam = webcam
         else:
             print(f"webcam: {webcam.status['detail']} Using the fake frame instead.")
+
+    def attach_gx10_camera(url: str) -> bool:
+        """Take the robot's camera from the GX10 pose service when it owns it: the picture and the pose then
+        come from there for everything (camera panel, sessions, Mirror) and this program never opens the
+        robot's camera. A laptop webcam in use is left alone."""
+        old = gateway.webcam
+        if old is not None and not getattr(old, "gx10_camera", False):
+            return False
+        if old is not None and old.pose_url == url.rstrip("/") and old.tracking:
+            return True
+        from .gx10_camera import Gx10Camera
+        cam = Gx10Camera(url, on_pose=live.apply_pose)
+        if not cam.start():
+            return False
+        gateway.webcam, settings.pose_url = cam, cam.pose_url
+        app.state.parts["webcam"] = cam
+        if old is not None:
+            old.stop()
+        return True
+
     mirror = Mirror(settings, gateway, hub, busy=lambda: (
         "A session is running. End it first." if live.running else
         "An animation is playing. Stop it first." if player.playing else
@@ -91,7 +113,8 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     app.state.parts = dict(settings=settings, hub=hub, gateway=gateway, safety=safety, sessions=sessions,
                            animations=animations, plans=plans, coach=coach, monitor=monitor,
                            twin=twin, player=player, live=live, tunnel=tunnel, profiles=profiles,
-                           recorder=recorder, chat=chat, generator=generator, webcam=gateway.webcam, mirror=mirror, gx10=gx10)
+                           recorder=recorder, chat=chat, generator=generator, webcam=gateway.webcam, mirror=mirror, gx10=gx10,
+                           attach_gx10_camera=attach_gx10_camera)
 
     def calibration_state() -> dict:
         active = gateway.limiter.profile
@@ -121,17 +144,27 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
         return JSONResponse({"detail": f"{e.args[0]} was not found"}, status_code=404)
 
     if settings.monitor:
+        attach_stop = threading.Event()
+
+        def _attach_when_up():
+            """The GX10's pose service may start after the dashboard does: keep asking until it owns the camera."""
+            while not attach_stop.is_set() and not attach_gx10_camera(settings.pose_url):
+                attach_stop.wait(5.0)
+
         @app.on_event("startup")
         def _start():
             if settings.dry_run:
                 synthetic.refresh(sessions)
             twin.attach_robot(gateway, hz=4.0, label="dry run" if settings.dry_run else settings.robot_url)
             monitor.start()
+            if settings.pose_url and not settings.webcam and not settings.dry_run:
+                threading.Thread(target=_attach_when_up, name="dashboard-gx10-camera-attach", daemon=True).start()
             if settings.gx10_auto:
                 gx10.start()   # in the background: the page is usable at once, and it keeps trying until the GX10 answers
 
         @app.on_event("shutdown")
         def _stop():
+            attach_stop.set()
             gx10.stop()
             mirror.stop(rest=False)
             monitor.stop()
@@ -194,6 +227,29 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
         """Text the microphone picked up (voice.Listener's on_transcript goes here)."""
         text = str(body.get("text") or "")[:500]
         return {"pain": safety.heard(text), "text": text}
+
+    # ---- the microphone (voice/bridge.py runs on the GX10 and talks to these) ----------------------
+
+    @app.get("/api/voice")
+    def voice_state():
+        """Whether the microphone should be ignored (the robot is talking) and whether an answer is awaited."""
+        return {"speaking": gateway.speaking(), "waiting": bool(live.running and live.state.get("waiting")
+                                                               and not live.simulate)}
+
+    @app.post("/api/voice/heard")
+    def voice_heard(body: dict = Body(...)):
+        """What the patient said, from the speech-to-text on the GX10. Pain words stop the robot at once;
+        anything else is the patient's answer if a session is waiting for one, and is dropped otherwise
+        (a stray remark must never become the answer to a later question)."""
+        text = str(body.get("text") or "")[:500].strip()
+        if not text:
+            return {"pain": False, "answered": False}
+        if safety.heard(text):
+            return {"pain": True, "answered": False}
+        if live.running and live.state.get("waiting") and not live.simulate:
+            live.answer(text[:300])
+            return {"pain": False, "answered": True}
+        return {"pain": False, "answered": False}
 
     @app.post("/api/safety/report")
     def safety_report(body: dict = Body(...)):

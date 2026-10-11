@@ -1,47 +1,59 @@
 #!/usr/bin/env bash
-# Start everything the GX10 runs for a live session: the arm_mvp pose service and the dashboard.
+# Start everything the GX10 runs for a live session:
+#   - the pose service, which OWNS the robot's camera and tracks it with arm_mvp (port 9100)
+#   - the dashboard, which gets the picture and the pose from the pose service (port 8080)
+#   - the microphone bridge: Whisper on the robot's mic, answers and pain words to the dashboard
 #
 #     ./scripts/start_gx10.sh            # then open http://<gx10-ip>:8080 on any computer on the network
-#     ./scripts/stop_gx10.sh             # stops both
+#     VOICE=0 ./scripts/start_gx10.sh    # without the microphone
+#     ./scripts/stop_gx10.sh             # stops them all
 #
-# The dashboard runs here (not on a laptop) so the robot's camera video reaches it directly: this
-# is the one program that opens the camera. It tracks on the pose service, shows the annotated picture
-# to browsers, and drives the robot through its API. The robot URL and token come from the environment
-# (BAYMAX_API_URL, BAYMAX_API_TOKEN), else from streaming/config.env. Logs: ~/pose_service.log, ~/dashboard.log
+# The robot URL and token come from the environment (BAYMAX_API_URL, BAYMAX_API_TOKEN), else from
+# streaming/config.env. The Python environment is ~/venvs/baymax (scripts/setup_gx10_venv.sh builds it).
+# Logs: ~/pose_service.log, ~/dashboard.log, ~/voice_bridge.log
 set -euo pipefail
 cd "$(dirname "$0")/.."
 PORT="${DASHBOARD_PORT:-8080}"
+VENV="${BAYMAX_VENV:-$HOME/venvs/baymax}"
 
 # Settings already in the environment win over streaming/config.env.
 url="${BAYMAX_API_URL:-}"; token="${BAYMAX_API_TOKEN:-}"
 set -a; . streaming/config.env; set +a
 export BAYMAX_API_URL="${url:-$BAYMAX_API_URL}" BAYMAX_API_TOKEN="${token:-${BAYMAX_API_TOKEN:-}}"
 
-if [ ! -x .venv/bin/python ]; then
-  python3 -m venv .venv
-  .venv/bin/pip install -q --upgrade pip
-fi
-.venv/bin/pip install -q fastapi uvicorn httpx pyyaml numpy opencv-python-headless mediapipe
+[ -x "$VENV/bin/python" ] || ./scripts/setup_gx10_venv.sh
 
 if ss -ulpn 2>/dev/null | grep -q ':5000 '; then
-  echo "warning: something already receives the robot's UDP video on port 5000; the dashboard will fall back to MJPEG." >&2
+  echo "warning: something already receives the robot's UDP video on port 5000; the GX10 will fall back to MJPEG." >&2
   echo "         (ss -ulpn | grep 5000, then stop that program)" >&2
 fi
 
-./dashboard/start_pose_service.sh
+./dashboard/start_pose_service.sh 9100 --camera
 
 if [ -f .dashboard.pid ] && kill -0 "$(cat .dashboard.pid)" 2>/dev/null; then
   kill "$(cat .dashboard.pid)"; sleep 2
 fi
-setsid nohup .venv/bin/python -m dashboard --robot-url "$BAYMAX_API_URL" --pose-url "http://127.0.0.1:9100" \
+setsid nohup "$VENV/bin/python" -m dashboard --robot-url "$BAYMAX_API_URL" --pose-url "http://127.0.0.1:9100" \
   --ollama-url "http://127.0.0.1:11434" --gx10 off --host 0.0.0.0 --port "$PORT" \
   > "$HOME/dashboard.log" 2>&1 < /dev/null &
 echo $! > .dashboard.pid
+up=0
 for _ in $(seq 1 30); do
-  if curl -fs "http://127.0.0.1:$PORT/api/status" >/dev/null 2>&1; then
-    echo "dashboard up: http://$(hostname -I | awk '{print $1}'):$PORT   (robot: $BAYMAX_API_URL)"
-    exit 0
-  fi
+  if curl -fs "http://127.0.0.1:$PORT/api/status" >/dev/null 2>&1; then up=1; break; fi
   sleep 1
 done
-echo "the dashboard did not start; see ~/dashboard.log" >&2; tail -20 "$HOME/dashboard.log" >&2; exit 1
+if [ "$up" = 0 ]; then
+  echo "the dashboard did not start; see ~/dashboard.log" >&2; tail -20 "$HOME/dashboard.log" >&2; exit 1
+fi
+
+if [ "${VOICE:-1}" = 1 ]; then
+  # The robot's microphone stream goes to this machine (needs ssh to the Pi: `tonypi`), then Whisper listens to it.
+  (cd streaming && ./start_pi_sender.sh) > "$HOME/pi_sender.log" 2>&1 \
+    || echo "warning: couldn't start the Pi's microphone sender (see ~/pi_sender.log); there will be no voice." >&2
+  if [ -f .voice_bridge.pid ] && kill -0 "$(cat .voice_bridge.pid)" 2>/dev/null; then kill "$(cat .voice_bridge.pid)"; sleep 1; fi
+  setsid nohup "$VENV/bin/python" -m voice.bridge --dashboard "http://127.0.0.1:$PORT" \
+    > "$HOME/voice_bridge.log" 2>&1 < /dev/null &
+  echo $! > .voice_bridge.pid
+  echo "voice bridge starting (Whisper takes a few seconds to load): ~/voice_bridge.log"
+fi
+echo "dashboard up: http://$(hostname -I | awk '{print $1}'):$PORT   (robot: $BAYMAX_API_URL)"

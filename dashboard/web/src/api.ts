@@ -5,7 +5,7 @@ export type LinkState = "ok" | "down" | "unknown" | "stub";
 export interface Link { state: LinkState; detail: string; latency_ms?: number | null; model?: string }
 export interface Status {
   dry_run: boolean;
-  webcam?: { pose: "gx10" | "local" | "none"; ms: number | null; gx10: boolean; transport: "udp" | "http" | null; delivery: number | null } | null;
+  webcam?: { label?: string; owned_by_gx10?: boolean; pose: "gx10" | "local" | "none"; ms: number | null; gx10: boolean; transport: "udp" | "http" | null; delivery: number | null } | null;
   links: { robot: Link; camera: Link; llm: Link };
   health: null | {
     battery_v: number | null; battery_pct: number | null; needs_charge: boolean | null;

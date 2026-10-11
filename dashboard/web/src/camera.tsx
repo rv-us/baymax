@@ -53,7 +53,7 @@ export function CameraPanel({ compact = false, path = "/api/camera.jpg" }: { com
       <header class="screen-head">
         <span class="screen-title">Camera</span>
         {fake && <span class="tag on-screen">Fake frame</span>}
-        {s?.webcam && <span class="tag on-screen">Laptop webcam{s.webcam.pose === "gx10" ? ` · pose on GX10${s.webcam.delivery != null ? ` · ${Math.round(s.webcam.delivery * 100)}% of frames answered` : ""}` : ""}</span>}
+        {s?.webcam && <span class="tag on-screen">{s.webcam.label ?? "Laptop webcam"}{s.webcam.owned_by_gx10 ? ` · owned by the GX10${s.webcam.ms != null ? ` · ${s.webcam.ms} ms` : ""}` : s.webcam.pose === "gx10" ? ` · pose on GX10${s.webcam.delivery != null ? ` · ${Math.round(s.webcam.delivery * 100)}% of frames answered` : ""}` : ""}</span>}
         {!s?.webcam && t && <span class="tag on-screen">{t.camera ?? "Camera"}{t.on === "gx10" ? ` · pose on GX10${t.delivery != null ? ` · ${Math.round(t.delivery * 100)}% of frames answered` : ""}` : t.on === "local" ? " · pose on this computer" : ""}</span>}
       </header>
       <footer class="screen-foot">

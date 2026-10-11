@@ -120,6 +120,10 @@ listener.on_transcript(lambda t: print(t.text))  # every transcript, even betwee
 - An answer ends after 0.8 s of silence, so text arrives about 0.9 s after the patient stops talking. Most of that is the silence wait (`END_SILENCE_MS` in `voice/segmenter.py`).
 - `Listener` starts its own `AudioReceiver`, so stop `audio_receiver.py` first: only one program can receive the audio.
 
+## The whole thing in one command
+
+`scripts/start_gx10.sh` starts the pose service (which owns the robot's camera and tracks it), the dashboard (which gets the camera from the pose service) and the microphone bridge (Whisper on the robot's mic, to the dashboard); `scripts/stop_gx10.sh` stops them. Details: [dashboard/README.md](../dashboard/README.md#live-sessions-on-the-gx10s-tracking). Don't run `receiver.py`, `audio_receiver.py` or `pose_server.py --stream` at the same time: each wants the camera or the microphone for itself.
+
 ## When you're done
 
 ```bash

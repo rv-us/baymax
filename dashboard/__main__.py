@@ -47,7 +47,7 @@ def main():
                     help="send camera frames to the GX10 pose service and use its answer (default auto: the "
                          "--ollama-url host on port 9100, if the service answers there)")
     ap.add_argument("--gx10", default=None, metavar="USER@HOST|off",
-                    help="where the GX10 is (default: BAYMAX_GX10, else asus@192.168.1.149). Unless --ollama-url or "
+                    help="where the GX10 is (default: BAYMAX_GX10, else asus@169.233.72.183). Unless --ollama-url or "
                          "OLLAMA_HOST says otherwise, the dashboard connects to it at startup (Ollama directly, or "
                          "through an SSH tunnel with the password from BAYMAX_GX10_PASSWORD or a git-ignored "
                          ".gx10_password file) and uses its pose service if it is running; 'off' skips all that")

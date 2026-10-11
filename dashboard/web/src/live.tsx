@@ -203,7 +203,9 @@ function SessionRunner() {
                 <option value="1">Real time</option><option value="3">3× faster (demo)</option><option value="6">6× faster (demo)</option>
               </select>
             </label>}
-            {status.value?.webcam
+            {status.value?.webcam?.owned_by_gx10
+              ? <p class="note"><Icon name="camera" size={16} />The GX10 owns the robot's camera and tracks the patient's arms, so the session runs in real time on real movement and the robot keeps a quarter of a rep ahead. If the GX10 stops answering the session pauses.</p>
+              : status.value?.webcam
               ? <p class="note"><Icon name="camera" size={16} />The laptop webcam tracks the patient's arms, so the session runs in real time on real movement. Face the camera with your arms in view.</p>
               : status.value?.dry_run
                 ? <p class="note"><Icon name="alert" size={16} />No webcam, so the patient's movement in a session is simulated. The log is marked synthetic.</p>

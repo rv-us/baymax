@@ -24,6 +24,15 @@ limited by the round trip. A frame is cut into datagrams of at most CHUNK bytes:
 Only the newest frame per session is ever worked on: a frame with a missing chunk is dropped when
 a newer one starts, and a frame that arrives after a newer one has been answered is ignored.
 
+With `--camera` the GX10 OWNS the robot's camera: nothing else has to open it. The first request for
+the camera makes the service receive the robot's video (BAYMAX_API_URL / BAYMAX_API_TOKEN), track every
+frame, and keep the newest answer; the dashboard just asks for it. After IDLE_CAMERA_S with nobody asking
+the camera is let go again, so other tools can have it.
+
+    GET  /camera/pose?after=SEQ&wait=S  {"pose", "overlay", "ms", "seq", "running", "mode", "fps", "age", "error"}:
+                                         the newest answer, waiting up to S seconds for one newer than SEQ
+    GET  /camera.jpg?width=W&quality=Q   the newest picture with the tracked person and arms drawn on it
+
 Each `session` has its own tracker, because smoothing, calibration and left/right identity
 are per patient. Idle sessions are dropped after a minute. Needs: opencv-python-headless,
 mediapipe, numpy, fastapi, uvicorn. There is no login: run it on a trusted network only.
@@ -45,6 +54,7 @@ CHUNK = 1200                 # JPEG bytes per datagram: under any Wi-Fi/VPN MTU,
 MAX_REPLY = 1400
 IDLE_S = 60.0
 MAX_SESSIONS = 8
+IDLE_CAMERA_S = 20.0         # with nobody asking for the camera this long, it is let go
 
 
 class Sessions:
@@ -178,21 +188,137 @@ class UdpServer:
                 pass
 
 
-def make_app(make_tracker=None, udp_port: int | None = None):
+class CameraOwner:
+    """The GX10 holds the robot's camera and tracks it, for as long as someone is asking.
+
+    `open_camera()` returns something with latest() -> (frame, stamp) and stop() (streaming/robot_camera.py's
+    RobotCamera). One tracker, so the calibration and the choice of person carry on between the dashboard's
+    requests; frames are worked on as they arrive, newest first, never queued."""
+
+    def __init__(self, make_tracker, open_camera, idle_s: float = IDLE_CAMERA_S):
+        self.make_tracker, self.open_camera, self.idle_s = make_tracker, open_camera, idle_s
+        self.cond = threading.Condition()
+        self.thread = None
+        self.last_ask = 0.0
+        self.answer = None        # {pose, overlay, jpeg, ms, seq, mono}
+        self.seq = 0
+        self.mode = None
+        self.error = None
+        self.fps = 0.0
+        self._stamp = None
+
+    def ask(self) -> None:
+        """Someone wants the camera: start it if it isn't running."""
+        with self.cond:
+            self.last_ask = time.monotonic()
+            if self.thread is None or not self.thread.is_alive():
+                self.thread = threading.Thread(target=self._run, name="gx10-camera", daemon=True)
+                self.thread.start()
+
+    @property
+    def running(self) -> bool:
+        return bool(self.thread and self.thread.is_alive() and self.mode)
+
+    def newest(self, after: int = -1, wait: float = 0.0):
+        """The newest answer, once it is newer than `after` (waiting up to `wait` seconds); None if there is none."""
+        self.ask()
+        end = time.monotonic() + wait
+        with self.cond:
+            while (self.answer is None or self.answer["seq"] <= after) and time.monotonic() < end:
+                self.cond.wait(max(0.0, end - time.monotonic()))
+            return self.answer
+
+    def _run(self) -> None:
+        from .overlay import annotate
+        cam = tracker = None
+        try:
+            while time.monotonic() - self.last_ask < self.idle_s:
+                if cam is None:
+                    try:
+                        tracker = tracker or self.make_tracker()
+                        cam = self.open_camera()
+                        self.mode, self.error = getattr(cam, "mode", None) or "udp", None
+                    except Exception as e:  # the robot isn't reachable yet: keep trying while someone asks
+                        self.error, cam = str(e) or type(e).__name__, None
+                        time.sleep(2.0)
+                        continue
+                frame, stamp = cam.latest()
+                if frame is None or stamp == self._stamp:
+                    time.sleep(0.005)
+                    continue
+                self._stamp = stamp
+                started = time.perf_counter()
+                try:
+                    pose, overlay = tracker.process(frame, time.monotonic())
+                    jpeg = annotate(frame, overlay, pose.get("people", 0))
+                except Exception as e:  # one bad frame must not stop the camera
+                    self.error = str(e) or type(e).__name__
+                    continue
+                now = time.monotonic()
+                with self.cond:
+                    prev = self.answer
+                    if prev:
+                        self.fps = 0.8 * self.fps + 0.2 / max(1e-3, now - prev["mono"])
+                    self.seq += 1
+                    self.answer = {"pose": pose, "overlay": overlay, "jpeg": jpeg, "seq": self.seq, "mono": now,
+                                   "ms": round((time.perf_counter() - started) * 1000, 1)}
+                    self.cond.notify_all()
+        finally:
+            with self.cond:
+                self.mode, self.answer, self.fps, self._stamp = None, None, 0.0, None
+                self.cond.notify_all()
+            if cam is not None:
+                cam.stop()
+            if tracker is not None:
+                tracker.close()
+
+    def health(self) -> dict:
+        a = self.answer
+        return {"running": self.running, "mode": self.mode, "fps": round(self.fps, 1), "error": self.error,
+                "age": None if a is None else round(time.monotonic() - a["mono"], 2)}
+
+
+def make_app(make_tracker=None, udp_port: int | None = None, camera: CameraOwner | None = None):
     import cv2
     import numpy as np
-    from fastapi import FastAPI, HTTPException, Request
+    from fastapi import FastAPI, HTTPException, Request, Response
 
     if make_tracker is None:
         from .armtrack import ArmTracker as make_tracker  # noqa: N813
     app = FastAPI(title="Baymax pose service")
     sessions = Sessions(make_tracker)
     app.state.sessions = sessions
+    app.state.camera = camera
 
     @app.get("/health")
     def health():
         return {"ok": True, "service": SERVICE, "udp": udp_port, "sessions": len(sessions.items),
-                "frames": sessions.frames}
+                "frames": sessions.frames, "camera": camera.health() if camera else None}
+
+    @app.get("/camera/pose")
+    def camera_pose(after: int = -1, wait: float = 0.0):
+        if camera is None:
+            raise HTTPException(404, "this pose service doesn't own the camera (start it with --camera)")
+        a = camera.newest(after, max(0.0, min(2.0, wait)))
+        h = camera.health()
+        if a is None:
+            return {"pose": None, "overlay": None, "seq": -1, "ms": None, **h}
+        return {"pose": a["pose"], "overlay": a["overlay"], "seq": a["seq"], "ms": a["ms"], **h}
+
+    @app.get("/camera.jpg")
+    def camera_jpg(width: int = 640, quality: int = 70):
+        if camera is None:
+            raise HTTPException(404, "this pose service doesn't own the camera (start it with --camera)")
+        a = camera.newest(-1, 3.0)
+        if a is None or a["jpeg"] is None:
+            raise HTTPException(503, camera.error or "no picture from the robot's camera yet")
+        jpeg, width = a["jpeg"], max(160, min(1280, width))
+        if width < 640:
+            arr = cv2.imdecode(np.frombuffer(jpeg, np.uint8), cv2.IMREAD_COLOR)
+            ok, buf = cv2.imencode(".jpg", cv2.resize(arr, (width, int(arr.shape[0] * width / arr.shape[1]))),
+                                   [cv2.IMWRITE_JPEG_QUALITY, max(20, min(95, quality))])
+            jpeg = buf.tobytes() if ok else jpeg
+        return Response(jpeg, media_type="image/jpeg", headers={"Cache-Control": "no-store"})
 
     @app.post("/track")
     async def track(request: Request, session: str = "default", t: float | None = None):
@@ -214,11 +340,21 @@ def main():
     ap = argparse.ArgumentParser(description="Baymax pose service (run on the GX10).")
     ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=DEFAULT_PORT)
+    ap.add_argument("--camera", action="store_true",
+                    help="own the robot's camera: receive its video (BAYMAX_API_URL, BAYMAX_API_TOKEN) and track "
+                         "it for the dashboard, which then gets the picture and the pose from here")
     args = ap.parse_args()
     import uvicorn
     print(f"Baymax pose service on http://{args.host}:{args.port}")
-    from .armtrack import ArmTracker
-    app = make_app(ArmTracker, udp_port=args.port)
+    from .armtrack import ArmTracker, ROOT
+    owner = None
+    if args.camera:
+        import sys
+        if ROOT not in sys.path:
+            sys.path.insert(0, ROOT)
+        from streaming.robot_camera import RobotCamera
+        owner = CameraOwner(ArmTracker, lambda: RobotCamera().start())
+    app = make_app(ArmTracker, udp_port=args.port, camera=owner)
     udp = UdpServer(app.state.sessions, args.port, args.host).start()
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
 
