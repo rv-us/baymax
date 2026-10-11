@@ -83,6 +83,9 @@ export function Record() {
     return () => clearTimeout(timer);
   }, [t?.id, a, b]);
 
+  const dur = t?.duration_ms ?? 0;
+  const setStart = (ms: number) => { if (Number.isFinite(ms)) trim.value = [Math.max(0, Math.min(ms, b - 300)), b]; };
+  const setEnd = (ms: number) => { if (Number.isFinite(ms)) trim.value = [a, Math.min(dur, Math.max(ms, a + 300))]; };
   const start = async () => { setBusy(true); saved.value = null; take.value = null; await attempt(() => api("POST", "/api/recorder/start", { coast: true })); setBusy(false); };
   const stop = async () => { setBusy(true); await attempt(() => api("POST", "/api/recorder/stop")); setBusy(false); };
   const discard = () => { if (!saved.value && !confirm("Discard this recording?")) return; take.value = null; saved.value = null; name.value = ""; };
@@ -145,14 +148,22 @@ export function Record() {
                 {t.joints.map((j, i) => <li key={j}><i style={{ background: JOINT_COLOR[i % 6] }} />{words(j)}</li>)}
               </ul>
               <div class="trim-sliders">
-                <label>Start at <output>{(a / 1000).toFixed(1)} s</output>
-                  <input type="range" min={0} max={t.duration_ms} step={100} value={a} disabled={!!saved.value}
-                    onInput={(e) => { trim.value = [Math.min(+e.currentTarget.value, b - 300), b]; }} /></label>
-                <label>End at <output>{(b / 1000).toFixed(1)} s</output>
-                  <input type="range" min={0} max={t.duration_ms} step={100} value={b} disabled={!!saved.value}
-                    onInput={(e) => { trim.value = [a, Math.max(+e.currentTarget.value, a + 300)]; }} /></label>
+                {([["Start", a, setStart], ["End", b, setEnd]] as [string, number, (ms: number) => void][]).map(([label, value, set]) => (
+                  <div key={label} class="trim-edit" role="group" aria-label={`${label} of the part to keep`}>
+                    <span class="trim-edit-label">{label} at</span>
+                    <div class="trim-exact">
+                      <button type="button" class="nudge" disabled={!!saved.value} aria-label={`${label} 0.1 seconds earlier`} onClick={() => set(value - 100)}>−</button>
+                      <input type="number" inputMode="decimal" step="0.1" min={0} max={t.duration_ms / 1000} value={(value / 1000).toFixed(1)} disabled={!!saved.value}
+                        aria-label={`${label} time in seconds`} onChange={(e) => set(Math.round(+e.currentTarget.value * 10) * 100)} />
+                      <span>s</span>
+                      <button type="button" class="nudge" disabled={!!saved.value} aria-label={`${label} 0.1 seconds later`} onClick={() => set(value + 100)}>+</button>
+                    </div>
+                    <input type="range" min={0} max={t.duration_ms} step={100} value={value} disabled={!!saved.value}
+                      aria-label={`${label} slider`} onInput={(e) => set(+e.currentTarget.value)} />
+                  </div>
+                ))}
               </div>
-              <p class="hint">What this shows: each line is one arm joint's position over the take. The shaded part is kept; drag the sliders to cut the fumbling at the start and end. The saved motion always finishes with the arms down.</p>
+              <p class="hint">What this shows: each line is one arm joint's position over the take. The shaded part is kept; use the sliders, or the minus and plus buttons for exact tenths of a second, to cut the fumbling at the start and end. The saved motion always finishes with the arms down.</p>
               {draftError && <p class="note bad" role="alert"><Icon name="alert" size={16} />{draftError}</p>}
             </section>
           )}

@@ -629,3 +629,33 @@ textarea {
 }
 .heat-scroll, .servo-scroll, .table-scroll { position: relative; }
 .heat-table { min-width: 300px; }
+
+/* Review 1: sideways tables say so and keep the servo name in view. */
+.scroll-hint { display: none; align-items: center; gap: 6px; font-size: 0.875rem; color: var(--accent-ink); background: var(--accent-wash); border-radius: 8px; padding: 6px 10px; margin-top: 8px; }
+.servo-scroll {
+  background:
+    linear-gradient(to right, var(--surface) 30%, transparent) left / 40px 100% no-repeat local,
+    linear-gradient(to left, var(--surface) 30%, transparent) right / 40px 100% no-repeat local,
+    linear-gradient(to right, color-mix(in oklab, var(--ink) 22%, transparent), transparent) left / 14px 100% no-repeat scroll,
+    linear-gradient(to left, color-mix(in oklab, var(--ink) 22%, transparent), transparent) right / 14px 100% no-repeat scroll;
+}
+.servo-table thead th { background: transparent; }
+.servo-table tbody th, .servo-table thead th:first-child { position: sticky; left: 0; z-index: 2; background: var(--surface); box-shadow: 1px 0 0 var(--rule); }
+.servo-table tr.is-flag th { background: var(--warn-wash); }
+@media (max-width: 1240px) { .scroll-hint { display: flex; } }
+@media (max-width: 560px) { .servo-table tbody th { min-width: 118px; } .servo-table tbody th .range-bar { display: none; } }
+
+/* Review 1: exact trim controls beside each slider. */
+.trim-edit { display: grid; gap: 6px; }
+.trim-edit-label { font-weight: 600; }
+.trim-exact { display: flex; align-items: center; gap: 6px; }
+.trim-exact input[type="number"] { width: 4.6em; font-weight: 800; }
+.trim-exact .nudge { width: var(--tap); height: var(--tap); }
+
+/* Review 1: on touch screens a tap previews and offers Play; it never jumps to the confirm. */
+.touch-copy { display: none; }
+@media (hover: none) { .hover-copy { display: none !important; } .touch-copy { display: block; } }
+.move-actions { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 0 14px 12px; }
+
+/* Review 1: the replay names its set. */
+.replay-what { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }

@@ -197,7 +197,7 @@ function Calories({ session }: { session: Session }) {
 function setKey(s: SetLog, i: number) { return `${s.exercise}-${s.set}-${i}`; }
 
 /** Replays a set (or a recording) on a private twin, and reports the playhead. */
-function Replay({ url, onTime, label }: { url: string; onTime?: (s: number | null) => void; label: string }) {
+function Replay({ url, onTime, label, what }: { url: string; onTime?: (s: number | null) => void; label: string; what?: string }) {
   const [clip, setClip] = useState<Clip | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -212,6 +212,7 @@ function Replay({ url, onTime, label }: { url: string; onTime?: (s: number | nul
     <div class="replay">
       <MotionTwin clip={clip} playing={playing} speed={speed} time={at} busy={!clip && !error} error={error} title={label} compact
         onTime={(ms) => { setAt(ms); onTime?.(ms / 1000); }} onEnd={() => setPlaying(false)} />
+      {what && <p class="replay-what"><span class="tag tag-accent"><Icon name="replay" size={14} />Replaying</span><b>{what}</b></p>}
       <div class="replay-bar">
         <button class="btn primary" disabled={!clip} onClick={() => { if (!playing && at >= total) setAt(0); setPlaying(!playing); }}>
           <Icon name={playing ? "pause" : "replay"} />{playing ? "Pause" : at > 0 && at < total ? "Resume" : "Replay"}
@@ -329,7 +330,7 @@ export function SessionDetail({ id }: { id: string }) {
                 aside={set.trace && <button class="btn toggle" aria-pressed={replaying} onClick={() => { setReplaying(!replaying); setCursor(null); }}><Icon name="replay" size={18} />Replay on the twin</button>}>
                 {set.trace ? (
                   <div class={replaying ? "replay-wrap" : ""}>
-                    {replaying && <Replay url={`/api/sessions/${session.id}/replay?set=${pick}`} label="What the patient did" onTime={setCursor} />}
+                    {replaying && <Replay url={`/api/sessions/${session.id}/replay?set=${pick}`} label="What the patient did" what={`${set.exercise}, set ${set.set}`} onTime={setCursor} />}
                     <OverlayChart key={setKey(set, pick)} set={set} cursor={replaying ? cursor : null} />
                   </div>
                 ) : <Unmeasured what="The joint angle" why="Sessions logged before pose tracking only have rep counts." />}

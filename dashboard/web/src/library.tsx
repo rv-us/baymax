@@ -27,6 +27,7 @@ export function Library() {
   const [clipError, setClipError] = useState<string | null>(null);
   const [solving, setSolving] = useState(false);
   const [asking, setAsking] = useState<string | null>(null);      // row waiting for "Move the robot"
+  const [tapped, setTapped] = useState<string | null>(null);      // row opened by a tap on a touch screen
   const want = useRef<string | null>(null);
 
   const load = () => api<{ animations: LibraryItem[]; builtins: LibraryItem[] }>("GET", "/api/library")
@@ -45,8 +46,10 @@ export function Library() {
       .then((c) => { if (want.current === item.id) { setClip(c); setSolving(false); } })
       .catch((e) => { if (want.current === item.id) { setClip(null); setClipError(e.message); setSolving(false); } });
   };
+  const touch = useRef(false);   // was the last press a finger or pen, not a mouse or key
   const click = (item: LibraryItem) => {
     preview(item);
+    if (touch.current) { setAsking(null); setTapped(tapped === item.id ? null : item.id); return; }
     if (blockedReason() || item.unreadable || (item.kind === "builtin" && !item.available)) return setAsking(null);
     if (armed.value) { setAsking(null); playOnRobot(targetOf(item)); } else setAsking(item.id);
   };
@@ -72,7 +75,8 @@ export function Library() {
     <div class="library">
       <header class="page-head">
         <h1>Library</h1>
-        <p>Point at a move to preview it. Click it to play it on the robot.</p>
+        <p class="hover-copy">Point at a move to preview it. Click it to play it on the robot.</p>
+        <p class="touch-copy">Tap a move to preview it, then press Play on robot.</p>
       </header>
       <RobotBar />
       <div class="library-cols">
@@ -102,6 +106,8 @@ export function Library() {
                 return (
                   <li key={item.id} class={`move ${shown?.id === item.id ? "is-shown" : ""} ${off ? "is-off" : ""}`}>
                     <button class="move-main" onPointerEnter={(e) => { if (e.pointerType === "mouse") preview(item); }} onFocus={() => preview(item)}
+                      onPointerDown={(e) => { touch.current = e.pointerType !== "mouse"; }} onKeyDown={() => { touch.current = false; }}
+                      aria-expanded={tapped === item.id ? true : undefined}
                       onClick={() => click(item)} aria-describedby={`m-${item.id}`}>
                       <span class={`move-kind kind-${item.kind}`}><Icon name={item.kind === "exercise" ? "studio" : item.kind === "emote" ? "hand" : "robot"} size={18} /></span>
                       <span class="move-text">
@@ -120,6 +126,13 @@ export function Library() {
                     {mine?.phase === "done" && <p class="move-status is-good" role="status"><Icon name="check" size={16} />Played on the robot</p>}
                     {mine?.phase === "stopped" && <p class="move-status" role="status"><Icon name="stop" size={16} />Stopped part way</p>}
                     {mine?.phase === "failed" && <p class="move-status is-bad" role="alert"><Icon name="alert" size={16} />{mine.message}</p>}
+                    {tapped === item.id && asking !== item.id && (
+                      <div class="move-actions">
+                        <span class="hint">{item.kind === "builtin" ? "No preview for built-in moves." : "Previewing above."}</span>
+                        <button class="btn robot" disabled={!!blocked || off}
+                          onClick={() => { if (armed.value) playOnRobot(targetOf(item)); else setAsking(item.id); }}><Icon name="robot" size={18} />Play on robot</button>
+                      </div>
+                    )}
                     {asking === item.id && (
                       <div class="confirm" role="alertdialog" aria-label={`Play ${item.name} on the real robot?`}>
                         <span>Play “{item.name}” on the real robot? Check the space around it is clear.</span>

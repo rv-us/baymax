@@ -74,7 +74,7 @@ await step("record: record, stop, trim, name, save, play", async () => {
   await shot("record-live");
   await page.getByRole("button", { name: "Stop recording" }).click();
   await page.getByRole("heading", { name: "Trim" }).waitFor({ timeout: 6000 });
-  await page.locator(".trim-sliders input").first().evaluate((el) => { el.value = "600"; el.dispatchEvent(new Event("input", { bubbles: true })); });
+  for (let i = 0; i < 6; i++) await page.getByRole("button", { name: "Start 0.1 seconds later" }).click();
   await page.waitForTimeout(1500);
   await page.getByLabel("Name").fill("Flow test wave");
   await shot("record-trim");

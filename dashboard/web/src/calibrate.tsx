@@ -174,7 +174,8 @@ export function Calibrate() {
             <div key={group} class="servo-group">
               <h3>{title}</h3>
               <p class="hint">{about}</p>
-              <div class="servo-scroll">
+              <p class="scroll-hint"><Icon name="right" size={16} />Swipe the table sideways to reach the limits, offset and speed cap.</p>
+              <div class="servo-scroll" tabIndex={0} role="group" aria-label={`${title} servo table, scrolls sideways`}>
                 <table class="servo-table">
                   <thead>
                     <tr>
