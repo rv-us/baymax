@@ -6,6 +6,7 @@ import pytest
 
 import arm_mimic
 import calibration
+import joints
 import solver
 from filters import OneEuro, slew
 from retarget import ARM_IDX, ArmIK, shoulder_frame
@@ -134,34 +135,61 @@ def test_slew_limit():
     assert slew(0.0, 100.0, 12.0, dt=1.0 / 15.0) == pytest.approx(24.0)
 
 
-def test_pulses_never_leave_servo_limits():
+# Arm pulses (pitch, roll, elbow servo) produced by the hard coded maps before joints.py existed.
+ARM_GOLDEN_ANGLES = [(0, 0, 180), (-90, 0, 180), (-37.3, 52.1, 121.7), (-144, 110, 95), (40, -20, 170),
+                     (-180, 180, 90), (12.5, -77.7, 133.3), (80, 30, 60), (-61, -140, 101)]
+ARM_GOLDEN = {
+    "L": [(725, 800, 575), (350, 800, 575), (570, 583, 818), (125, 342, 875), (892, 875, 617),
+          (0, 125, 875), (777, 875, 770), (1000, 675, 875), (471, 875, 875)],
+    "R": [(275, 200, 425), (650, 200, 425), (430, 125, 182), (875, 125, 125), (108, 283, 383),
+          (1000, 125, 125), (223, 524, 230), (31, 125, 125), (529, 783, 125)],
+}
+
+
+def test_arm_pulses_unchanged_by_joint_table_refactor():
+    from retarget import elbow_pulse, shoulder_pulses
+
+    for side in "LR":
+        for angles, want in zip(ARM_GOLDEN_ANGLES, ARM_GOLDEN[side]):
+            assert tuple(joints.arm_pulses(side, *angles).values()) == want, (side, angles)
+        for pitch in np.arange(-180.0, 81.0, 6.5):  # inside the limits the table equals the old formulas exactly
+            for roll in np.arange(-10.0, 161.0, 8.5):
+                roll_s = roll if side == "L" else -roll
+                got = joints.arm_pulses(side, pitch, roll_s, 140.0)
+                old = (*shoulder_pulses(pitch, roll_s, side), elbow_pulse(140.0, side))
+                lim = [(joints.JOINTS[i]["min"], joints.JOINTS[i]["max"]) for i in joints.ARM_SERVOS[side]]
+                assert tuple(got.values()) == tuple(min(max(p, lo), hi) for p, (lo, hi) in zip(old, lim))
+
+
+def test_arm_pulses_never_leave_servo_limits():
+    from mediapose_est import SERVO_LIMITS, STAND_PULSES
+
     angles = list(np.arange(-360.0, 361.0, 7.5)) + [float("nan"), float("inf"), float("-inf"), 1e12, -1e12]
     for side in "LR":
-        assert solver.arm_pulses(side, *solver.REST) == {s: solver.STAND_PULSES[s] for s in solver.ARM_SERVOS[side]}
+        assert joints.arm_pulses(side, *joints.ARM_REST) == {s: STAND_PULSES[s] for s in joints.ARM_SERVOS[side]}
         for pitch in angles:
             for roll in angles:
                 for elbow in (0.0, 90.0, 180.0, 400.0, float("nan"), float("inf"), float("-inf")):
-                    for sid, pulse in solver.arm_pulses(side, pitch, roll, elbow).items():
-                        lo, hi = solver.SERVO_LIMITS[sid]
+                    for sid, pulse in joints.arm_pulses(side, pitch, roll, elbow).items():
+                        lo, hi = SERVO_LIMITS[sid]
                         assert isinstance(pulse, int) and lo <= pulse <= hi, (side, pitch, roll, elbow, sid, pulse)
-    assert solver.arm_pulses("L", float("nan"), float("nan"), float("nan")) == solver.arm_pulses("L", *solver.REST)
-
-
-def test_rate_limit_and_stand():
-    stand = solver.stand_arm_pulses()
-    assert set(stand) == {6, 7, 8, 14, 15, 16}
-    target = {**stand, 8: 100, 16: 280}
-    out = solver.rate_limit(stand, target, 30)
-    assert out[8] == stand[8] - 30 and out[16] == 280 and out[6] == stand[6]
+    assert joints.arm_pulses("L", float("nan"), float("nan"), float("nan")) == joints.arm_pulses("L", *joints.ARM_REST)
 
 
 def test_calibration_file_roundtrip(tmp_path):
     assert calibration.load(str(tmp_path / "missing.json"))["calibrated"] is False
-    assert calibration.new_state()["locked"] is False
+    assert calibration.new_state()["locked"] == {"arm": False, "leg": False}
     cal = {**calibration.default_calibration(0.4), "calibrated": True, "shoulder_px": 120.0}
     calibration.save(cal, str(tmp_path / "c.json"))
     assert calibration.load(str(tmp_path / "c.json")) == cal
-    assert calibration.new_state(cal)["locked"] is True
+    assert calibration.new_state(cal)["locked"] == {"arm": True, "leg": False}
+    # A file written by the arms only version: arm lengths kept, leg lengths defaulted to its shoulder width.
+    old = {k: cal[k] for k in ("calibrated", "shoulder_m", "shoulder_px", "upper", "fore")}
+    old["upper"] = {"L": 0.31, "R": 0.30}
+    calibration.save(old, str(tmp_path / "old.json"))
+    got = calibration.load(str(tmp_path / "old.json"))
+    assert got["upper"] == old["upper"] and got["calibrated"] and not got["legs_calibrated"]
+    assert got["thigh"]["L"] == calibration.RATIOS["thigh"] * 0.4
     assert calibration.matrix_rows(0) == ["0" * 16] * 8 and calibration.matrix_rows(45) == ["1" * 16] * 8
     assert calibration.matrix_rows(23)[0] == "1" * 8 + "0" * 8
 
@@ -211,8 +239,8 @@ def test_tracking_end_to_end_copy_mode():
     arms = {side: arm_mimic.new_arm(side, args) for side in "LR"}
     for i in range(60):
         arm_mimic.track_arms(arms, landmarks_for(cases[0]), cal, i / 30.0, 1 / 30.0, (640, 480), args)
-    assert abs(solver.arm_pulses("L", *arms["L"]["angles"])[8] - 350) <= 12
-    assert abs(solver.arm_pulses("R", *arms["R"]["angles"])[16] - 275) <= 12
+    assert abs(joints.arm_pulses("L", *arms["L"]["angles"])[8] - 350) <= 12
+    assert abs(joints.arm_pulses("R", *arms["R"]["angles"])[16] - 275) <= 12
 
 
 def test_tracking_gates_hold_then_lost():
@@ -238,7 +266,7 @@ def test_tracking_gates_hold_then_lost():
         arm_mimic.track_arms(arms, None, cal, t, 1 / 30.0, (640, 480), args)
     for side in "LR":
         assert arms[side]["state"] == "LOST"
-        assert np.allclose(arms[side]["angles"], solver.REST, atol=0.5)  # eased back to rest
+        assert np.allclose(arms[side]["angles"], joints.ARM_REST, atol=0.5)  # eased back to rest
 
 
 HANG = {"L": (0, 0, 0), "R": (0, 0, 0)}
@@ -247,13 +275,13 @@ T_POSE = {"L": (0, 90, 0), "R": (0, -90, 0)}
 
 def feed(state, angles, t, frames, vis=None, jitter=None, **kw):
     """Feeds `frames` frames of one pose at 30 fps. Returns (new time, samples added per side)."""
-    before = {s: len(state["buf"][s]) for s in "LR"}
+    before = {s: len(state["buf"]["arm"][s]) for s in "LR"}
     for i in range(frames):
         img, world, v = landmarks_for(angles, **kw)
         px = img[:, :2] * (640, 480) + (jitter(i) if jitter else 0.0)
         calibration.update(state, px, world, v if vis is None else vis, t)
         t += 1 / 30.0
-    return t, {s: len(state["buf"][s]) - before[s] for s in "LR"}
+    return t, {s: len(state["buf"]["arm"][s]) - before[s] for s in "LR"}
 
 
 def test_auto_calibration_collects_only_good_frames():
@@ -275,18 +303,18 @@ def test_auto_calibration_collects_only_good_frames():
     assert added == {"L": 0, "R": 0}
     t, added = feed(state, HANG, t, 30, jitter=lambda i: (12.0 * (i + 1), 0.0))  # walking sideways
     assert added == {"L": 0, "R": 0}
-    assert not state["locked"] and calibration.progress(state) == 0
+    assert not state["locked"]["arm"] and calibration.progress(state) == 0
 
     # One good arm only: that side collects, the bent side does not, and nothing locks.
     t, added = feed(state, {"L": (0, 0, 0), "R": (0, 0, 70)}, t, 30)
     assert added["R"] == 0 and 15 <= added["L"] <= 21  # 30 frames minus the 0.3 s stillness wait
-    assert not state["locked"]
+    assert not state["locked"]["arm"]
 
     # Good frames: hanging arms, then a T-pose. Locks at 45 per side.
     t, added = feed(state, HANG, t, 40)
-    assert 25 <= added["R"] <= 31 and not state["locked"] and calibration.progress(state) == added["R"]
+    assert 25 <= added["R"] <= 31 and not state["locked"]["arm"] and calibration.progress(state) == added["R"]
     t, added = feed(state, T_POSE, t, 40)
-    assert added["L"] > 25 and state["locked"]
+    assert added["L"] > 25 and state["locked"]["arm"]
     cal = state["cal"]
     assert cal["calibrated"] and abs(cal["shoulder_m"] - WIDTH) < 0.02
     for side in "LR":
@@ -297,12 +325,12 @@ def test_auto_calibration_median_rejects_outliers_and_refines_slowly():
     rng = np.random.default_rng(3)
     state, t = calibration.new_state(), 0.0
     t, _ = feed(state, HANG, t, 80, jitter=lambda i: rng.normal(0.0, 0.6, (33, 2)))  # pixel noise
-    assert state["locked"]
+    assert state["locked"]["arm"]
     for side in "LR":
         assert abs(state["cal"]["upper"][side] - UPPER) < 0.02 and abs(state["cal"]["fore"][side] - FORE) < 0.02
     # After locking, a burst of wrong samples moves a length by at most 3 percent per sample.
     before = state["cal"]["upper"]["L"]
-    state["buf"]["L"].extend([(2 * UPPER, 2 * FORE, WIDTH, 100.0)] * 100)
+    state["buf"]["arm"]["L"].extend([(2 * UPPER, 2 * FORE, WIDTH, 100.0)] * 100)
     t, _ = feed(state, HANG, t, 1)
     assert before < state["cal"]["upper"]["L"] <= before * 1.03 + 1e-9
 

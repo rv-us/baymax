@@ -1,29 +1,22 @@
 """
-Monocular arm geometry and servo mapping.
+Monocular body geometry: depth recovery from bone lengths, body frames, leg angles and the
+balance layer. Servo mapping lives in joints.py.
 
 Everything before the torso frame lives in metric camera coordinates (x right, y down, z away
 from the camera, origin at the lens). A landmark at pixel (x, y) lies on the ray
 r = ((x - cx) / f, (y - cy) / f, 1), so its 3D position is Z * r for some depth Z.
 """
 import math
-import os
-import sys
 
 import numpy as np
 
-_HERE = os.path.dirname(os.path.abspath(__file__))
-for _p in (os.path.join(_HERE, ".."), os.path.join(_HERE, "..", "laptop_mvp")):
-    if os.path.abspath(_p) not in sys.path:
-        sys.path.insert(0, os.path.abspath(_p))
+import joints
 
-from mediapose_est import SERVO_LIMITS, STAND_PULSES  # noqa: E402
-from retarget import elbow_pulse, shoulder_pulses  # noqa: E402
-
-ARM_SERVOS = {"L": (8, 7, 6), "R": (16, 15, 14)}  # shoulder pitch, shoulder roll, elbow
-REST = (0.0, 0.0, 180.0)  # pitch, roll, interior elbow: the stand pose
-# Elbows and shoulder rolls tightened to robot_api/servo/limits.py (125..875, bracket protection).
-ARM_LIMITS = {sid: (max(SERVO_LIMITS[sid][0], 125), min(SERVO_LIMITS[sid][1], 875)) if sid in (6, 7, 14, 15)
-              else SERVO_LIMITS[sid] for side in "LR" for sid in ARM_SERVOS[side]}
+# Balance layer constants (all UNVERIFIED on hardware, chosen conservative).
+BALANCE_HIP_MARGIN = 10.0  # hip pitch may leave knee / 2 (hip over ankle) by this many degrees
+LIFT_FRAC = 0.12           # ankle height difference, as a fraction of leg length, that counts as a lifted foot
+LIFT_KNEE, LIFT_HIP = 15.0, 10.0  # most a lifted leg may differ from the stance leg, degrees
+BLEND_START = 0.85         # in-plane fraction of a bone above which its depth leans on the world landmarks
 
 
 def ray(px, focal, center):
@@ -77,38 +70,102 @@ def bone_end(parent, r, length, sign):
     return z * r
 
 
-def reconstruct_arm(shoulder, px_elbow, px_wrist, world, signs, lengths, focal, center):
+def reconstruct_chain(parent, pxs, world, signs, lengths, focal, center, blend=False):
     """
-    Elbow and wrist in camera coordinates, rebuilt as shoulder + bone vectors of calibrated
-    length. world = (3, 3) world landmarks of shoulder, elbow, wrist, signs = previous (upper,
-    forearm) depth signs, lengths = (upper, forearm) in metres. Returns (elbow, wrist, signs).
+    Joints of a bone chain in camera coordinates, each rebuilt as parent + bone vector of
+    calibrated length. pxs = child pixels, world = world landmarks of parent and children,
+    signs = previous depth signs, lengths = bone lengths in metres. Returns (points, signs).
 
     The sign of each bone is the side of the child's view ray the bone points along (world bone
     vector dotted with the ray). For a centred joint that is just the sign of the world z
     difference, off centre it stays correct where plain z would pick the wrong root.
+
+    blend=True is for bones that spend their time in the image plane (torso, standing legs).
+    There dz = sqrt(L^2 - d^2) is ill conditioned (1 cm of length error is about 10 cm of
+    depth), so as the bone approaches the image plane its depth fades to the world landmark
+    depth, which is small and steady there. Foreshortened bones keep the exact solution.
     """
-    out, parent, new_signs = [], shoulder, []
-    for i, px in enumerate((px_elbow, px_wrist)):
+    points, new_signs = [], []
+    for i, px in enumerate(pxs):
         r = ray(px, focal, center)
-        sign = depth_sign(signs[i], float((world[i + 1] - world[i]) @ r) / float(np.linalg.norm(r)))
-        parent = bone_end(parent, r, lengths[i], sign)
-        out.append(parent)
+        w = world[i + 1] - world[i]
+        sign = depth_sign(signs[i], float(w @ r) / float(np.linalg.norm(r)))
+        child = bone_end(parent, r, lengths[i], sign)
+        if blend:
+            v = child - parent
+            k = float(np.clip((np.hypot(v[0], v[1]) / lengths[i] - BLEND_START) / (1.0 - BLEND_START), 0.0, 1.0))
+            v[2] = (1.0 - k) * v[2] + k * lengths[i] * w[2] / max(float(np.linalg.norm(w)), 1e-6)
+            child = parent + lengths[i] * v / max(float(np.linalg.norm(v)), 1e-9)
+        points.append(child)
         new_signs.append(sign)
-    return out[0], out[1], tuple(new_signs)
+        parent = child
+    return points, tuple(new_signs)
 
 
-def arm_pulses(side, pitch, roll, elbow):
-    """Arm angles (retarget.py convention, degrees) -> {servo id: pulse}, always inside ARM_LIMITS."""
-    pitch, roll, elbow = (float(np.clip(a, -360.0, 360.0)) if np.isfinite(a) else rest
-                          for a, rest in zip((pitch, roll, elbow), REST))
-    raw = (*shoulder_pulses(pitch, roll, side), elbow_pulse(elbow, side))
-    return {sid: int(min(max(p, ARM_LIMITS[sid][0]), ARM_LIMITS[sid][1])) for sid, p in zip(ARM_SERVOS[side], raw)}
+def reconstruct_arm(shoulder, px_elbow, px_wrist, world, signs, lengths, focal, center, blend=False):
+    """Elbow and wrist from the shoulder (see reconstruct_chain). Returns (elbow, wrist, signs)."""
+    (elbow, wrist), signs = reconstruct_chain(shoulder, (px_elbow, px_wrist), world, signs, lengths, focal, center, blend)
+    return elbow, wrist, signs
 
 
-def rate_limit(prev, target, max_step):
-    """Per tick pulse limit: each servo moves at most max_step pulses toward its target."""
-    return {sid: int(prev[sid] + min(max(p - prev[sid], -max_step), max_step)) for sid, p in target.items()}
+def body_frame(l_shoulder, r_shoulder, l_hip, r_hip):
+    """
+    Full body frame for the legs: (rot, origin) with rot rows = (forward, left, up) in camera
+    coords and origin at the hip midpoint. Up runs from mid hip to mid shoulder, left is the
+    hip line re-orthogonalized against up. None when degenerate.
+    """
+    origin = 0.5 * (l_hip + r_hip)
+    up = 0.5 * (l_shoulder + r_shoulder) - origin
+    n = float(np.linalg.norm(up))
+    if not np.isfinite(n) or n < 1e-6:
+        return None
+    up = up / n
+    left = (l_hip - r_hip) - float((l_hip - r_hip) @ up) * up
+    n = float(np.linalg.norm(left))
+    if not np.isfinite(n) or n < 1e-6:
+        return None
+    left = left / n
+    return np.stack([np.cross(left, up), left, up]), origin
 
 
-def stand_arm_pulses():
-    return {sid: STAND_PULSES[sid] for side in "LR" for sid in ARM_SERVOS[side]}
+def leg_angles(thigh, shin, side):
+    """
+    Body frame bone vectors (x forward, y left, z up) -> (hip_pitch, hip_roll, knee) in the
+    joints.py conventions: + thigh forward, + abduction, + knee flexion. No IK, the robot chain
+    (roll then pitch) is inverted directly: roll is the thigh's angle in the frontal plane,
+    pitch its angle out of that plane toward the front.
+    """
+    t, s = thigh / max(float(np.linalg.norm(thigh)), 1e-9), shin / max(float(np.linalg.norm(shin)), 1e-9)
+    roll = math.degrees(math.atan2(t[1], -t[2]))
+    pitch = math.degrees(math.atan2(t[0], math.hypot(t[1], t[2])))
+    knee = math.degrees(math.acos(float(np.clip(t @ s, -1.0, 1.0))))
+    return pitch, roll if side == "L" else -roll, knee
+
+
+def lifted_foot(ankle_z, leg_length):
+    """"L" or "R" when that ankle is clearly higher than the other one (body frame z), else None."""
+    diff = ankle_z["L"] - ankle_z["R"]
+    if abs(diff) <= LIFT_FRAC * leg_length:
+        return None
+    return "L" if diff > 0 else "R"
+
+
+def balance(angles, lifted=None):
+    """
+    Safety layer for {"L": (hip_pitch, hip_roll, knee), "R": ...}. Both feet stay planted:
+      1. every angle is cut to the joint table's safe caps,
+      2. a lifted foot is read as a single leg stance request: that leg may only differ from
+         the stance leg by a small hip pitch and knee change, it is never raised,
+      3. hip pitch stays near knee / 2. With the torso upright and the foot flat that keeps
+         the hip above the ankle, so a bow at the waist (which the robot cannot do, it has no
+         waist joint) does not throw the hips backward.
+    """
+    out = {s: [joints.safe_angle(i, a) for i, a in zip(joints.LEG_SERVOS[s], angles[s])] for s in "LR"}
+    if lifted in out:
+        hip, roll, knee = out[lifted]
+        ref = out["R" if lifted == "L" else "L"]
+        out[lifted] = [min(max(hip, ref[0] - LIFT_HIP), ref[0] + LIFT_HIP), min(roll, max(ref[1], 0.0)),
+                       min(max(knee, ref[2]), ref[2] + LIFT_KNEE)]
+    for leg in out.values():
+        leg[0] = min(max(leg[0], 0.5 * leg[2] - BALANCE_HIP_MARGIN), 0.5 * leg[2] + BALANCE_HIP_MARGIN)
+    return {s: tuple(v) for s, v in out.items()}
