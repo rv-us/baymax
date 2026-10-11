@@ -24,6 +24,13 @@ def test_since_returns_audio_after_t_and_its_start_time():
     assert abs(t0 - 100.10) < 1e-9
 
 
+def test_chunks_since_keeps_each_arrival_time():
+    rx = filled(5)  # chunks end at 100.02 ... 100.10
+    got = rx.chunks_since(100.06)
+    assert [round(t, 2) for t, _ in got] == [100.08, 100.10]
+    assert rx.chunks_since(got[-1][0]) == []
+
+
 def test_since_with_nothing_newer():
     assert filled(3).since(200.0) == (b"", None)
 
