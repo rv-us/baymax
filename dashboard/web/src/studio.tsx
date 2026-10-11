@@ -34,6 +34,8 @@ const playhead = signal(0);
 const previewing = signal(false);
 const dirty = signal(false);
 const library = signal<any[] | null>(null);
+/** Set by the library's "Edit in Studio": the animation to open when Studio next shows. */
+export const pendingOpen = signal<string | null>(null);
 const mirror = signal(true);
 const loopOn = signal(false);
 const speed = signal(1);
@@ -361,8 +363,8 @@ function RecordPanel() {
   const hold = async () => { setAuto(false); if (await attempt(() => api("POST", "/api/record/hold"), "The arms are holding again.")) setLimp(false); };
   return (
     <details class="fold">
-      <summary><Icon name="hand" />Record from the robot</summary>
-      <p>Let the robot's arms go limp, move them by hand, and capture each pose as a keyframe. The legs keep holding.</p>
+      <summary><Icon name="hand" />Capture single poses from the robot</summary>
+      <p>Let the robot's arms go limp, move them by hand, and capture each pose as a keyframe. The legs keep holding. To record a whole motion in one go, use <a href="#/record">Record</a>.</p>
       {!has && <p class="note"><Icon name="alert" size={16} />No servo readback from the robot yet, so there is nothing to capture.</p>}
       <div class="row">
         {!limp
@@ -459,6 +461,13 @@ export function Studio() {
     refreshLibrary();
     twinView("command");
   }, []);
+  useEffect(() => {
+    const id = pendingOpen.value;
+    if (!id || !model.value) return;
+    pendingOpen.value = null;
+    if (dirty.value && anim.value.keyframes.length && anim.value.id !== id && !confirm("Discard the unsaved changes to the animation that is open?")) return;
+    attempt(async () => open(await api("GET", `/api/animations/${id}`)));
+  }, [pendingOpen.value, model.value]);
 
   if (loadError) return <div class="page-empty"><Icon name="alert" size={28} /><h2>The editor couldn't load</h2><p>{loadError}</p></div>;
   const m = model.value, p = pose.value;
@@ -481,6 +490,10 @@ export function Studio() {
 
   return (
     <div class="studio">
+      <header class="page-head studio-head">
+        <h1>Studio</h1>
+        <p>Set a pose on the dials, capture keyframes, preview on the twin, then play on the robot.</p>
+      </header>
       <div class="studio-bar">
         <input ref={nameRef} class="name" type="text" value={a.name} placeholder="Name this animation" aria-label="Animation name"
           onInput={(e) => { anim.value = { ...a, name: e.currentTarget.value }; dirty.value = true; }} />

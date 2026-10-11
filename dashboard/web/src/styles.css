@@ -317,7 +317,7 @@ main:focus { outline: none; }
 .studio {
   display: grid; gap: 16px;
   grid-template-columns: minmax(0, 1.2fr) minmax(380px, 0.8fr);
-  grid-template-areas: "bar bar" "views joints" "time time" "more more";
+  grid-template-areas: "head head" "bar bar" "views joints" "time time" "more more";
 }
 .studio-bar { grid-area: bar; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .studio-bar .name { flex: 1 1 240px; font-size: 1.375rem; font-weight: 700; min-height: 52px; border-color: transparent; background: transparent; padding-left: 4px; border-bottom: 2px solid var(--rule); border-radius: 0; }
@@ -588,7 +588,7 @@ a.session-row:hover { background: var(--paper); }
   .live { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "views main" "views side"; }
 }
 @media (max-width: 1080px) {
-  .studio { grid-template-columns: minmax(0, 1fr); grid-template-areas: "bar" "views" "time" "joints" "more"; }
+  .studio { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "bar" "views" "time" "joints" "more"; }
   .studio-views { min-height: 0; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); height: 46vh; min-height: 320px; }
   .arms { grid-template-columns: 1fr 1fr; gap: 20px; }
   .arm + .arm { border-top: 0; padding-top: 0; }

@@ -25,24 +25,54 @@ export interface Live {
   frame: Frame; advice: { kind: string; text: string } | null;
   last?: { id: string | null; status: string; flagged: boolean } | null; error?: string | null;
 }
-export interface Playback { playing: boolean; t_ms: number; total_ms: number; error: string | null; name: string | null; stopped?: boolean }
+export interface Playback {
+  playing: boolean; t_ms: number; total_ms: number; error: string | null; name: string | null; stopped?: boolean;
+  request?: number; finished?: number | null; kind?: "animation" | "builtin"; limited?: string[];
+}
+export interface RecorderState {
+  recording: boolean; seconds: number; frames: number; error: string | null; simulated: boolean; limp: boolean;
+  take: { id: string; duration_ms: number; simulated: boolean } | null;
+}
+export interface Calibration { active: string; name: string; narrowed: string[]; allow_action_groups: boolean }
+export interface Clip { hz: number; total_ms: number; frames: { angles: Record<string, number>; base: any }[]; name?: string }
+export interface LibraryItem {
+  id: string; name: string; kind: "exercise" | "emote" | "builtin"; description?: string; keyframes?: number;
+  duration_ms?: number; source?: string; unreadable?: boolean; group?: string; available?: boolean;
+}
 export interface Tunnel { open: boolean; host: string | null; user: string | null; port: number | null; error: string | null; manual: string }
 export interface Keyframe { ms: number; hold_ms?: number; ease?: string; servos: Record<string, number>; head?: Record<string, number> }
 export interface Target { top?: number; bottom?: number; tolerance?: number; tempo_s?: number }
 export interface Rep {
   n: number; t_start: number; t_end: number; peak_deg: number; trough_deg: number; duration_s: number;
   rom_deg: number; rom_ratio?: number; accuracy_pct?: number; pace_ratio?: number; misses: string[]; quality: "good" | "off";
+  up_s?: number; down_s?: number; smoothness_pct?: number; symmetry_pct?: number; left_rom_deg?: number; right_rom_deg?: number;
 }
+export interface Overall { score: number | null; label: string; parts: { key: string; label: string; value: number; weight: number }[] }
 export interface Scores {
   accuracy_pct: number | null; pacing_pct: number | null; consistency_pct: number | null; tempo_match_pct: number | null;
+  smoothness_pct: number | null; symmetry_pct: number | null; completion_pct: number | null; overall: Overall;
   fatigue: { label: string; rom_change_pct: number | null; duration_change_pct: number | null };
   reps?: number; target_reps?: number; active_s?: number; safety_events?: number;
 }
+export interface JointRom { joint: string; min_deg: number; max_deg: number; rom_deg: number; target_rom_deg?: number; pct?: number }
+export interface Symmetry { pct: number; left_rom_deg: number; right_rom_deg: number; diff_deg: number; favours: "left" | "right" | "even" }
+export interface Tempo { target_s: number | null; mean_s: number; up_s: number | null; down_s: number | null; spread_pct: number }
+export interface Heatmap { bins: number; rows: { rep: number; cells: (number | null)[] }[] }
+export interface Insight { tone: "good" | "warn" | "bad" | "info"; text: string }
+export interface Trend {
+  id: string; started: number; status: string; synthetic: boolean; overall: number; accuracy_pct: number | null;
+  pacing_pct: number | null; smoothness_pct: number | null; symmetry_pct: number | null; reps: number; target_reps: number;
+}
+export interface RecordingInfo {
+  name: string; animation_id: string; kind: string; take_ms: number; kept_ms: number; animation_ms: number;
+  samples: number; keyframes: number; joints_moved: string[]; travel_deg: number;
+}
 export interface SetLog {
   exercise: string; set: number; reps: number; target_reps: number; deviations: string[]; answer?: string | null;
-  trouble?: string; target: Target; started_t?: number; seconds?: number; finished?: boolean;
-  trace?: { hz: number; patient: (number | null)[]; reference: number[] };
+  trouble?: string; target: Target; started_t?: number; seconds?: number; finished?: boolean; track_joint?: string;
+  trace?: { hz: number; patient: (number | null)[]; reference: number[]; joints?: Record<string, (number | null)[]> };
   reps_detail: Rep[]; scores: Scores; bands: { t0: number; t1: number; quality: "good" | "off" | "lost"; rep?: number }[];
+  rom_by_joint: JointRom[]; symmetry: Symmetry | null; tempo: Tempo | null; heatmap: Heatmap | null;
 }
 export interface SessionEvent { t: number; type: string; set?: number; detail?: string; transcript?: string }
 export interface Summary {
@@ -55,10 +85,13 @@ export interface Session {
   sets: SetLog[]; interrupted: SetLog[]; events: SessionEvent[]; notes: string[]; scores: Scores;
   summary: Summary; summary_cached: boolean; summary_pending: boolean;
   calories?: { kcal: number; weight_kg: number };
+  kind: "exercise" | "recording"; rom_by_joint: JointRom[]; symmetry: Symmetry | null; insights: Insight[];
+  recording?: RecordingInfo;
 }
 export interface SessionRow {
   id: string; plan: string; started: number; status: string; flagged: boolean; synthetic: boolean; scores: Scores;
   exercises: string[]; sets: number; has_detail: boolean; headline: string | null; unreadable?: boolean;
+  kind: "exercise" | "recording"; name: string | null; duration_s: number;
 }
 
 export class ApiError extends Error {
@@ -93,6 +126,8 @@ export const safety = signal<Safety>({ stop: null, alerts: [] });
 export const live = signal<Live>({ running: false, frame: { visible: true, x: 0, size: 0.6 }, advice: null });
 export const playback = signal<Playback>({ playing: false, t_ms: 0, total_ms: 0, error: null, name: null });
 export const tunnel = signal<Tunnel | null>(null);
+export const recorder = signal<RecorderState>({ recording: false, seconds: 0, frames: 0, error: null, simulated: false, limp: false, take: null });
+export const calibration = signal<Calibration | null>(null);
 export const settings = signal<{ ollama_url: string; model: string; stub_llm: boolean; robot: string } | null>(null);
 export const serverUp = signal<boolean | null>(null);
 export const sessionsChanged = signal(0);
@@ -125,6 +160,7 @@ export async function loadStatus() {
     const s = await api("GET", "/api/status");
     status.value = s; safety.value = s.safety; live.value = s.live; playback.value = s.playback;
     tunnel.value = s.tunnel; settings.value = s.settings; serverUp.value = true;
+    recorder.value = s.recorder; calibration.value = s.calibration;
   } catch { serverUp.value = false; }
 }
 
@@ -136,6 +172,8 @@ export function connectEvents() {
   on("live", (d) => { live.value = d; });
   on("playback", (d) => { playback.value = d; });
   on("tunnel", (d) => { tunnel.value = d; });
+  on("recorder", (d) => { recorder.value = d; });
+  on("calibration", (d) => { calibration.value = d; });
   on("sessions", () => { sessionsChanged.value++; });
   on("summary", (d) => { summaryEvent.value = d; sessionsChanged.value++; });
   es.onopen = () => { if (serverUp.value === false) loadStatus(); serverUp.value = true; };
@@ -149,6 +187,58 @@ export async function stopRobot() {
   } catch (e) {
     toast("error", e instanceof Error ? e.message : String(e));
   }
+}
+
+// ---- streamed coach replies -----------------------------------------------------------
+
+export interface ChatHandlers {
+  onMeta?: (m: { source: "llm" | "stub" | "offline"; model: string | null; notice?: string }) => void;
+  onDelta: (text: string) => void; onDone: () => void; onError: (message: string) => void;
+}
+/** POST /api/chat and read its Server-Sent Events as they arrive. Returns a function that cancels. */
+export function streamChat(body: unknown, h: ChatHandlers): () => void {
+  const ctl = new AbortController();
+  let ended = false;
+  const end = (fn: () => void) => { if (!ended) { ended = true; fn(); } };
+  (async () => {
+    let res: Response;
+    try {
+      res = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), signal: ctl.signal });
+    } catch {
+      if (!ctl.signal.aborted) end(() => h.onError("The dashboard server isn't answering. Is `python -m dashboard` still running?"));
+      return;
+    }
+    if (!res.ok || !res.body) {
+      const data = await res.json().catch(() => ({}));
+      end(() => h.onError(typeof data.detail === "string" ? data.detail : `The coach couldn't be reached (HTTP ${res.status}).`));
+      return;
+    }
+    const reader = res.body.getReader(), decoder = new TextDecoder();
+    let buffer = "";
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let cut: number;
+        while ((cut = buffer.indexOf("\n\n")) >= 0) {
+          const block = buffer.slice(0, cut);
+          buffer = buffer.slice(cut + 2);
+          const kind = /^event: (.*)$/m.exec(block)?.[1], raw = /^data: (.*)$/m.exec(block)?.[1];
+          if (!kind || !raw) continue;
+          const data = JSON.parse(raw);
+          if (kind === "meta") h.onMeta?.(data);
+          else if (kind === "delta") h.onDelta(data.text);
+          else if (kind === "done") end(h.onDone);
+          else if (kind === "error") end(() => h.onError(data.message));
+        }
+      }
+      end(h.onDone);
+    } catch {
+      if (!ctl.signal.aborted) end(() => h.onError("The connection dropped while the coach was answering."));
+    }
+  })();
+  return () => { ended = true; ctl.abort(); };
 }
 
 // ---- theme: follows the system unless one is chosen here ----------------------------------

@@ -26,7 +26,7 @@ export function ChartDefs() {
 }
 
 /** Patient against the demonstrated motion for one set, with each rep's stretch shaded. */
-export function OverlayChart({ set }: { set: SetLog }) {
+export function OverlayChart({ set, cursor }: { set: SetLog; cursor?: number | null }) {
   const trace = set.trace!;
   const box = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<number | null>(null);
@@ -81,13 +81,14 @@ export function OverlayChart({ set }: { set: SetLog }) {
             <g key={v}><line x1={L} x2={W - R} y1={y(v)} y2={y(v)} class="grid" /><text x={L - 8} y={y(v) + 4} class="axis" text-anchor="end">{Math.round(v)}°</text></g>
           ))}
           <line x1={L} x2={W - R} y1={y(top)} y2={y(top)} class="chart-target" />
-          <text x={W - R - 4} y={y(top) - 5} class="axis" text-anchor="end">target</text>
+          <text x={L + 4} y={y(top) - 5} class="axis" text-anchor="start">target</text>
           {xTicks.map((t) => <text key={t} x={x(t)} y={H - 10} class="axis" text-anchor="middle">{clock(t)}</text>)}
           <path d={path(trace.reference)} class="chart-ref" />
           <path d={path(trace.patient)} class="chart-patient" />
           {set.reps_detail.map((r) => (
             <text key={r.n} x={x((r.t_start + r.t_end) / 2)} y={T + 12} class="rep-no" text-anchor="middle">{r.n}</text>
           ))}
+          {cursor != null && cursor <= dur && <line x1={x(cursor)} x2={x(cursor)} y1={T} y2={H - B} class="playhead" />}
           {hv && <line x1={x(hv.t)} x2={x(hv.t)} y1={T} y2={H - B} class="crosshair" />}
           {hv && hv.p != null && <circle cx={x(hv.t)} cy={y(hv.p)} r="4.5" class="hover-dot" />}
         </svg>

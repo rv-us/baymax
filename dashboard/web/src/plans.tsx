@@ -22,7 +22,7 @@ export function Plans() {
     return (
       <div class="page-empty"><Icon name="plans" size={28} /><h2>No workout plans yet</h2>
         <p>A plan is a list of exercises. Make an animation in Studio and add it to a plan from there.</p>
-        <button class="btn primary" onClick={() => go("/")}>Open Studio</button></div>
+        <button class="btn primary" onClick={() => go("/studio")}>Open Studio</button></div>
     );
   }
   const drop = (plan: any, name: string) => {

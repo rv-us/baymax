@@ -35,6 +35,18 @@ const PATHS: Record<string, string> = {
   hand: "M8 12V6a1.5 1.5 0 0 1 3 0v5M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v8c0 4-2.5 7-6 7-3 0-4.5-1.5-6-4l-2-3.5a1.4 1.4 0 0 1 2.3-1.5L8 14",
   film: "M4 5h16v14H4zM8 5v14M16 5v14M4 9.5h4M4 14.5h4M16 9.5h4M16 14.5h4",
   mirror: "M12 3v18M8 7l-5 5 5 5zM16 7l5 5-5 5z",
+  library: "M4 5h6v6H4zM14 5h6v6h-6zM4 14h6v5H4zM14 14h6v5h-6z",
+  spark: "M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7z",
+  tune: "M5 4v6M5 14v6M12 4v2M12 10v10M19 4v9M19 17v3M3 12h4M10 8h4M17 15h4",
+  more: "M5 12h.01M12 12h.01M19 12h.01",
+  send: "M4 12l16-8-6 16-3-7z",
+  scissors: "M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.5 7.5L20 19M8.5 16.5L20 5",
+  lock: "M6 11h12v9H6zM9 11V8a3 3 0 0 1 6 0v3",
+  unlock: "M6 11h12v9H6zM9 11V8a3 3 0 0 1 5.6-1.5",
+  home: "M4 11l8-7 8 7M6 10v10h12V10M10 20v-6h4v6",
+  chart: "M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6",
+  replay: "M4 12a8 8 0 1 0 2.6-5.9M4 4v5h5M10 9l5 3-5 3z",
+  info: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v6M12 7.5v.5",
 };
 
 export function Icon({ name, size = 20, label }: { name: string; size?: number; label?: string }) {

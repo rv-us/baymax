@@ -1,18 +1,47 @@
 import { render } from "preact";
 import { useEffect, useState } from "preact/hooks";
-import { api, attempt, connectEvents, dismiss, live, loadStatus, safety, serverUp, status, stopRobot, toasts } from "./api";
+import { api, attempt, calibration, connectEvents, dismiss, live, loadStatus, playback, recorder, safety, serverUp, status, stopRobot, toasts } from "./api";
+import { Calibrate } from "./calibrate";
+import { Coach } from "./coach";
+import { Generate } from "./generate";
 import { Icon } from "./icons";
+import { Landing } from "./landing";
+import { Library } from "./library";
 import { drawerOpen, LinkChips, LinksDrawer, Vitals } from "./links";
 import { LiveScreen } from "./live";
 import { Plans } from "./plans";
+import { Record as RecordScreen } from "./record";
 import { route } from "./route";
 import { SessionDetail, SessionList } from "./sessions";
 import { Studio } from "./studio";
 import "./styles.css";
+import "./more.css";
 
-
-const NAV: [string, string, string][] = [["/", "Studio", "studio"], ["/live", "Live", "live"], ["/sessions", "Sessions", "sessions"], ["/plans", "Plans", "plans"]];
-const isAt = (path: string) => (path === "/" ? route.value === "/" : route.value.startsWith(path));
+// The dashboard's pages, grouped by the job they do. One list drives the side rail, the
+// phone's bottom bar and its "More" sheet, so the three can't disagree.
+interface Page { path: string; label: string; icon: string; about: string }
+const GROUPS: { name: string; pages: Page[] }[] = [
+  { name: "Move", pages: [
+    { path: "/library", label: "Library", icon: "library", about: "Preview and play exercises and emotes" },
+    { path: "/studio", label: "Studio", icon: "studio", about: "Build an animation keyframe by keyframe" },
+    { path: "/record", label: "Record", icon: "record", about: "Record a motion by moving the arms" },
+    { path: "/generate", label: "Generate", icon: "spark", about: "Describe a motion and let the model write it" },
+  ] },
+  { name: "Train", pages: [
+    { path: "/live", label: "Live", icon: "live", about: "Run a session and coach it" },
+    { path: "/plans", label: "Plans", icon: "plans", about: "What the robot teaches, in order" },
+  ] },
+  { name: "Review", pages: [
+    { path: "/sessions", label: "Sessions", icon: "sessions", about: "Saved sessions and their analysis" },
+    { path: "/coach", label: "Coach", icon: "coach", about: "Ask about a session" },
+  ] },
+  { name: "Tune", pages: [
+    { path: "/calibrate", label: "Calibrate", icon: "tune", about: "Servo readout, limits and profiles" },
+  ] },
+];
+const PAGES = GROUPS.flatMap((g) => g.pages);
+const PHONE_TABS = ["/library", "/live", "/sessions", "/coach"];
+const isAt = (path: string) => route.value === path || route.value.startsWith(path + "/");
 
 function StopButton() {
   const [sending, setSending] = useState(false);
@@ -99,44 +128,124 @@ function PatientView() {
 
 function Screen() {
   const r = route.value;
-  if (r === "/") return <Studio />;
-  if (r.startsWith("/live")) return <LiveScreen />;
+  if (isAt("/library")) return <Library />;
+  if (isAt("/studio")) return <Studio />;
+  if (isAt("/record")) return <RecordScreen />;
+  if (isAt("/generate")) return <Generate />;
+  if (isAt("/live")) return <LiveScreen />;
   if (r.startsWith("/sessions/")) return <SessionDetail id={decodeURIComponent(r.slice("/sessions/".length))} />;
-  if (r.startsWith("/sessions")) return <SessionList />;
-  if (r.startsWith("/plans")) return <Plans />;
-  return <div class="page-empty"><h2>There's no page here</h2><a class="btn" href="#/">Open Studio</a></div>;
+  if (isAt("/sessions")) return <SessionList />;
+  if (r.startsWith("/coach/")) return <Coach id={decodeURIComponent(r.slice("/coach/".length))} />;
+  if (isAt("/coach")) return <Coach />;
+  if (isAt("/plans")) return <Plans />;
+  if (isAt("/calibrate")) return <Calibrate />;
+  return (
+    <div class="page-empty">
+      <Icon name="alert" size={28} />
+      <h2>There's no page here</h2>
+      <p>The address <code>#{r}</code> doesn't match anything in the dashboard.</p>
+      <div class="row"><a class="btn primary" href="#/library">Open the library</a><a class="btn" href="#/">Front page</a></div>
+    </div>
+  );
+}
+
+/** A dot on a nav item when something is running there. */
+function busyAt(path: string): string | null {
+  if (path === "/live" && live.value.running) return "A session is running";
+  if (path === "/record" && recorder.value.recording) return "Recording";
+  if (path === "/library" && playback.value.playing) return "Playing on the robot";
+  if (path === "/calibrate" && calibration.value && calibration.value.active !== "factory") return `Profile “${calibration.value.name}” is in force`;
+  return null;
+}
+
+function NavLink({ page, onClick }: { page: Page; onClick?: () => void }) {
+  const busy = busyAt(page.path);
+  return (
+    <a href={`#${page.path}`} aria-current={isAt(page.path) ? "page" : undefined} onClick={onClick} title={page.about}>
+      <Icon name={page.icon} size={20} /><span>{page.label}</span>
+      {busy && <i class={`nav-dot ${page.path === "/calibrate" ? "is-quiet" : ""}`} role="img" aria-label={busy} title={busy} />}
+    </a>
+  );
 }
 
 function App() {
+  const [more, setMore] = useState(false);
   useEffect(() => { loadStatus(); connectEvents(); }, []);
-  const patient = route.value.startsWith("/patient");
+  useEffect(() => { setMore(false); }, [route.value]);
+  useEffect(() => {
+    if (!more) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMore(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [more]);
+  const r = route.value;
+  const patient = r.startsWith("/patient");
+  const here = PAGES.find((p) => isAt(p.path));
+  useEffect(() => { if (r !== "/") document.title = here ? `${here.label}, Baymax dashboard` : "Baymax dashboard"; }, [here?.path, r === "/"]);
+  if (r === "/") return <><Landing /><Toasts /></>;
   return (
     <div class={`app ${patient ? "is-patient" : ""}`}>
-      <a class="skip" href="#main">Skip to the page</a>
+      <a class="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to the page</a>
       <div class="chrome">
-      <header class="top">
-        <a class="brand" href="#/" aria-label="Baymax, Studio">
-          <svg viewBox="0 0 44 24" width="40" height="22" aria-hidden="true"><circle cx="9" cy="12" r="5" /><circle cx="35" cy="12" r="5" /><path d="M9 12h26" /></svg>
-          <span>Baymax</span>
-        </a>
-        <nav class="nav" aria-label="Main">
-          {NAV.map(([path, label]) => <a key={path} href={`#${path}`} aria-current={isAt(path) ? "page" : undefined}>{label}</a>)}
-        </nav>
-        {status.value?.dry_run && <span class="tag tag-dry" title="Fake hardware, synthetic sessions, stub coach">Dry run</span>}
-        <LinkChips />
-        <Vitals />
-        <StopButton />
-      </header>
-      <SafetyBanner />
+        <header class="top">
+          <a class="brand" href="#/" aria-label="Baymax, front page">
+            <svg viewBox="0 0 44 24" width="40" height="22" aria-hidden="true"><circle cx="9" cy="12" r="5" /><circle cx="35" cy="12" r="5" /><path d="M9 12h26" /></svg>
+            <span>Baymax</span>
+          </a>
+          {here && <span class="crumb" aria-hidden="true">{GROUPS.find((g) => g.pages.includes(here))!.name}<Icon name="right" size={14} /><b>{here.label}</b></span>}
+          <span class="top-gap" />
+          {status.value?.dry_run && <span class="tag tag-dry" title="Fake hardware, synthetic sessions, stub coach">Dry run</span>}
+          <LinkChips />
+          <Vitals />
+          <StopButton />
+        </header>
+        <SafetyBanner />
       </div>
-      <main id="main" tabIndex={-1}>{patient ? <PatientView /> : <Screen />}</main>
+      <div class="body">
+        {!patient && (
+          <nav class="rail" aria-label="Main">
+            {GROUPS.map((g) => (
+              <div key={g.name} class="rail-group" role="group" aria-label={g.name}>
+                <h2>{g.name}</h2>
+                {g.pages.map((p) => <NavLink key={p.path} page={p} />)}
+              </div>
+            ))}
+            <button class="rail-settings" onClick={() => { drawerOpen.value = true; }}><Icon name="settings" size={20} /><span>Connections</span></button>
+          </nav>
+        )}
+        <main id="main" tabIndex={-1}>{patient ? <PatientView /> : <Screen />}</main>
+      </div>
       {!patient && (
         <nav class="tabbar" aria-label="Main">
-          {NAV.map(([path, label, icon]) => (
-            <a key={path} href={`#${path}`} aria-current={isAt(path) ? "page" : undefined}><Icon name={icon} size={24} /><span>{label}</span></a>
-          ))}
-          <button onClick={() => { drawerOpen.value = true; }}><Icon name="settings" size={24} /><span>Links</span></button>
+          {PHONE_TABS.map((path) => {
+            const p = PAGES.find((x) => x.path === path)!;
+            return <a key={path} href={`#${path}`} aria-current={isAt(path) ? "page" : undefined}><Icon name={p.icon} size={24} /><span>{p.label}</span>{busyAt(path) && <i class="nav-dot" />}</a>;
+          })}
+          <button aria-expanded={more} aria-controls="more-sheet" class={here && !PHONE_TABS.includes(here.path) ? "is-here" : ""} onClick={() => setMore(!more)}>
+            <Icon name="more" size={24} /><span>{here && !PHONE_TABS.includes(here.path) ? here.label : "More"}</span>
+          </button>
         </nav>
+      )}
+      {more && (
+        <div class="sheet-wrap" onClick={(e) => { if (e.target === e.currentTarget) setMore(false); }}>
+          <div class="sheet" id="more-sheet" role="dialog" aria-modal="true" aria-label="All pages">
+            <header><h2>All pages</h2><button class="btn icon-only quiet" aria-label="Close" onClick={() => setMore(false)}><Icon name="cross" /></button></header>
+            {GROUPS.map((g) => (
+              <div key={g.name} class="sheet-group">
+                <h3>{g.name}</h3>
+                {g.pages.map((p) => (
+                  <a key={p.path} href={`#${p.path}`} aria-current={isAt(p.path) ? "page" : undefined}>
+                    <Icon name={p.icon} size={22} /><span><b>{p.label}</b><small>{p.about}</small></span>
+                  </a>
+                ))}
+              </div>
+            ))}
+            <div class="sheet-group">
+              <button onClick={() => { setMore(false); drawerOpen.value = true; }}><Icon name="settings" size={22} /><span><b>Connections</b><small>Robot, camera, coach and theme</small></span></button>
+              <a href="#/"><Icon name="home" size={22} /><span><b>Front page</b><small>What Baymax is</small></span></a>
+            </div>
+          </div>
+        </div>
       )}
       <LinksDrawer />
       <Toasts />

@@ -271,6 +271,10 @@ export function LiveScreen() {
   }, []);
   return (
     <div class="live">
+      <header class="page-head live-head">
+        <h1>Live</h1>
+        <p>Run a workout plan with the patient, watch it happen, and step in when needed.</p>
+      </header>
       <div class="live-views"><TwinPanel /><CameraPanel /></div>
       <div class="live-main"><SessionRunner /></div>
       <div class="live-side">
