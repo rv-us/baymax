@@ -22,11 +22,13 @@ def pose_service_url(choice: str, ollama: str | None) -> str | None:
     host = urlparse(ollama if ollama and "://" in ollama else f"http://{ollama or ''}").hostname
     if host in (None, "", "localhost", "127.0.0.1"):
         return None
-    url = f"http://{host}:9000"
+    from dashboard.pose_service import DEFAULT_PORT, SERVICE
+    url = f"http://{host}:{DEFAULT_PORT}"
     try:
+        import json
         import urllib.request
         with urllib.request.urlopen(f"{url}/health", timeout=2) as r:
-            return url if r.status == 200 else None
+            return url if json.load(r).get("service") == SERVICE else None
     except (OSError, ValueError):
         return None
 
@@ -43,7 +45,7 @@ def main():
                          "(default: auto in a dry run, off with a robot)")
     ap.add_argument("--pose-url", default="auto", metavar="auto|URL|off",
                     help="send camera frames to the GX10 pose service and use its answer (default auto: the "
-                         "--ollama-url host on port 9000, if the service answers there)")
+                         "--ollama-url host on port 9100, if the service answers there)")
     ap.add_argument("--host", default="127.0.0.1", help="0.0.0.0 to serve tablets and phones on the LAN")
     ap.add_argument("--port", type=int, default=8080)
     args = ap.parse_args()

@@ -95,3 +95,16 @@ def test_the_pose_service_is_found_next_to_the_ollama_host(service):
     assert pose_service_url("auto", None) is None and pose_service_url("auto", "http://localhost:11434") is None
     assert pose_service_url("http://box:9000", None) == "http://box:9000"
     assert pose_service_url("auto", "http://203.0.113.9:11434") is None      # nothing answering there
+
+
+def test_the_older_pose_server_on_the_same_box_is_not_mistaken_for_this_one(service):
+    import http.server
+    class Old(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200); self.end_headers(); self.wfile.write(b'{"ok": true, "model": "x", "frames": 3}')
+        def log_message(self, *a): pass
+    httpd = http.server.HTTPServer(("127.0.0.1", 0), Old)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    assert not Webcam(pose_url=f"http://127.0.0.1:{httpd.server_port}")._remote_health()
+    assert Webcam(pose_url=service[0])._remote_health()
+    httpd.shutdown()

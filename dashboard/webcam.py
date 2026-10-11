@@ -24,6 +24,7 @@ import urllib.request
 import uuid
 
 from .armtrack import EMPTY_POSE
+from .pose_service import SERVICE
 
 COLORS = {"TRACKING": (80, 220, 80), "HOLD": (0, 210, 255), "LOST": (60, 60, 255)}  # BGR
 REMOTE_TIMEOUT_S = 2.0
@@ -112,8 +113,9 @@ class Webcam:
 
     def _remote_health(self) -> bool:
         try:
+            import json
             with urllib.request.urlopen(f"{self.pose_url}/health", timeout=REMOTE_TIMEOUT_S) as r:
-                return r.status == 200
+                return json.load(r).get("service") == SERVICE
         except (OSError, ValueError):
             return False
 
