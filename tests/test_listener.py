@@ -128,4 +128,4 @@ def test_robot_speech_is_ignored():
 def test_hallucination_list_matches_after_normalizing():
     assert _normalize(" Thank you. ") in HALLUCINATIONS
     assert _normalize("Yes, I'm ready.") not in HALLUCINATIONS
-    assert WhisperTranscriber  # imported without faster-whisper installed
+    assert WhisperTranscriber  # importable without torch or transformers installed

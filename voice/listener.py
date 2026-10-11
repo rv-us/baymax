@@ -2,8 +2,8 @@
 Speech-to-text for the workout loop (runs on the GX10).
 
 Listens to the robot's microphone stream (streaming/audio_receiver.py), finds
-utterances with Silero VAD, and transcribes them with Whisper (faster-whisper,
-small.en on the CPU).
+utterances with Silero VAD, and transcribes them with Whisper (small.en on the
+GPU through transformers, about 50 ms per answer). Everything runs on the GX10.
 
 Usage in your own code:
 
@@ -33,7 +33,10 @@ import numpy as np
 from streaming.audio_receiver import AudioReceiver
 from voice.segmenter import RATE, Segmenter, Utterance
 
-MODEL = "small.en"
+MODEL = "openai/whisper-small.en"
+# Words Whisper should expect. Without it, a lone "Stop." came out as "DOP".
+PROMPT = "Stop. Yes. No. Not yet. I'm ready. That hurts. Ow."
+NO_SPEECH = 0.5      # drop audio Whisper thinks is more likely noise than speech
 MUTE_AFTER_S = 0.3   # keep ignoring the mic this long after the robot stops talking
 POLL_S = 0.05
 
@@ -75,23 +78,46 @@ class SileroVad:
 
 
 class WhisperTranscriber:
-    """faster-whisper on the CPU. Returns the text, or "" for silence and noise."""
+    """Whisper through Hugging Face transformers, in fp16 on the GPU (CPU if there is
+    none). Returns the text, or "" for silence and noise."""
 
-    def __init__(self, model: str = MODEL, device: str = "cpu", compute_type: str = "int8",
-                 threads: int = 8):
-        from faster_whisper import WhisperModel
+    def __init__(self, model: str = MODEL, device: str | None = None, prompt: str = PROMPT):
+        import torch
+        from transformers import WhisperForConditionalGeneration, WhisperProcessor
 
-        self.model = WhisperModel(model, device=device, compute_type=compute_type,
-                                  cpu_threads=threads)
+        self._torch = torch
+        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        self.dtype = torch.float16 if self.device == "cuda" else torch.float32
+        self.processor = WhisperProcessor.from_pretrained(model)
+        self.model = WhisperForConditionalGeneration.from_pretrained(model, dtype=self.dtype)
+        self.model.to(self.device).eval()
+        self.model.generation_config.max_length = None  # max_new_tokens below is the limit
+        tok = self.processor.tokenizer
+        self._sot = tok.convert_tokens_to_ids("<|startoftranscript|>")
+        # English-only models call the no-speech token <|nocaptions|>.
+        self._nospeech = next(i for i in (tok.convert_tokens_to_ids(t) for t in
+                                          ("<|nospeech|>", "<|nocaptions|>")) if i != tok.unk_token_id)
+        self._prompt = (torch.tensor(self.processor.get_prompt_ids(prompt), device=self.device)
+                        if prompt else None)
         self(b"\x00\x00" * RATE)  # warm up, so the first real answer isn't slow
+
+    def no_speech_prob(self, features) -> float:
+        """Whisper's own estimate that the audio has no speech (answers score under 0.1, noise over 0.8)."""
+        sot = self._torch.tensor([[self._sot]], device=self.device)
+        logits = self.model(features, decoder_input_ids=sot).logits[0, -1].float()
+        return logits.softmax(-1)[self._nospeech].item()
 
     def __call__(self, pcm: bytes) -> str:
         audio = np.frombuffer(pcm, np.int16).astype(np.float32) / 32768
-        segments, _ = self.model.transcribe(audio, language="en", beam_size=1,
-                                            condition_on_previous_text=False)
-        # Whisper's own no-speech rule: probably silence and not confidently words.
-        text = " ".join(s.text.strip() for s in segments
-                        if not (s.no_speech_prob > 0.6 and s.avg_logprob < -1.0)).strip()
+        features = self.processor(audio, sampling_rate=RATE, return_tensors="pt").input_features
+        features = features.to(self.device, self.dtype)
+        with self._torch.inference_mode():
+            # Checked before decoding: with the prompt, Whisper turns noise into words like "No."
+            if self.no_speech_prob(features) > NO_SPEECH:
+                return ""
+            kwargs = {"prompt_ids": self._prompt} if self._prompt is not None else {}
+            ids = self.model.generate(features, max_new_tokens=64, **kwargs)
+        text = self.processor.batch_decode(ids, skip_special_tokens=True)[0].strip()
         return "" if _normalize(text) in HALLUCINATIONS else text
 
 
@@ -220,7 +246,7 @@ class Listener:
 
 def main():
     parser = argparse.ArgumentParser(description="Print what the robot's microphone hears.")
-    parser.add_argument("--model", default=MODEL, help="Whisper model (small.en, base.en, ...)")
+    parser.add_argument("--model", default=MODEL, help="Whisper model on Hugging Face")
     args = parser.parse_args()
 
     print(f"Loading Silero VAD and Whisper {args.model}...")
