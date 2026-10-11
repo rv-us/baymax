@@ -62,20 +62,38 @@ class FrameReceiver:
         self._frame = None
         self._ts = 0.0
         self._running = False
+        self._opened = threading.Event()
+        self._error = None
         self.frame_count = 0
 
-    def start(self):
-        self._cap = cv2.VideoCapture(self.pipeline, cv2.CAP_GSTREAMER)
-        if not self._cap.isOpened():
-            raise RuntimeError("Could not open the GStreamer pipeline. Is the port already in use?")
+    def start(self, open_timeout: float = 1.0):
+        """Start receiving in the background. Returns without waiting for the Pi to start sending."""
         self._running = True
+        self._opened.clear()
+        self._error = None
         self._thread = threading.Thread(target=self._loop, daemon=True)
         self._thread.start()
+        # Opening blocks until the first packet arrives, so don't wait for it here.
+        # A broken pipeline fails fast, though, so give it a moment to report that.
+        self._opened.wait(open_timeout)
+        if self._error:
+            raise RuntimeError(self._error)
         return self
 
     def _loop(self):
+        cap = cv2.VideoCapture(self.pipeline, cv2.CAP_GSTREAMER)
+        if not cap.isOpened():
+            self._error = "Could not open the GStreamer pipeline. Is the port already in use?"
+            self._running = False
+            self._opened.set()
+            return
+        self._cap = cap
+        self._opened.set()
+        if not self._running:  # stop() was called while we were waiting for the first packet
+            cap.release()
+            return
         while self._running:
-            ok, frame = self._cap.read()
+            ok, frame = cap.read()
             if not ok:
                 time.sleep(0.005)
                 continue
