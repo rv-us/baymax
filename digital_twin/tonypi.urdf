@@ -264,7 +264,7 @@
     <parent link="l_upper_arm"/>
     <child link="l_forearm"/>
     <origin xyz="0 0 -0.080" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
+    <axis xyz="1 0 0"/>
     <limit lower="-3.1416" upper="3.1416" effort="3.0" velocity="5.0"/>
     <dynamics damping="0.05" friction="0.02"/>
   </joint>
@@ -292,18 +292,18 @@
       </geometry>
       <material name="servo_black"/>
     </visual>
-    <!-- Hand / Gripper End Effector -->
+    <!-- Hand / Gripper End Effector (faces inward, the way the elbow bends) -->
     <visual>
       <origin xyz="0 0.004 -0.075" rpy="0 0 0"/>
       <geometry>
-        <box size="0.016 0.030 0.015"/>
+        <box size="0.030 0.016 0.015"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
     <visual>
-      <origin xyz="0.008 0.004 -0.082" rpy="0 0 0"/>
+      <origin xyz="0 -0.004 -0.082" rpy="0 0 0"/>
       <geometry>
-        <box size="0.004 0.022 0.012"/>
+        <box size="0.022 0.004 0.012"/>
       </geometry>
       <material name="accent_blue"/>
     </visual>
@@ -402,7 +402,7 @@
     <parent link="r_upper_arm"/>
     <child link="r_forearm"/>
     <origin xyz="0 0 -0.080" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
+    <axis xyz="-1 0 0"/>
     <limit lower="-3.1416" upper="3.1416" effort="3.0" velocity="5.0"/>
     <dynamics damping="0.05" friction="0.02"/>
   </joint>
@@ -430,18 +430,18 @@
       </geometry>
       <material name="servo_black"/>
     </visual>
-    <!-- Hand / Gripper End Effector -->
+    <!-- Hand / Gripper End Effector (faces inward, the way the elbow bends) -->
     <visual>
       <origin xyz="0 -0.004 -0.075" rpy="0 0 0"/>
       <geometry>
-        <box size="0.016 0.030 0.015"/>
+        <box size="0.030 0.016 0.015"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
     <visual>
-      <origin xyz="0.008 -0.004 -0.082" rpy="0 0 0"/>
+      <origin xyz="0 0.004 -0.082" rpy="0 0 0"/>
       <geometry>
-        <box size="0.004 0.022 0.012"/>
+        <box size="0.022 0.004 0.012"/>
       </geometry>
       <material name="accent_blue"/>
     </visual>

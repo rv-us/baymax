@@ -1,0 +1,47 @@
+{
+  "L_ref_tpose": {
+    "status": "ok",
+    "note": "100% reached (697/528/519), looked right",
+    "time": "2026-10-11T01:24:31"
+  },
+  "L_ref_forward": {
+    "status": "ok",
+    "note": "100% with roll clamped 891->875, user: about right",
+    "time": "2026-10-11T01:24:32"
+  },
+  "L_ref_up": {
+    "status": "ok",
+    "note": "100% with roll clamped 891->875; 200% (pitch 0, ~174 deg) also reached fine",
+    "time": "2026-10-11T01:24:32"
+  },
+  "L_back30_rollin_straight": {
+    "status": "ok",
+    "note": "Pitch/elbow at capture; roll stopped at 870 (API clamp 875, captured 886, ~81% of roll travel). User: okay.",
+    "time": "2026-10-11T01:28:16"
+  },
+  "L_back30_rollin_bent": {
+    "status": "ok",
+    "note": "Pitch/elbow at capture (859/636); roll stopped at 871 (clamp 875, captured 887). User: looks ok.",
+    "time": "2026-10-11T01:29:08"
+  },
+  "L_back30_elbow_max": {
+    "status": "ok",
+    "note": "Pitch 859, elbow 703 (captured 711); roll stopped at 870 (clamp 875, captured 886). User: looks good.",
+    "time": "2026-10-11T01:36:22"
+  },
+  "L_p0_rollin_straight": {
+    "status": "ok",
+    "note": "Reached capture (687/864/578, roll 5 short). User: just touching.",
+    "time": "2026-10-11T01:37:34"
+  },
+  "L_p0_rollin_bent": {
+    "status": "ok",
+    "note": "688/675/867 (elbow clamped 887->875). User: satisfactory.",
+    "time": "2026-10-11T01:38:48"
+  },
+  "L_p0_elbow_max": {
+    "status": "ok",
+    "note": "685/575/868 (elbow clamped 994->875). User: looks perfect.",
+    "time": "2026-10-11T01:40:44"
+  }
+}

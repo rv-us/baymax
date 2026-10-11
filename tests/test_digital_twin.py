@@ -112,12 +112,15 @@ def test_urdf_structure():
     assert robot.root == "torso"
 
 
-def test_fk_elbow_bends_forearm_forward(state):
-    # left elbow servo up from stand = forearm swings forward (+x), like a bicep curl
-    pulses = dict(mapping.STAND_POSE)
-    pulses[6] += 250
-    links = state.robot.fk(mapping.pulses_to_angles(pulses))
-    assert hand_tip(links, "l")[0] > 0.05  # forearm points forward, not straight down
+def test_fk_elbow_bends_forearm_sideways(state):
+    # The elbow axis is parallel to the shoulder roll axis (no upper-arm rotation on TonyPi), so
+    # with the arm hanging the forearm swings sideways, never forward like a bicep curl.
+    stand = state.robot.fk(mapping.pulses_to_angles(dict(mapping.STAND_POSE)))
+    for side, sid in (("l", 6), ("r", 14)):
+        pulses = dict(mapping.STAND_POSE)
+        pulses[sid] += 250
+        tip, rest = hand_tip(state.robot.fk(mapping.pulses_to_angles(pulses)), side), hand_tip(stand, side)
+        assert abs(tip[0] - rest[0]) < 0.01 and abs(tip[1] - rest[1]) > 0.05
 
 
 # ---------------------------------------------------------------- state / limits

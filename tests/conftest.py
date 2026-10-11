@@ -2,6 +2,7 @@ import os
 import sys
 
 os.environ["BAYMAX_DRY_RUN"] = "1"  # must precede any robot_api import
+os.environ["BAYMAX_TEMP_CHECK"] = "1"  # the refusal tests need it; test_temp_check_off covers the default
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import pytest  # noqa: E402

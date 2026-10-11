@@ -6,15 +6,19 @@ Run on the robot (one process owns the servo bus):
 POST /<path> with a JSON object of keyword arguments, e.g.
     curl -X POST :8000/actions/walk -H 'content-type: application/json' -d '{"steps": 2}'
 Endpoints without required arguments also answer GET. GET /endpoints lists all.
-GET /sensors/camera.jpg returns the camera view as an image.
-Set BAYMAX_API_TOKEN to require "Authorization: Bearer <token>".
+GET /sensors/camera.jpg returns the camera view as an image, GET /sensors/camera.mjpg as a
+live MJPEG stream (browsers and cv2.VideoCapture open it).
+Set BAYMAX_API_TOKEN to require "Authorization: Bearer <token>" (or ?token=<token> for clients
+that can't set headers, like cv2.VideoCapture on the stream).
 """
 from __future__ import annotations
 
 import argparse
 import inspect
 
-from fastapi import Body, Depends, FastAPI, Header, HTTPException, Response
+from fastapi import Body, Depends, FastAPI, Header, HTTPException, Query, Response
+from fastapi.responses import StreamingResponse
+from starlette.concurrency import run_in_threadpool
 
 from . import config
 from .api import ENDPOINTS
@@ -22,8 +26,8 @@ from .errors import RobotError
 from .hardware import check_exclusive
 
 
-def _auth(authorization: str | None = Header(default=None)):
-    if config.API_TOKEN and authorization != f"Bearer {config.API_TOKEN}":
+def _auth(authorization: str | None = Header(default=None), token: str | None = Query(default=None)):
+    if config.API_TOKEN and authorization != f"Bearer {config.API_TOKEN}" and token != config.API_TOKEN:
         raise HTTPException(401, "missing or wrong bearer token")
 
 
@@ -66,6 +70,31 @@ def camera_jpg(width: int = 640, quality: int = 80):
         return Response(camera.snapshot_jpeg(width, quality), media_type="image/jpeg")
     except RobotError as e:
         raise HTTPException(409, str(e))
+
+
+@app.get("/sensors/camera.mjpg")
+def camera_mjpg(width: int = 640, quality: int = 70, fps: float = 30.0):
+    """The head camera as a live MJPEG stream (multipart/x-mixed-replace), up to 30 fps."""
+    from .sensors import camera
+
+    frames = camera.stream_jpegs(width, quality, fps)
+    try:
+        first = next(frames)  # surface "camera not available" as a 409, not a broken stream
+    except RobotError as e:
+        raise HTTPException(409, str(e))
+
+    async def parts():
+        # Async, so a client disconnect cancels it here and the finally closes the frame generator
+        # (which restores the camera controls). Starlette never closes a sync iterator.
+        jpg = first
+        try:
+            while jpg is not None:
+                yield b"--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n%s\r\n" % (len(jpg), jpg)
+                jpg = await run_in_threadpool(next, frames, None)
+        finally:
+            frames.close()
+
+    return StreamingResponse(parts(), media_type="multipart/x-mixed-replace; boundary=frame")
 
 
 @app.get("/endpoints")
