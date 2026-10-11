@@ -13,6 +13,7 @@ with --pan-sign / --tilt-sign flipped).
     python scripts/track_test.py                    # 60 s, head follows ($BAYMAX_API_URL)
     python scripts/track_test.py --no-head          # detection only: head commands logged, not sent
     python scripts/track_test.py --pan-sign 1       # try the other pan direction
+    python scripts/track_test.py --step-test        # stand still: settles which way pan/tilt turn
 
 Annotated frames go to /tmp/track_test/ every --save-every seconds (what YOLO saw).
 """
@@ -70,6 +71,57 @@ def annotate(frame, people, perception):
     return out
 
 
+def step_test(perception, backend, perc, step=120):
+    """Move the head by +-step on each axis with nobody moving, and see where the face goes.
+    Following needs: face right of center -> the pan change that moves the face left."""
+    def face(label):
+        time.sleep(1.2)  # let the move finish and fresh frames arrive
+        xs, ys = [], []
+        for _ in range(8):
+            people = sorted(perception.persons(), key=lambda p: -p.body.size)
+            if people:
+                xs.append(people[0].body.face[0])
+                ys.append(people[0].body.face[1])
+            time.sleep(0.1)
+        if not xs:
+            print(f"  {label}: nobody in view")
+            return None
+        x, y = sorted(xs)[len(xs) // 2], sorted(ys)[len(ys) // 2]
+        print(f"  {label}: face x={x:.2f} y={y:.2f}  (head pan {perception.head.pan} tilt {perception.head.tilt})")
+        return x, y
+
+    perception.track(None)
+    print("stand still facing the robot")
+    perception.point_head(perc.HEAD_CENTER, perc.SCAN_TILT, ms=400)
+    base = face("center")
+    results = {}
+    for axis, delta in (("pan", step), ("tilt", step)):
+        pan = perc.HEAD_CENTER + (delta if axis == "pan" else 0)
+        tilt = perc.SCAN_TILT + (delta if axis == "tilt" else 0)
+        perception.point_head(pan, tilt, ms=400)
+        moved = face(f"{axis} +{delta}")
+        perception.point_head(perc.HEAD_CENTER, perc.SCAN_TILT, ms=400)
+        face("back to center")
+        if base and moved:
+            results[axis] = (moved[0] - base[0]) if axis == "pan" else (moved[1] - base[1])
+    print("\n=== step test ===")
+    if "pan" in results:
+        d = results["pan"]
+        # Raising pan moved the face by d. To center a face on the right (offset > 0) we need the
+        # face to move left (negative), so pan should change with sign -sign(d) per unit offset:
+        # PAN_SIGN * err_x * gain must have the sign of -d for err_x > 0.
+        right = -1 if d > 0 else 1
+        print(f"pan +{step}: face moved {'right' if d > 0 else 'left'} by {abs(d):.2f} of the frame "
+              f"-> PAN_SIGN should be {right} (now {perc.PAN_SIGN})")
+    if "tilt" in results:
+        d = results["tilt"]
+        # Tilt uses d_tilt = -TILT_SIGN * err_y * gain; a face low in the frame (err_y > 0) must move up.
+        right = 1 if d > 0 else -1
+        print(f"tilt +{step}: face moved {'down' if d > 0 else 'up'} by {abs(d):.2f} of the frame "
+              f"-> TILT_SIGN should be {right} (now {perc.TILT_SIGN})")
+    perception.stop()
+
+
 def main():
     ap = argparse.ArgumentParser(description="Face tracking test on the real robot (no LLM).")
     ap.add_argument("--url", default=os.environ.get("BAYMAX_API_URL", "http://169.233.72.93:8000"))
@@ -84,6 +136,9 @@ def main():
     ap.add_argument("--camera", choices=["auto", "udp", "mjpeg"], default="auto")
     ap.add_argument("--save-every", type=float, default=3.0, help="seconds between saved frames (0: never)")
     ap.add_argument("--out", default="/tmp/track_test")
+    ap.add_argument("--step-test", action="store_true",
+                    help="person stands still; the head steps pan and tilt by a fixed amount and the "
+                         "face's shift in the frame shows which sign keeps the face centered")
     args = ap.parse_args()
 
     # The signs are read when perception is imported.
@@ -108,6 +163,8 @@ def main():
     perception = perc.Perception(camera, perc.make_detector(args.detector), backend).start()
     print(f"camera mode: {camera.mode}")
     os.makedirs(args.out, exist_ok=True)
+    if args.step_test:
+        return step_test(perception, backend, perc)
 
     # Per-frame camera rate (separate from how fast pose detection keeps up).
     cam_times, last_t = [], 0.0
