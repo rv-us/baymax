@@ -157,7 +157,19 @@ class VoiceHub:
         with self.cond:
             self._expire()
             return {"ok": True, "service": SERVICE, "seq": self.seq, "muted": self._muted_at is not None,
-                    "active": self.listener is not None, "loading": self._loading}
+                    "active": self.listener is not None, "loading": self._loading, "audio": self._audio()}
+
+    def _audio(self):
+        """Is the robot's microphone reaching Whisper? Chunks received so far and the loudness of the last
+        half second (dBFS; about -60 is a quiet room), or None while nothing is loaded."""
+        rx = getattr(self.listener, "receiver", None)
+        if rx is None:
+            return None
+        try:
+            from streaming.audio_receiver import dbfs
+            return {"chunks": rx.chunk_count, "dbfs": round(dbfs(rx.latest(0.5)), 1)}
+        except Exception:
+            return {"chunks": getattr(rx, "chunk_count", 0), "dbfs": None}
 
 
 def make_app(hub: VoiceHub):
