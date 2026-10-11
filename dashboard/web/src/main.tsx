@@ -1,6 +1,6 @@
 import { render } from "preact";
 import { useEffect, useState } from "preact/hooks";
-import { api, attempt, calibration, connectEvents, dismiss, live, loadStatus, playback, recorder, safety, serverUp, status, stopRobot, toasts } from "./api";
+import { api, attempt, calibration, connectEvents, dismiss, live, loadStatus, mirror, playback, recorder, safety, serverUp, status, stopRobot, toasts } from "./api";
 import { Calibrate } from "./calibrate";
 import { Coach } from "./coach";
 import { Generate } from "./generate";
@@ -9,6 +9,7 @@ import { Landing } from "./landing";
 import { Library } from "./library";
 import { drawerOpen, LinkChips, LinksDrawer, Vitals } from "./links";
 import { LiveScreen } from "./live";
+import { MirrorScreen } from "./mirror";
 import { Plans } from "./plans";
 import { Record as RecordScreen } from "./record";
 import { route } from "./route";
@@ -29,6 +30,7 @@ const GROUPS: { name: string; pages: Page[] }[] = [
   ] },
   { name: "Train", pages: [
     { path: "/live", label: "Live", icon: "live", about: "Run a session and coach it" },
+    { path: "/mirror", label: "Mirror", icon: "mirror", about: "The robot copies your arms" },
     { path: "/plans", label: "Plans", icon: "plans", about: "What the robot teaches, in order" },
   ] },
   { name: "Review", pages: [
@@ -133,6 +135,7 @@ function Screen() {
   if (isAt("/record")) return <RecordScreen />;
   if (isAt("/generate")) return <Generate />;
   if (isAt("/live")) return <LiveScreen />;
+  if (isAt("/mirror")) return <MirrorScreen />;
   if (r.startsWith("/sessions/")) return <SessionDetail id={decodeURIComponent(r.slice("/sessions/".length))} />;
   if (isAt("/sessions")) return <SessionList />;
   if (r.startsWith("/coach/")) return <Coach id={decodeURIComponent(r.slice("/coach/".length))} />;
@@ -152,6 +155,7 @@ function Screen() {
 /** A dot on a nav item when something is running there. */
 function busyAt(path: string): string | null {
   if (path === "/live" && live.value.running) return "A session is running";
+  if (path === "/mirror" && mirror.value.running) return "Mirroring";
   if (path === "/record" && recorder.value.recording) return "Recording";
   if (path === "/library" && playback.value.playing) return "Playing on the robot";
   if (path === "/calibrate" && calibration.value && calibration.value.active !== "factory") return `Profile “${calibration.value.name}” is in force`;

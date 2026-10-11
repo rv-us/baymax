@@ -4,9 +4,11 @@ import { live, status } from "./api";
 import { Icon } from "./icons";
 
 const GAP_MS = 250;      // pause between frames (about 3 a second; servo/status shares the link)
+const MIRROR_GAP_MS = 100;  // the Mirror feed is shown faster: you are watching your own arms
 const RETRY_MS = 3000;
 
-export function CameraPanel({ compact = false }: { compact?: boolean }) {
+/** `path` is where the frames come from: the robot's camera by default, or the Mirror feed with the arms drawn on. */
+export function CameraPanel({ compact = false, path = "/api/camera.jpg" }: { compact?: boolean; path?: string }) {
   const img = useRef<HTMLImageElement>(null);
   const [state, setState] = useState<"loading" | "ok" | "down">("loading");
 
@@ -18,14 +20,14 @@ export function CameraPanel({ compact = false }: { compact?: boolean }) {
       timer = window.setTimeout(() => {
         if (!alive) return;
         if (document.hidden) return next(1000);
-        el.src = `/api/camera.jpg?width=${compact ? 320 : 640}&t=${Date.now()}`;
+        el.src = `${path}?width=${compact ? 320 : 640}&t=${Date.now()}`;
       }, delay);
     };
-    el.onload = () => { setState("ok"); next(GAP_MS); };
+    el.onload = () => { setState("ok"); next(path === "/api/camera.jpg" ? GAP_MS : MIRROR_GAP_MS); };
     el.onerror = () => { setState("down"); next(RETRY_MS); };
     next(0);
     return () => { alive = false; clearTimeout(timer); el.onload = el.onerror = null; };
-  }, [compact]);
+  }, [compact, path]);
 
   const s = status.value;
   const f = live.value.frame;
@@ -34,7 +36,7 @@ export function CameraPanel({ compact = false }: { compact?: boolean }) {
     <section class={`screen camera ${compact ? "compact" : ""}`} aria-label="Robot camera">
       <div class="screen-body">
         <img ref={img} alt="What the robot's camera sees" class={state === "ok" ? "" : "hidden"} />
-        {state === "ok" && f.visible && (
+        {state === "ok" && f.visible && path === "/api/camera.jpg" && (
           <div class="frame-box" aria-hidden="true"
             style={{ left: `${50 + f.x * 35}%`, height: `${f.size * 92}%`, width: `${f.size * 42}%` }} />
         )}

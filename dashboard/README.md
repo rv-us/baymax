@@ -9,8 +9,11 @@ python -m dashboard --dry-run                               # no robot, GX10 or 
 BAYMAX_API_TOKEN=secret python -m dashboard --robot-url http://<robot>:8000 --ollama-url http://<gx10>:11434
 python -m dashboard --dry-run --host 0.0.0.0                # also reachable from other machines on the LAN
 python -m dashboard --dry-run --webcam off                    # keep the fake camera frame (--webcam 1 picks another camera)
+python -m dashboard --dry-run --gx10 asus@192.168.1.149      # where the GX10 is (the default); --gx10 off skips looking for it
 
 In a dry run the laptop's webcam is used as the robot camera when one can be opened (`--webcam auto`, the default with `--dry-run`; needs `opencv-python` and `mediapipe`). `arm_mvp`'s estimator tracks the patient's arms on every frame: the camera panel shows the skeleton, the patient-in-frame state comes from it, and a live session mirrors a real patient in real time (the log is marked `source: live-webcam`, not synthetic). Exercises that track a joint it can't read (knee, trunk) fall back to the simulated patient and the log says so. With several people in view the tracker follows the one closest to the centre of the frame (`arm_mvp/people.py`; it stays with the person it has unless someone else is clearly closer, and resets its smoothing when the person changes), for mirroring and for scoring a session alike. Only joints drawn green (`TRACKING`) count: an arm that is holding or lost contributes no pulses to the robot, and a workout is scored only on frames where **both** arms are green, so a rep that wasn't properly seen is never evaluated. The pulses are damped before they leave the tracker (a median of five, a dead band, smoothing that eases off for small differences: `arm_mvp/filters.py` `PulseDamper`), a straight elbow is eased to straight so camera noise doesn't make it twitch (`solver.soften_elbow`), and an arm at the person's side reads shoulder pitch 0 with the elbow slightly out instead of the equivalent half-turn answer the solver could land on (`solver.hang_prior`). 
+
+**The GX10 at startup.** Unless `--ollama-url` or `OLLAMA_HOST` says where Ollama is, or `--gx10 off` is given, the dashboard looks for the GX10 at `asus@192.168.1.149` (or `--gx10 user@host`, or `BAYMAX_GX10`) as soon as it starts, in the background, and keeps trying every few seconds until it answers (`dashboard/gx10.py`). It uses Ollama on the GX10 directly if that answers, otherwise opens an SSH tunnel to it on a free local port, and starts sending frames to the GX10's pose service if that is running. The SSH password comes from `BAYMAX_GX10_PASSWORD` or the first line of a git-ignored `.gx10_password` file in the repo folder (never from the code); with neither it tries your ssh key. `GET /api/status` shows the link as `gx10`.
 
 **Offloading the tracking to the GX10.** The tracking is the heavy part, so the GX10 can do it. On the GX10, `./dashboard/start_pose_service.sh` makes a `.venv` the first time and starts `python -m dashboard.pose_service` on port 9100 (log: `~/pose_service.log`). On the dashboard machine, `--pose-url` points at it, and `--pose-url auto` (the default) uses the `--ollama-url` host on port 9100 if the service answers there:
 
@@ -42,12 +45,21 @@ There is no login. On `--host 0.0.0.0` anyone on the network can move the robot 
 | Move | Record | Let the arms go limp, move them by hand, trim the take on a chart of the joints, name it, save it, play it back. |
 | Move | Generate | Describe a motion. The model on the GX10 writes it, the twin previews it, Save or Discard. Mock mode when the GX10 is unreachable. |
 | Train | Live | Start a plan, see the session state, reps and tracked angle, answer for the patient, reposition, speak, show text. |
+| Train | Mirror | Start, and the robot copies your arms: the camera's frames go to the GX10, which runs `arm_mvp`'s tracker and answers with the servo pulses; only arms drawn green move the robot (see below). Shows which arms are followed, the calibration, how many people are in view, and where the tracking is running. |
 | Train | Plans | The plans in `workout/plans`, as the loader reads them. |
 | Review | Sessions | Every exercise session and recording, saved by themselves. One session: overall score, reasons in plain words, and a chart per reason. Replay on the twin, delete. |
 | Review | Coach | Chat about a session. The coach gets that session's measurements; replies stream in. |
 | Tune | Calibrate | Told against doing side by side, per-servo readout, limits, offsets, speed caps, saved profiles. |
 | | Connections (the Robot / Camera / Coach chips) | Honest status of the three links, Ollama address, SSH tunnel, theme. |
 | | `#/patient` | Large-type view for the patient: exercise, cue, rep count. |
+
+## Mirror
+
+`camera -> GX10 tracker -> servo pulses -> robot arms`. With a robot the camera is the robot's own (H.264 over UDP, else MJPEG: `streaming/robot_camera.py`); in a dry run the laptop's webcam stands in. Frames go to the GX10 pose service (below), which answers with the pose and the pulses the arms should take; with no service, or if it goes quiet, the same tracker runs here. `dashboard/mirror.py` is only the loop that forwards the newest answer to the robot, at most 20 times a second, through the gateway, so the safety latch, the calibration profile and `robot_api`'s own limits all apply.
+
+- **Only green arms move the robot.** An arm that is holding or lost is left alone, a stale answer is never replayed, and with nothing green the robot simply holds still. Stop eases the arms back to rest.
+- **A safety stop ends mirroring at once** and leaves the robot frozen where it is. It won't start while a session, an animation or a recording is using the robot, and none of those start while it runs.
+- Several people in view: it follows the one closest to the centre. Arms at the person's side read as pitch 0 with the elbows slightly out. Calibration is automatic (stand square to the camera, arms at your sides, hold still) and forgiving of camera noise.
 
 ## Safety
 
@@ -91,6 +103,7 @@ Changes outside `dashboard/` are all in `workout/` (nothing in `robot_api/` or `
 | `POST /api/chat {session_id?, messages}` | SSE: `meta`, `delta`, `done`, `error` |
 | `GET /api/sessions`, `GET/DELETE /api/sessions/{id}`, `GET /api/sessions/{id}/replay?set=n`, `GET /api/analytics/trends` | Sessions and analysis |
 | `GET/POST /api/calibration`, `PUT/DELETE /api/calibration/{id}`, `POST /api/calibration/active`, `GET /api/debug/servos`, `POST /api/debug/jog` | Calibration and debug |
+| `POST /api/mirror/start`, `/stop`, `GET /api/mirror`, `GET /api/mirror.jpg` | Mirror: start and stop it, its state (also on the event stream), and the camera picture with the arms drawn on. Refused while a session, an animation, a recording or a safety stop has the robot |
 | `POST /api/stop` | Freeze everything |
 
 ## Session schema (version 2) and scores

@@ -24,8 +24,10 @@ from .chat import Chat, clean_messages
 from .coach import Coach
 from .config import Settings, ollama_url
 from .events import Hub
+from .gx10 import Gx10Link
 from .generator import Generator
 from .live import Live
+from .mirror import Mirror
 from .monitor import Monitor
 from .player import Player
 from .recorder import Recorder
@@ -65,6 +67,7 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     generator = Generator(settings, gateway.limiter)
     monitor = Monitor(settings, gateway, safety, coach, hub)
     tunnel = Tunnel(hub)
+    gx10 = Gx10Link(settings, tunnel, monitor, hub, get_webcam=lambda: gateway.webcam)
     twin = mount_twin(app, "/twin")
     player = Player(gateway, twin.state, hub)
     live = Live(settings, gateway, safety, sessions, hub)
@@ -78,12 +81,17 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
             gateway.webcam = webcam
         else:
             print(f"webcam: {webcam.status['detail']} Using the fake frame instead.")
+    mirror = Mirror(settings, gateway, hub, busy=lambda: (
+        "A session is running. End it first." if live.running else
+        "An animation is playing. Stop it first." if player.playing else
+        "A recording is running. Stop it first." if recorder.recording else None))
+    safety.on_trip.append(lambda kind, entry: mirror.stop(rest=False))   # a stop freezes the robot where it is
     safety.on_trip.append(lambda kind, entry: player.stop())
     safety.on_trip.append(lambda kind, entry: recorder.stop())
     app.state.parts = dict(settings=settings, hub=hub, gateway=gateway, safety=safety, sessions=sessions,
                            animations=animations, plans=plans, coach=coach, monitor=monitor,
                            twin=twin, player=player, live=live, tunnel=tunnel, profiles=profiles,
-                           recorder=recorder, chat=chat, generator=generator, webcam=gateway.webcam)
+                           recorder=recorder, chat=chat, generator=generator, webcam=gateway.webcam, mirror=mirror, gx10=gx10)
 
     def calibration_state() -> dict:
         active = gateway.limiter.profile
@@ -119,9 +127,13 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
                 synthetic.refresh(sessions)
             twin.attach_robot(gateway, hz=4.0, label="dry run" if settings.dry_run else settings.robot_url)
             monitor.start()
+            if settings.gx10_auto:
+                gx10.start()   # in the background: the page is usable at once, and it keeps trying until the GX10 answers
 
         @app.on_event("shutdown")
         def _stop():
+            gx10.stop()
+            mirror.stop(rest=False)
             monitor.stop()
             tunnel.close(publish=False)
 
@@ -131,6 +143,7 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     def status():
         return {**monitor.snapshot(), "safety": safety.snapshot(), "live": live.state,
                 "playback": player.state, "tunnel": tunnel.status(), "recorder": recorder.state,
+                "mirror": mirror.snapshot(), "gx10": gx10.snapshot(),
                 "calibration": calibration_state(),
                 "settings": {"ollama_url": settings.ollama_url, "model": settings.model,
                              "stub_llm": settings.stub_llm, "robot": "fake hardware" if settings.dry_run
@@ -266,7 +279,7 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     def preview_session(body: dict = Body(...)):
         """Loop the session being built on the twin: the pose `t_ms` into all its exercises
         played end to end. Twin only. Does nothing while a session or animation is running."""
-        if live.running or player.playing or not body.get("exercises"):
+        if live.running or player.playing or mirror.running or not body.get("exercises"):
             return {"skipped": True}
         plan = parse_plan({"name": "preview", "exercises": body.get("exercises") or []}, source="preview")
         out = preview.session_pose([vars(e) for e in plan.exercises], float(body.get("t_ms") or 0))
@@ -276,6 +289,8 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
 
     def ready_to_move() -> None:
         """Refuse (409, in words) unless the robot may be moved right now."""
+        if mirror.running:
+            raise Refused("Mirror is running. Stop it before playing an animation.")
         if live.running:
             raise Refused("A session is running. End it before playing an animation.")
         if recorder.recording:
@@ -370,6 +385,8 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
 
     @app.post("/api/recorder/start")
     def recorder_start(body: dict = Body(default={})):
+        if mirror.running:
+            raise Refused("Mirror is running. Stop it first.")
         if player.playing:
             raise Refused("An animation is playing on the robot. Stop it first.")
         if live.running:
@@ -635,10 +652,34 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
                                  media_type="text/event-stream",
                                  headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"})
 
+    # ---- mirror: the robot copies the patient's arms ------------------------------
+
+    @app.post("/api/mirror/start")
+    def mirror_start():
+        return mirror.start()
+
+    @app.post("/api/mirror/stop")
+    def mirror_stop():
+        mirror.stop()
+        return {"stopping": mirror.running}
+
+    @app.get("/api/mirror")
+    def mirror_state():
+        return mirror.snapshot()
+
+    @app.get("/api/mirror.jpg", response_class=Response)
+    def mirror_frame(width: int = 640):
+        jpeg = mirror.jpeg(max(160, min(1280, width)))
+        if jpeg is None:
+            raise Refused("Mirror isn't running.", 404)
+        return Response(jpeg, media_type="image/jpeg", headers={"Cache-Control": "no-store"})
+
     # ---- live session and coaching ------------------------------------------------
 
     @app.post("/api/live/start")
     def live_start(body: dict = Body(...)):
+        if mirror.running:
+            raise Refused("Mirror is running. Stop it first.")
         if player.playing:
             raise Refused("An animation is playing on the robot. Stop it first.")
         simulate, pace = bool(body.get("simulate", True)), float(body.get("pace") or 1.0)

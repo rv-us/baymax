@@ -46,6 +46,11 @@ def main():
     ap.add_argument("--pose-url", default="auto", metavar="auto|URL|off",
                     help="send camera frames to the GX10 pose service and use its answer (default auto: the "
                          "--ollama-url host on port 9100, if the service answers there)")
+    ap.add_argument("--gx10", default=None, metavar="USER@HOST|off",
+                    help="where the GX10 is (default: BAYMAX_GX10, else asus@192.168.1.149). Unless --ollama-url or "
+                         "OLLAMA_HOST says otherwise, the dashboard connects to it at startup (Ollama directly, or "
+                         "through an SSH tunnel with the password from BAYMAX_GX10_PASSWORD or a git-ignored "
+                         ".gx10_password file) and uses its pose service if it is running; 'off' skips all that")
     ap.add_argument("--host", default="127.0.0.1", help="0.0.0.0 to serve tablets and phones on the LAN")
     ap.add_argument("--port", type=int, default=8080)
     args = ap.parse_args()
@@ -69,6 +74,13 @@ def main():
     settings.webcam = None if choice == "off" else choice
     settings.pose_url = pose_service_url(args.pose_url, args.ollama_url)
     settings.stub_llm = args.dry_run and not args.ollama_url
+    gx10 = args.gx10 or os.environ.get("BAYMAX_GX10")
+    if (gx10 or "").lower() != "off":
+        from dashboard.gx10 import find_password, parse_target
+        settings.gx10_user, settings.gx10_host = parse_target(gx10)
+        settings.gx10_password = find_password()
+        # An explicit Ollama address wins; otherwise the GX10 is the coach's default home.
+        settings.gx10_auto = not (args.ollama_url or os.environ.get("OLLAMA_HOST"))
 
     if args.host not in ("127.0.0.1", "localhost"):
         print("warning: the dashboard has no login; anyone on this network can move the robot through it")

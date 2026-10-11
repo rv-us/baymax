@@ -659,3 +659,34 @@ textarea {
 
 /* Review 1: the replay names its set. */
 .replay-what { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+
+/* ---- mirror: the robot copies the patient's arms ------------------------------------ */
+
+.mirror { display: grid; gap: 16px; grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.85fr); grid-template-areas: "head head" "views side"; align-items: start; }
+.mirror > .page-head { grid-area: head; }
+.mirror-views { grid-area: views; }
+.mirror-side { grid-area: side; display: grid; gap: 14px; }
+@media (max-width: 900px) {
+  .mirror { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "views" "side"; }
+  .mirror-views { position: static; }
+}
+.mirror-where, .mirror-cal, .mirror-people { display: flex; gap: 8px; align-items: flex-start; margin: 0; color: var(--ink-2); }
+.mirror-where svg, .mirror-cal svg, .mirror-people svg { flex: none; margin-top: 3px; }
+.mirror-cal.is-done { color: var(--good); }
+.arm-rows { list-style: none; margin: 0; padding: 0; display: grid; border: 1.5px solid var(--rule); border-radius: var(--radius); overflow: hidden; background: var(--paper); }
+.arm-row { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "name state" "sends sends"; gap: 2px 12px; padding: 12px 14px; }
+.arm-row + .arm-row { border-top: 1px solid var(--rule); }
+.arm-name { grid-area: name; font-weight: 700; }
+.arm-state { grid-area: state; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink-2); }
+.arm-state i { width: 10px; height: 10px; border-radius: 50%; background: var(--ink-3); }
+.arm-sends { grid-area: sends; font-size: 0.875rem; color: var(--ink-2); }
+.tone-good .arm-state { color: var(--good); }
+.tone-good .arm-state i { background: var(--good); }
+.tone-warn .arm-state { color: var(--warn); }
+.tone-warn .arm-state i { background: var(--warn); }
+.tone-bad .arm-state { color: var(--stop); }
+.tone-bad .arm-state i { background: var(--stop); }
+.mirror-angles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; }
+.mirror-angles div { background: var(--sunk); border-radius: 12px; padding: 10px 12px; }
+.mirror-angles dt { font-size: 0.8125rem; color: var(--ink-2); }
+.mirror-angles dd { margin: 0; font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }

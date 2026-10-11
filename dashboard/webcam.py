@@ -43,9 +43,39 @@ SLOW_RTT_S = 0.35        # beyond this smoothed round trip, frames go to the GX1
 REMOTE_RETRY_S = 5.0     # after a failure, use the local tracker this long before asking the GX10 again
 
 
+class RobotCameraSource:
+    """The robot's own camera (H.264 over UDP if it can, else MJPEG: streaming/robot_camera.py), read
+    like an OpenCV capture. Only one program can receive the robot's UDP video, so whoever opens
+    this must release() it."""
+
+    def __init__(self, api_url: str):
+        from .armtrack import ROOT
+        if ROOT not in sys.path:
+            sys.path.insert(0, ROOT)
+        from streaming.robot_camera import RobotCamera
+        self.cam = RobotCamera(api_url).start()
+        self.mode = self.cam.mode
+        self._last = 0.0
+
+    def read(self, wait_s: float = 3.0):
+        end = time.monotonic() + wait_s
+        while time.monotonic() < end:
+            frame, stamp = self.cam.latest()
+            if frame is not None and stamp != self._last:
+                self._last = stamp
+                return True, frame
+            time.sleep(0.005)
+        return False, None
+
+    def release(self) -> None:
+        self.cam.stop()
+
+
 class Webcam:
     def __init__(self, index: str | int | None = "auto", on_pose=None, pose_url: str | None = None,
-                 transport: str = "auto"):
+                 transport: str = "auto", robot_url: str | None = None):
+        self.robot_url = robot_url        # read the robot's camera instead of a webcam
+        self.label = "Robot camera" if robot_url else "Laptop webcam"
         self.transport_choice = transport   # "auto": UDP if the service has a port for it; or "http"
         self.index = index
         self.on_pose = on_pose            # called about 5 times a second with pose()
@@ -86,9 +116,13 @@ class Webcam:
             self.status = {"state": "down", "detail": "OpenCV isn't installed (pip install opencv-python)."}
             return False
         self._cv2 = cv2
-        cap = self._open(cv2)
+        try:
+            cap = self._open_robot() if self.robot_url else self._open(cv2)
+        except Exception as e:
+            cap, self._open_error = None, str(e) or type(e).__name__
         if cap is None:
-            self.status = {"state": "down", "detail": "No webcam found, or another program is using it."}
+            self.status = {"state": "down", "detail": (f"The robot's camera isn't available: {getattr(self, '_open_error', '')}"
+                                                       if self.robot_url else "No webcam found, or another program is using it.")}
             return False
         self._cap = cap
         remote = self._remote_health() if self.pose_url else False
@@ -104,6 +138,20 @@ class Webcam:
 
     def stop(self) -> None:
         self._alive = False
+
+    def use_pose_service(self, url: str) -> bool:
+        """Start sending frames to a pose service that turned up after startup (the GX10 was not
+        reachable yet when the dashboard started). Returns whether it answered."""
+        self.pose_url = url.rstrip("/")
+        if not self._remote_health():
+            return False
+        self._remote_down_until = 0.0
+        self.tracking = True
+        self._set_status()
+        return True
+
+    def _open_robot(self):
+        return RobotCameraSource(self.robot_url)
 
     def _open(self, cv2):
         choices = range(4) if self.index in (None, "auto") else [int(self.index)]
@@ -126,7 +174,7 @@ class Webcam:
             note = " · pose on this computer" + (" (the GX10 isn't answering)" if self.pose_url else "")
         else:
             note = f" (no pose tracking: {self._local_error[:70]})" if self._local_error else " (no pose tracking)"
-        self.status = {"state": "ok", "detail": "Laptop webcam" + note}
+        self.status = {"state": "ok", "detail": self.label + note}
 
     # ---- where the pose is computed -----------------------------------------------
 
@@ -304,7 +352,7 @@ class Webcam:
                 try:
                     pose, overlay, where = self._compute(frame, now - t0)
                 except Exception as e:  # one bad frame must not end tracking
-                    self.status = {"state": "ok", "detail": f"Laptop webcam (pose error: {str(e)[:60]})"}
+                    self.status = {"state": "ok", "detail": f"{self.label} (pose error: {str(e)[:60]})"}
             pose.setdefault("t", time.time())
             self.ms = round((time.monotonic() - now) * 1000)
             if where != self.source:

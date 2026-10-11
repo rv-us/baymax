@@ -10,3 +10,6 @@ dashboard/web/e2e/flow/
 dashboard/web/e2e/out/
 reviews/shots/
 .pose_service.pid
+
+# The GX10 login password for the dashboard (dashboard/gx10.py); never commit it.
+.gx10_password
