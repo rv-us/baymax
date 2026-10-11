@@ -384,6 +384,8 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
         target = os.path.normpath(os.path.join(settings.web_dir, path))
         if path and target.startswith(os.path.normpath(settings.web_dir)) and os.path.isfile(target):
             return FileResponse(target)
+        if "." in path.rsplit("/", 1)[-1]:
+            raise HTTPException(404, "not found")  # a missing file, not a page of the app
         if os.path.isfile(index):
             return FileResponse(index, headers={"Cache-Control": "no-cache"})
         return JSONResponse({"detail": "The web app isn't built. Run: cd dashboard/web && npm install "
