@@ -72,6 +72,23 @@ def _status_locked() -> dict:
     return out
 
 
+START_TRIES = 2  # the camera occasionally refuses its format on open ("not-negotiated"); a retry works
+
+
+def _launch(host: str, port: int, bitrate_kbps: int):
+    """Start the pipeline (or its dry-run fake). Called with _lock held."""
+    if config.DRY_RUN:
+        from ..fake import STATE
+
+        STATE.log.append(("camera_udp_start", host, port, bitrate_kbps))
+        return _FakeProc()
+    camera.close()  # release the API's own handle so the pipeline can open the device
+    camera._stream_controls(start=True)
+    kwargs = {"preexec_fn": _die_with_parent} if sys.platform.startswith("linux") else {}
+    return subprocess.Popen(build_command(host, port, bitrate_kbps), stdin=subprocess.DEVNULL,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, **kwargs)
+
+
 def start(host: str, port: int = 5000, bitrate_kbps: int = 1500, lease_s: float = 10.0) -> dict:
     """Stream H.264 over UDP to host:port. Repeat the call within lease_s seconds to keep it
     going. Refuses if the camera is already streaming somewhere else."""
@@ -88,32 +105,27 @@ def start(host: str, port: int = 5000, bitrate_kbps: int = 1500, lease_s: float 
         if running:
             raise RobotError(f"the camera is already streaming to {_target[0]}:{_target[1]}; "
                              "stop that first (sensors/camera/udp/stop)")
-        if config.DRY_RUN:
-            from ..fake import STATE
-
-            STATE.log.append(("camera_udp_start", host, port, bitrate_kbps))
-            _proc = _FakeProc()
-        else:
+        if not config.DRY_RUN:
             others = _other_senders()
             if others:
                 raise RobotError("another program is streaming the camera (start_pi_sender.sh?): "
                                  + others[0][:120])
-            camera.close()  # release the API's own handle so the pipeline can open the device
-            camera._stream_controls(start=True)
-            kwargs = {"preexec_fn": _die_with_parent} if sys.platform.startswith("linux") else {}
-            _proc = subprocess.Popen(build_command(host, port, bitrate_kbps), stdin=subprocess.DEVNULL,
-                                     stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, **kwargs)
-        _target, _started, _expires, _last_error = (host, port), time.time(), time.time() + lease_s, None
-        proc = _proc
-    # A pipeline that can't start (device busy, missing plugin) exits within a second.
-    try:
-        proc.wait(1.0)
-    except subprocess.TimeoutExpired:
-        pass
-    else:
-        err = proc.stderr.read().decode(errors="replace").strip() if proc.stderr else ""
+    for attempt in range(1, START_TRIES + 1):
+        with _lock:
+            _proc = _launch(host, port, bitrate_kbps)
+            _target, _started, _expires, _last_error = (host, port), time.time(), time.time() + lease_s, None
+            proc = _proc
+        # A pipeline that can't start (device busy, format refused, missing plugin) exits within a second.
+        try:
+            proc.wait(1.0)
+        except subprocess.TimeoutExpired:
+            break  # still running after a second: it started
+        err =proc.stderr.read().decode(errors="replace").strip() if proc.stderr else ""
         _cleanup(f"pipeline exited: {err[-300:] or 'no error output'}")
-        raise RobotError(_last_error)
+        print(f"camera_udp: start attempt {attempt} failed: {err[-300:]}", file=sys.stderr, flush=True)
+        if attempt == START_TRIES:
+            raise RobotError(_last_error)
+        time.sleep(0.5)
     with _lock:
         if _watchdog is None or not _watchdog.is_alive():
             _watchdog = threading.Thread(target=_watch, daemon=True)
