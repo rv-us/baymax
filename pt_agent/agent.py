@@ -103,7 +103,7 @@ def main() -> int:
     ap.add_argument("--url", help="robot API URL (default $BAYMAX_API_URL)")
     ap.add_argument("--dry-run", action="store_true", help="fake robot hardware (local backend)")
     ap.add_argument("--camera", default=None,
-                    help="stream (robot's MJPEG, default with a robot), webcam, none, or an image/video path")
+                    help="stream (the robot's camera: H.264 over UDP, or MJPEG as a fallback; default with a robot), webcam, none, or an image/video path")
     ap.add_argument("--cam-index", type=int, default=0, help="webcam index for --camera webcam")
     ap.add_argument("--detector", choices=["yolo", "mediapipe"], default="yolo",
                     help="pose model: yolo finds everyone in view, mediapipe usually one person")

@@ -3,7 +3,7 @@
 Runs one workout session on the GX10: ready check, then for each exercise introduce, demonstrate, and for each set prompt, track and review. Design: [docs/workout-agent-loop.md](../docs/workout-agent-loop.md). The dashboard runs this same loop for its live sessions (`dashboard/live.py`), and [pt_agent/](../pt_agent/) is the LLM-agent alternative.
 
 ```bash
-cd ~/baymax && source .venv/bin/activate
+cd ~/baymax && source ~/venvs/baymax/bin/activate   # scripts/setup_gx10_venv.sh builds it
 python -m workout --dry-run --keyboard   # no robot: fake robot API, type the patient's answers
 python -m workout --keyboard             # real robot (BAYMAX_API_URL), typed answers
 python -m workout                        # real robot and the robot's mic (voice.Listener)
