@@ -29,6 +29,9 @@ WONDERECHO_PORT = "/dev/ttyUSB0"
 # USB audio card (speaker + microphone); ALSA card name "Device".
 AUDIO_CARD = "Device"
 AUDIO_PCM = f"plughw:CARD={AUDIO_CARD},DEV=0"
+# Recording device. Set BAYMAX_MIC_PCM=mic_shared (made by streaming/setup_pi_audio.sh)
+# so mic_level can share the mic with the audio stream to the GX10.
+MIC_PCM = os.environ.get("BAYMAX_MIC_PCM", AUDIO_PCM)
 
 # HTTP server / client.
 API_HOST = os.environ.get("BAYMAX_API_HOST", "0.0.0.0")

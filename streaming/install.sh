@@ -12,7 +12,8 @@ sudo apt install -y gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-pl
 chmod +x ./*.sh
 
 echo "== Checking GStreamer elements"
-for e in udpsrc rtpjitterbuffer rtph264depay h264parse avdec_h264 appsink; do
+for e in udpsrc rtpjitterbuffer rtph264depay h264parse avdec_h264 appsink \
+         rtpopusdepay opusdec audioconvert audioresample fdsink; do
   gst-inspect-1.0 "$e" >/dev/null 2>&1 && echo "  OK       $e" || echo "  MISSING  $e"
 done
 
@@ -39,4 +40,11 @@ ssh -o BatchMode=yes -o ConnectTimeout=5 "$PI_HOST" "gst-inspect-1.0 x264enc >/d
   && echo "  OK       Pi has x264enc" \
   || echo "  PROBLEM  On the Pi run: sudo apt install -y gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly"
 
+echo "== Checking the Pi has the audio elements"
+ssh -o BatchMode=yes -o ConnectTimeout=5 "$PI_HOST" \
+  "gst-inspect-1.0 alsasrc >/dev/null 2>&1 && gst-inspect-1.0 opusenc >/dev/null 2>&1 && gst-inspect-1.0 rtpopuspay >/dev/null 2>&1" \
+  && echo "  OK       Pi has alsasrc, opusenc, rtpopuspay" \
+  || echo "  PROBLEM  On the Pi run: sudo apt install -y gstreamer1.0-alsa gstreamer1.0-plugins-base gstreamer1.0-plugins-good"
+
+echo "Next: ./setup_pi_audio.sh (once) so the mic can be shared."
 echo "Done."
