@@ -134,7 +134,9 @@ def thinking_kwargs(model: str, thinking: str) -> dict:
 
 
 def build_agent(backend, model: str, thinking: str, api_key: str | None,
-                base_url: str | None = None):
+                base_url: str | None = None, tools: list | None = None,
+                system_prompt: str = SYSTEM_PROMPT):
+    """The robot agent; tools and system_prompt default to this CLI's (pt_agent passes its own)."""
     from langchain.agents import create_agent
 
     from .tools import make_tools
@@ -148,7 +150,8 @@ def build_agent(backend, model: str, thinking: str, api_key: str | None,
 
         llm = ChatOllama(model=model, base_url=ollama_url(base_url), num_ctx=OLLAMA_NUM_CTX,
                          reasoning=thinking != "off")
-    return create_agent(llm, make_tools(backend), system_prompt=SYSTEM_PROMPT)
+    return create_agent(llm, tools if tools is not None else make_tools(backend),
+                        system_prompt=system_prompt)
 
 
 # ---- message helpers ------------------------------------------------------------

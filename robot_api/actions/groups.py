@@ -24,12 +24,15 @@ SAFE_GROUPS = {
     "wing_chun", "left_uppercut", "right_uppercut",
 }
 
+# Risky groups the fake robot (BAYMAX_DRY_RUN) also knows, so the fall demo can be tested.
+DRY_RUN_RISKY = {"lie_down", "stand_up_back", "stand_up_front"}
+
 _running = False
 
 
 def list_groups() -> dict:
     if config.DRY_RUN or not os.path.isdir(config.ACTION_DIR):
-        names = sorted(SAFE_GROUPS)
+        names = sorted(SAFE_GROUPS | DRY_RUN_RISKY)
     else:
         names = sorted(f[:-4] for f in os.listdir(config.ACTION_DIR) if f.endswith(".d6a"))
     return {"safe": [n for n in names if n in SAFE_GROUPS],
@@ -38,7 +41,7 @@ def list_groups() -> dict:
 
 def _exists(name: str) -> bool:
     if config.DRY_RUN:
-        return name in SAFE_GROUPS
+        return name in SAFE_GROUPS or name in DRY_RUN_RISKY
     return os.path.isfile(os.path.join(config.ACTION_DIR, name + ".d6a"))
 
 
