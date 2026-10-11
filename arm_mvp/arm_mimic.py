@@ -30,8 +30,8 @@ LOST_STEP_SCALE = 1.0 / 6.0  # a lost arm eases back to rest at a sixth of the t
 
 def parse_args(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--source", default=None, help="camera index, stream URL, or video file for offline replay "
-                   "(default: the robot's camera stream with --api-url, else webcam 0)")
+    p.add_argument("--source", default=None, help="camera index, stream URL, 'robot', or video file for offline "
+                   "replay (default: 'robot' with --api-url, i.e. its camera over UDP or MJPEG, else webcam 0)")
     p.add_argument("--focal-px", type=float, default=None, help="focal length in pixels (default 0.9 * width)")
     p.add_argument("--min-cutoff", type=float, default=1.5, help="One Euro min cutoff in Hz (lower = smoother when still)")
     p.add_argument("--beta", type=float, default=4.0, help="One Euro beta (higher = less lag when moving)")
@@ -49,18 +49,37 @@ def parse_args(argv=None):
     p.add_argument("--headless-test", type=int, default=0, metavar="N", help="process N frames without a window, print stats, exit")
     args = p.parse_args(argv)
     if args.source is None:
-        args.source = robot_stream_url(args.api_url) if args.api_url else "0"
+        args.source = ROBOT if args.api_url else "0"
     return args
 
 
-def robot_stream_url(api_url):
-    """robot_api's MJPEG stream. cv2 can't send headers, so the token goes in the query."""
-    token = os.environ.get("BAYMAX_API_TOKEN")
-    return api_url.rstrip("/") + "/sensors/camera.mjpg?width=640" + (f"&token={token}" if token else "")
+ROBOT = "robot"  # --source robot: the robot's camera via --api-url (UDP if possible, else MJPEG)
 
 
 def is_live(source):
-    return source.isdigit() or "://" in source
+    return source == ROBOT or source.isdigit() or "://" in source
+
+
+def robot_frames(api_url):
+    """The robot's camera through streaming.robot_camera.RobotCamera, newest frames only."""
+    import sys
+
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from streaming.robot_camera import RobotCamera
+
+    cam = RobotCamera(api_url).start()
+    print(f"robot camera: {cam.mode}")
+    last, t0 = 0.0, time.monotonic()
+    try:
+        while True:
+            frame, t = cam.latest()
+            if frame is None or t == last:
+                time.sleep(0.002)
+                continue
+            last = t
+            yield frame, time.monotonic() - t0
+    finally:
+        cam.stop()
 
 
 class LatestFrame:
@@ -93,8 +112,13 @@ class LatestFrame:
             return None if self.seq == last_seq else (self.frame, self.stamp, self.seq)
 
 
-def frames(source, realtime):
+def frames(source, realtime, api_url=None):
     """Yields (bgr frame, seconds). Live cameras and streams drop stale frames, files replay every frame."""
+    if source == ROBOT:
+        if not api_url:
+            raise SystemExit("--source robot needs --api-url")
+        yield from robot_frames(api_url)
+        return
     if is_live(source):
         cam, seq, t0 = LatestFrame(source), 0, time.monotonic()
         try:
@@ -273,7 +297,7 @@ def main():
     n, fps, t_prev, ts_prev, wall_prev, wall_start = 0, 0.0, None, -1, time.monotonic(), time.monotonic()
 
     try:
-        for frame, t in frames(args.source, realtime=not headless):
+        for frame, t in frames(args.source, realtime=not headless, api_url=args.api_url):
             if sim is not None:
                 frame, _ = sim.apply(frame)
             h, w = frame.shape[:2]

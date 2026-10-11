@@ -6,7 +6,7 @@ a face needs several updates a second). Each frame goes through a pose model: YO
 (laptop_mvp/pose_landmarker_full.task, usually only one person). The head points give each
 person's face position, the shoulders their size (a distance cue), the wrists whether they wave.
 
-    source = FrameSource("http://robot:8000/sensors/camera.mjpg")   # or 0 for a webcam
+    source = RobotCamera("http://robot:8000")   # streaming.robot_camera; or FrameSource(0) for a webcam
     perception = Perception(source, PoseDetector(), backend).start()
     perception.people()          # [{"id": 1, "bearing_deg": 12, "waving": False, ...}]
     perception.track(1)          # keep the head pointed at person 1
