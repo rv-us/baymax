@@ -159,17 +159,20 @@ class Gx10Camera:
             when, key, jpeg = self._pic
             if key == (width, quality) and time.monotonic() - when < JPEG_CACHE_S:
                 return jpeg
-            try:
-                if self._pic_conn is None:
-                    self._pic_conn = http.client.HTTPConnection(self._host, self._port, timeout=TIMEOUT_S)
-                status, body = self._get(self._pic_conn, f"/camera.jpg?width={width}&quality={quality}")
-                jpeg = body if status == 200 else None
-                if jpeg is None:
-                    self.status = {"state": "down", "detail": _detail(body) or f"the pose service answered {status}"}
-            except (OSError, http.client.HTTPException) as e:
-                self._pic_conn = None
-                jpeg = None
-                self.status = {"state": "down", "detail": f"The GX10 isn't answering: {e}"}
+            jpeg = None
+            for attempt in (1, 2):   # the GX10 closes a connection that sat idle: the retry is on a fresh one
+                try:
+                    if self._pic_conn is None:
+                        self._pic_conn = http.client.HTTPConnection(self._host, self._port, timeout=TIMEOUT_S)
+                    status, body = self._get(self._pic_conn, f"/camera.jpg?width={width}&quality={quality}")
+                    jpeg = body if status == 200 else None
+                    if jpeg is None:
+                        self.status = {"state": "down", "detail": _detail(body) or f"the pose service answered {status}"}
+                    break
+                except (OSError, http.client.HTTPException) as e:
+                    self._pic_conn = None
+                    if attempt == 2:
+                        self.status = {"state": "down", "detail": f"The GX10 isn't answering: {e}"}
             self._pic = (time.monotonic(), (width, quality), jpeg)
             return jpeg
 
