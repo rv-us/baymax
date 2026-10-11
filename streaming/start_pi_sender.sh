@@ -13,7 +13,7 @@ fi
 echo "GX10 address on $GX10_IFACE: $GX10_IP"
 
 # Stop any sender that's already running so we don't fight over the camera.
-ssh "$PI_HOST" "pkill -f '[g]st-launch-1.0 v4l2src' || true"
+ssh "$PI_HOST" "pkill -f '[g]st-launch-1.0.* v4l2src' || true"
 sleep 1
 
 ssh "$PI_HOST" "nohup gst-launch-1.0 v4l2src device=$VIDEO_DEVICE \
@@ -25,7 +25,7 @@ ssh "$PI_HOST" "nohup gst-launch-1.0 v4l2src device=$VIDEO_DEVICE \
   < /dev/null > /tmp/tonypi-sender.log 2>&1 &"
 
 sleep 2
-if ssh "$PI_HOST" "pgrep -f '[g]st-launch-1.0 v4l2src' >/dev/null"; then
+if ssh "$PI_HOST" "pgrep -f '[g]st-launch-1.0.* v4l2src' >/dev/null"; then
   echo "Sender running on the Pi, streaming to $GX10_IP:$VIDEO_PORT"
   echo "Pi log: ssh $PI_HOST 'tail -f /tmp/tonypi-sender.log'"
 else
