@@ -1,0 +1,25 @@
+# A starter workout: two arm exercises the robot can demonstrate (actions/arm)
+# and mirror safely. Angles are in degrees. See workout/plan.py for the format.
+name: Arms, basic
+exercises:
+  - name: Front arm raises
+    cue: Lift both arms straight out in front of you to shoulder height, then lower them slowly.
+    demo: { arm: forward, times: 2 }
+    sets: 2
+    reps: 8
+    mirror: arms
+    track_joint: shoulder_elevation
+    targets:
+      shoulder_elevation: { top: 90, bottom: 15, tolerance: 15 }
+      elbow: { min: 150 }            # keep the arms straight
+
+  - name: Overhead reaches
+    cue: Reach both arms straight up over your head, then lower them slowly.
+    demo: { arm: up, times: 2 }
+    sets: 2
+    reps: 6
+    mirror: arms
+    track_joint: shoulder_elevation
+    targets:
+      shoulder_elevation: { top: 160, bottom: 15, tolerance: 20 }
+      elbow: { min: 150 }
