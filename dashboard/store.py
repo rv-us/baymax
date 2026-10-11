@@ -92,6 +92,9 @@ class Sessions:
                 "scores": s["scores"], "exercises": list(dict.fromkeys(x["exercise"] for x in s["sets"])),
                 "sets": len(s["sets"]), "has_detail": any(x["reps_detail"] for x in s["sets"] + s["interrupted"]),
                 "headline": (s.get("summary") or {}).get("headline"),
+                "kind": s["kind"], "name": (s.get("recording") or {}).get("name"),
+                "duration_s": round(max(0.0, (s.get("ended") or s.get("started") or 0) - (s.get("started") or 0)), 1),
+                "symmetry_pct": (s.get("symmetry") or {}).get("pct"),
             })
         return sorted(rows, key=lambda r: r.get("started") or 0, reverse=True)
 
@@ -110,11 +113,19 @@ class Sessions:
             data.update(fields)
             _write(self._path(sid), data)
 
-    def delete_synthetic(self) -> int:
+    def delete(self, sid: str) -> None:
+        try:
+            os.remove(self._path(sid))
+        except FileNotFoundError:
+            raise NotFound(sid) from None
+
+    def delete_synthetic(self, source: str | None = None) -> int:
+        """Remove generated sessions. `source` limits it to one generator's files."""
         n = 0
         for sid in self.ids():
             try:
-                if self.raw(sid).get("synthetic"):
+                raw = self.raw(sid)
+                if raw.get("synthetic") and (source is None or raw.get("source") == source):
                     os.remove(self._path(sid))
                     n += 1
             except (ValueError, NotFound):
@@ -124,6 +135,7 @@ class Sessions:
 
 # ---- animations -------------------------------------------------------------------
 
+KINDS = ("exercise", "emote")
 EXERCISE_DEFAULTS = {"cue": "", "sets": 2, "reps": 8, "mirror": "arms",
                      "track_joint": "shoulder_elevation", "targets": {}}
 
@@ -140,9 +152,13 @@ def check_animation(data: dict) -> dict:
               for kf in data["keyframes"]]
     exercise = {**EXERCISE_DEFAULTS, **{k: v for k, v in (data.get("exercise") or {}).items()
                                         if k in EXERCISE_DEFAULTS}}
-    out = {"version": 1, "name": name, "keyframes": frames, "exercise": exercise,
+    kind = data.get("kind") if data.get("kind") in KINDS else "exercise"
+    out = {"version": 1, "name": name, "kind": kind, "keyframes": frames, "exercise": exercise,
            "source": str(data.get("source") or "manual")[:40],
            "loop": bool(data.get("loop")), "speed": float(data.get("speed") or 1.0)}
+    for key, limit in (("description", 300), ("prompt", 400), ("generator", 60)):
+        if data.get(key):
+            out[key] = str(data[key])[:limit]
     as_exercise(out)  # the exercise fields must pass plan.py too
     return out
 
@@ -177,21 +193,32 @@ class Animations:
                 a = _read(self._path(aid))
                 rows.append({"id": aid, "name": a.get("name", aid), "keyframes": len(a.get("keyframes", [])),
                              "duration_ms": duration_ms(a.get("keyframes", [])),
+                             "kind": a.get("kind") if a.get("kind") in KINDS else "exercise",
+                             "description": a.get("description") or (a.get("exercise") or {}).get("cue") or "",
                              "source": a.get("source"), "updated": a.get("updated")})
             except (ValueError, KeyError, TypeError):
                 rows.append({"id": aid, "name": aid, "unreadable": True})
         return rows
 
     def get(self, aid: str) -> dict:
-        return {"id": aid, **_read(self._path(aid))}
+        data = _read(self._path(aid))
+        return {"id": aid, **data, "kind": data.get("kind") if data.get("kind") in KINDS else "exercise"}
 
     def save(self, data: dict, aid: str | None = None) -> dict:
         clean = check_animation(data)
-        aid = check_id(aid) if aid else slug(clean["name"])
+        aid = check_id(aid) if aid else self.free_id(slug(clean["name"]))
         clean["updated"] = time.time()
         with _lock:
             _write(self._path(aid), clean)
         return {"id": aid, **clean}
+
+    def free_id(self, base: str) -> str:
+        """`base`, or `base_2`, `base_3`... so a new animation never overwrites another."""
+        aid, n = base, 1
+        while os.path.exists(self._path(aid)):
+            n += 1
+            aid = f"{base[:44]}_{n}"
+        return aid
 
     def delete(self, aid: str) -> None:
         try:

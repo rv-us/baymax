@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "name": "Cheer",
+  "kind": "emote",
+  "keyframes": [
+    {
+      "ms": 1200,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 79,
+        "left_shoulder_roll": 696,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 921,
+        "right_shoulder_roll": 304,
+        "right_elbow": 425
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1610
+      }
+    },
+    {
+      "ms": 400,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 79,
+        "left_shoulder_roll": 696,
+        "left_elbow": 762,
+        "right_shoulder_pitch": 921,
+        "right_shoulder_roll": 304,
+        "right_elbow": 238
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1610
+      }
+    },
+    {
+      "ms": 400,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 79,
+        "left_shoulder_roll": 696,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 921,
+        "right_shoulder_roll": 304,
+        "right_elbow": 425
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1610
+      }
+    },
+    {
+      "ms": 400,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 79,
+        "left_shoulder_roll": 696,
+        "left_elbow": 762,
+        "right_shoulder_pitch": 921,
+        "right_shoulder_roll": 304,
+        "right_elbow": 238
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1610
+      }
+    },
+    {
+      "ms": 400,
+      "hold_ms": 400,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 79,
+        "left_shoulder_roll": 696,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 921,
+        "right_shoulder_roll": 304,
+        "right_elbow": 425
+      },
+      "head": {
+        "pan": 1500,
+        "tilt": 1610
+      }
+    },
+    {
+      "ms": 1400,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    }
+  ],
+  "exercise": {
+    "cue": "",
+    "sets": 2,
+    "reps": 8,
+    "mirror": "arms",
+    "track_joint": "shoulder_elevation",
+    "targets": {}
+  },
+  "source": "starter",
+  "loop": false,
+  "speed": 1.0,
+  "description": "Both arms up for a job well done.",
+  "updated": 1791710193.2247267
+}

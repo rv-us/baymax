@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "name": "Shoulder press",
+  "kind": "exercise",
+  "keyframes": [
+    {
+      "ms": 1800,
+      "hold_ms": 300,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 446,
+        "left_elbow": 846,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 554,
+        "right_elbow": 154
+      }
+    },
+    {
+      "ms": 1800,
+      "hold_ms": 500,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 100,
+        "left_shoulder_roll": 717,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 900,
+        "right_shoulder_roll": 283,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 1800,
+      "hold_ms": 300,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 446,
+        "left_elbow": 846,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 554,
+        "right_elbow": 154
+      }
+    },
+    {
+      "ms": 1600,
+      "hold_ms": 300,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    }
+  ],
+  "exercise": {
+    "cue": "Start with your hands by your shoulders, press them up overhead, then lower slowly.",
+    "sets": 2,
+    "reps": 6,
+    "mirror": "arms",
+    "track_joint": "shoulder_elevation",
+    "targets": {
+      "shoulder_elevation": {
+        "top": 150,
+        "bottom": 60,
+        "tolerance": 20
+      }
+    }
+  },
+  "source": "starter",
+  "loop": false,
+  "speed": 1.0,
+  "description": "From goalposts, press both hands up overhead and come back down.",
+  "updated": 1791710193.2204247
+}

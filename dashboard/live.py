@@ -141,7 +141,8 @@ class SimTracker:
                             reference=ref_all[len(done) - 1], target=target)
             live.sleep(1 / synthetic.HZ)
         self.carry, self.paused_at = (done, time.time()) if not finished else ([], 0.0)
-        trace = {"hz": synthetic.HZ, "patient": done, "reference": ref_all[:len(done)]}
+        trace = {"hz": synthetic.HZ, "patient": done, "reference": ref_all[:len(done)],
+                 "joints": synthetic.joint_traces(done, target)}
         reps = len(reps_from_trace(trace, target))
         return SetResult(reps, exercise.reps, [], len(done) / synthetic.HZ, finished=finished,
                          started=started, trace=trace)

@@ -18,6 +18,7 @@ from workout.plan import load_plan
 from workout.session import reference_trace, set_target, upgrade_set
 
 HZ = 10
+VERSION = 2  # 2: traces carry left and right joints
 
 
 def profile(rng: random.Random, progress: float = 1.0) -> dict:
@@ -71,6 +72,30 @@ def with_reference(patient: list, target: dict, reps: int) -> dict:
     return {"hz": HZ, "patient": patient, "reference": ref}
 
 
+def joint_traces(patient: list, target: dict) -> dict:
+    """Each side on its own, derived from the tracked angle: the two shoulders differ by
+    a few percent (one arm usually leads) and the elbows stay nearly straight, bending a
+    little more at the top of each rep. Seeded from the trace itself, so the same trace
+    always gives the same joints and the main random stream is left alone."""
+    rng = random.Random(int(sum(a or 0 for a in patient) * 10) + len(patient))
+    bottom, top = target.get("bottom", 10.0), target.get("top", 90.0)
+    lead = rng.uniform(-0.12, 0.12)          # share of range the left arm leads by
+    bend = rng.uniform(4.0, 16.0)            # degrees the elbows give at the top
+    out = {"left_shoulder": [], "right_shoulder": [], "left_elbow": [], "right_elbow": []}
+    for a in patient:
+        if a is None:
+            for row in out.values():
+                row.append(None)
+            continue
+        lift = a - bottom
+        up = max(0.0, min(1.0, lift / max(1.0, top - bottom)))
+        out["left_shoulder"].append(round(bottom + lift * (1 + lead / 2) + rng.gauss(0, 0.8), 1))
+        out["right_shoulder"].append(round(bottom + lift * (1 - lead / 2) + rng.gauss(0, 0.8), 1))
+        out["left_elbow"].append(round(172 - bend * up * (1 + lead) + rng.gauss(0, 1.2), 1))
+        out["right_elbow"].append(round(172 - bend * up * (1 - lead) + rng.gauss(0, 1.2), 1))
+    return out
+
+
 def deviations(scored_set: dict) -> list:
     """Free-text form notes like the tracker will write, from the scored reps."""
     reps = scored_set["reps_detail"]
@@ -95,7 +120,7 @@ def generate_session(seed: int, started: float, progress: float = 1.0, plan_name
     transitions = [{"t": round(t, 2), "from": "READY_CHECK", "event": "ready", "to": "INTRODUCE",
                     "seconds": round(t, 2)}]
     session = {"schema": 2, "plan": plan.name, "started": started, "status": "completed", "flagged": False,
-               "synthetic": True, "source": "synthetic", "seed": seed, "patient": {"name": "Demo patient"},
+               "synthetic": True, "source": "synthetic", "seed": seed, "synthetic_version": VERSION, "patient": {"name": "Demo patient"},
                "transitions": transitions, "sets": [], "interrupted": [], "events": [], "notes": []}
     if rng.random() < 0.5:
         session["events"].append({"t": round(t * 0.6, 2), "type": rng.choice(("prompt_closer", "prompt_back")),
@@ -124,7 +149,8 @@ def generate_session(seed: int, started: float, progress: float = 1.0, plan_name
             entry = {"exercise": ex.name, "set": n, "reps": 0, "target_reps": ex.reps, "deviations": [],
                      "track_joint": ex.track_joint, "target": target, "started_t": round(t, 2),
                      "seconds": round(seconds, 2), "finished": not cut,
-                     "trace": with_reference(patient, target, ex.reps)}
+                     "trace": {**with_reference(patient, target, ex.reps),
+                               "joints": joint_traces(patient, target)}}
             scored = upgrade_set(entry)
             entry["reps"] = len(scored["reps_detail"])
             entry["deviations"] = deviations(scored)
@@ -149,6 +175,25 @@ def generate_session(seed: int, started: float, progress: float = 1.0, plan_name
             break
     session["ended"] = started + t + 4
     return session
+
+
+def refresh(store, count: int = 8) -> bool:
+    """Dry run startup: make the demo sessions if there are none, and remake synthetic
+    ones written by an older generator (so new charts have data to show)."""
+    stale = False
+    for sid in store.ids():
+        try:
+            raw = store.raw(sid)
+        except (ValueError, KeyError):
+            continue
+        if raw.get("synthetic") and raw.get("source") == "synthetic" and raw.get("synthetic_version") != VERSION:
+            stale = True
+    if stale:
+        store.delete_synthetic(source="synthetic")
+    if stale or not store.ids():
+        seed_sessions(store, count)
+        return True
+    return False
 
 
 def seed_sessions(store, count: int = 8, seed: int = 7, now: float | None = None) -> list:

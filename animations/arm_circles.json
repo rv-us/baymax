@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "name": "Arm circles",
+  "kind": "exercise",
+  "keyframes": [
+    {
+      "ms": 1100,
+      "ease": "in",
+      "servos": {
+        "left_shoulder_pitch": 433,
+        "left_shoulder_roll": 758,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 567,
+        "right_shoulder_roll": 242,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 1000,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 267,
+        "left_shoulder_roll": 612,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 733,
+        "right_shoulder_roll": 388,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 1000,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 475,
+        "left_shoulder_roll": 467,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 525,
+        "right_shoulder_roll": 533,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 1000,
+      "ease": "linear",
+      "servos": {
+        "left_shoulder_pitch": 683,
+        "left_shoulder_roll": 612,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 317,
+        "right_shoulder_roll": 388,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 1100,
+      "hold_ms": 300,
+      "ease": "out",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    }
+  ],
+  "exercise": {
+    "cue": "Draw a slow, wide circle with both arms: forward, up, out to the side, and down.",
+    "sets": 2,
+    "reps": 6,
+    "mirror": "arms",
+    "track_joint": "shoulder_elevation",
+    "targets": {
+      "shoulder_elevation": {
+        "top": 100,
+        "bottom": 10,
+        "tolerance": 20
+      }
+    }
+  },
+  "source": "starter",
+  "loop": false,
+  "speed": 1.0,
+  "description": "Slow circles with both arms: forward, up, out to the side and down.",
+  "updated": 1791710193.207838
+}

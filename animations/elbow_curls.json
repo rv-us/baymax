@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "name": "Elbow curls",
+  "kind": "exercise",
+  "keyframes": [
+    {
+      "ms": 900,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 621,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 379,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 1500,
+      "hold_ms": 400,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 621,
+        "left_shoulder_roll": 800,
+        "left_elbow": 867,
+        "right_shoulder_pitch": 379,
+        "right_shoulder_roll": 200,
+        "right_elbow": 133
+      }
+    },
+    {
+      "ms": 1500,
+      "hold_ms": 200,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 621,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 379,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 900,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    }
+  ],
+  "exercise": {
+    "cue": "Keep your upper arms still, bend your elbows up, then straighten them slowly.",
+    "sets": 2,
+    "reps": 8,
+    "mirror": "arms",
+    "track_joint": "elbow",
+    "targets": {
+      "elbow": {
+        "top": 70,
+        "bottom": 5,
+        "tolerance": 15
+      }
+    }
+  },
+  "source": "starter",
+  "loop": false,
+  "speed": 1.0,
+  "description": "Bend both elbows up, then straighten them slowly.",
+  "updated": 1791710193.210464
+}

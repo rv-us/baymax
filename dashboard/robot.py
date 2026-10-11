@@ -15,6 +15,7 @@ import time
 
 from robot_api.errors import RobotError
 
+from .calibration import Limiter
 from .config import Settings
 
 # Endpoints that move the robot. Refused while a safety stop is latched.
@@ -48,6 +49,7 @@ class Gateway:
             from robot_api.client import HttpBackend
 
             self.backend = HttpBackend(settings.robot_url, settings.robot_token, timeout=60)
+        self.limiter = Limiter()         # the active calibration profile (app.py sets it)
         self.blocked = lambda: None      # set by Safety: returns a reason while latched
         self.fake_stall: dict = {}       # dry-run only: {servo id: pulse it is stuck at}
         self._lock = threading.Lock()
@@ -65,6 +67,12 @@ class Gateway:
         if kwargs.get("allow_risky"):
             raise Refused("Risky action groups (falling, kicking, getting up) can't be run "
                           "from the dashboard.", 403)
+        try:  # the calibration profile: clamp, offset and slow every servo command
+            path, kwargs, report = self.limiter.apply(path, kwargs)
+        except Refused:
+            raise
+        except RobotError as e:
+            raise Refused(str(e), 409 if "profile" in str(e) else 422) from e
         self._check_local(path, kwargs)
         began = time.monotonic()
         try:
@@ -76,10 +84,13 @@ class Gateway:
             self._seen(status != 502, message if status == 502 else None, began)
             raise Refused(message, status) from e
         self._seen(True, None, began)
-        if path == "servo/status" and self.fake_stall:
-            for s in result.get("servos", []):
+        if path == "servo/status":
+            for s in result.get("servos", []) if self.fake_stall else []:
                 if s["id"] in self.fake_stall:
                     s["position"] = self.fake_stall[s["id"]]
+            result = self.limiter.read(result)
+        if report and isinstance(result, dict):
+            result["calibration"] = report
         return result
 
     def _check_local(self, path: str, kwargs: dict) -> None:

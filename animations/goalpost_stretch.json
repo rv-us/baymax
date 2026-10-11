@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "name": "Goalpost stretch",
+  "kind": "exercise",
+  "keyframes": [
+    {
+      "ms": 2000,
+      "hold_ms": 1500,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 446,
+        "left_elbow": 846,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 554,
+        "right_elbow": 154
+      }
+    },
+    {
+      "ms": 1600,
+      "hold_ms": 600,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 475,
+        "left_shoulder_roll": 675,
+        "left_elbow": 846,
+        "right_shoulder_pitch": 525,
+        "right_shoulder_roll": 325,
+        "right_elbow": 154
+      }
+    },
+    {
+      "ms": 1600,
+      "hold_ms": 600,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 446,
+        "left_elbow": 846,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 554,
+        "right_elbow": 154
+      }
+    },
+    {
+      "ms": 2000,
+      "hold_ms": 300,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "left_shoulder_roll": 800,
+        "left_elbow": 575,
+        "right_shoulder_pitch": 275,
+        "right_shoulder_roll": 200,
+        "right_elbow": 425
+      }
+    }
+  ],
+  "exercise": {
+    "cue": "Hold your arms like goalposts, bring them together in front, then open wide again.",
+    "sets": 2,
+    "reps": 5,
+    "mirror": "arms",
+    "track_joint": "shoulder_elevation",
+    "targets": {
+      "shoulder_elevation": {
+        "top": 85,
+        "bottom": 10,
+        "tolerance": 20
+      }
+    }
+  },
+  "source": "starter",
+  "loop": false,
+  "speed": 1.0,
+  "description": "Arms out with elbows bent like goalposts, then bring them forward and open again.",
+  "updated": 1791710193.2181664
+}

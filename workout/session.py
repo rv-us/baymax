@@ -31,10 +31,13 @@ STORED (written by the workout loop, the tracker, or the synthetic generator)
       started_t     seconds since session start
       seconds       how long the set took
       finished      false if interrupted
-      trace         { hz, patient: [deg | null], reference: [deg] }
-                    Both lists share one time axis starting at started_t; sample i is at
+      trace         { hz, patient: [deg | null], reference: [deg], joints?: {name: [deg | null]} }
+                    All lists share one time axis starting at started_t; sample i is at
                     started_t + i / hz. null = no pose that frame. `reference` is the
                     demonstrated motion. Optional, and downsampled (10 Hz is plenty).
+                    `joints` (optional) holds each side on its own: left_shoulder,
+                    right_shoulder, left_elbow, right_elbow. Symmetry and per-joint range
+                    come from it; without it they read "not measured".
       reps_detail   [rep]   optional. A tracker that counts reps itself writes it;
                     otherwise it is derived from `trace` by reps_from_trace().
 
@@ -45,12 +48,32 @@ STORED (written by the workout loop, the tracker, or the synthetic generator)
 DERIVED (never stored; computed by upgrade() so there is one definition of each)
 
     rep     duration_s, rom_deg, rom_target_deg, rom_ratio, accuracy_pct, pace_ratio,
+            up_s, down_s, smoothness_pct, symmetry_pct, left_rom_deg, right_rom_deg,
             misses: [short | over | not_lowered | fast | slow], quality: good | off
     set     scores { accuracy_pct, pacing_pct, consistency_pct, tempo_match_pct,
-                     fatigue { label, rom_change_pct, duration_change_pct } }
+                     smoothness_pct, symmetry_pct, completion_pct,
+                     fatigue { label, rom_change_pct, duration_change_pct },
+                     overall { score, label, parts: [{ key, label, value, weight }] } }
             bands  [{ t0, t1, quality: good | off | lost, rep? }]   each rep's stretch of
                    the trace, and stretches with no pose
-    session scores { accuracy_pct, pacing_pct, fatigue, reps, target_reps, active_s }
+            rom_by_joint [{ joint, min_deg, max_deg, rom_deg, target_rom_deg?, pct? }]
+            symmetry { pct, left_rom_deg, right_rom_deg, diff_deg, favours: left | right | even }
+            tempo  { target_s, mean_s, up_s, down_s, spread_pct }
+            heatmap { bins, rows: [{ rep, cells: [deg | null] }] }   patient minus the ideal
+                   rep, by phase of the rep; positive = above the demonstration
+    session scores { ...as a set, plus reps, target_reps, active_s, safety_events }
+            kind (exercise | recording), rom_by_joint, symmetry,
+            insights: [{ tone: good | warn | bad | info, text }]
+
+smoothness_pct  how close each rep is to one clean rise and fall. The speed of a smooth
+                rep goes up once and down once; stop-start or shaky reps change speed
+                more. 100 x (ideal speed change / measured speed change), after a light
+                3-sample smoothing. Tracker jitter still counts a little, so a clean
+                rep from a 10 Hz tracker reads 50 to 70, not 100.
+symmetry_pct    100 x (1 - |left range - right range| / the larger range), per rep.
+overall.score   weighted mean of what was measured: range 35, pacing 20, smoothness 15,
+                symmetry 15, reps completed 15. Parts that weren't measured drop out and
+                the rest are re-weighted.
 
 accuracy_pct  range of motion reached against the target range, capped at 100.
 pacing_pct    half consistency (how even the rep durations are), half how close each
@@ -62,6 +85,7 @@ A real pose tracker only has to fill SetResult.trace (or rep_details). Nothing i
 dashboard reads anything that this file does not define.
 """
 
+import math
 import statistics
 
 SCHEMA = 2
@@ -129,22 +153,24 @@ def reps_from_trace(trace: dict, target: dict) -> list:
     if span <= 0:
         return []
     lo, hi = bottom + 0.2 * span, bottom + 0.4 * span
-    reps, start, peak, trough, up = [], None, None, None, False
+    reps, start, peak, peak_i, trough, up = [], None, None, 0, None, False
     for i, a in enumerate(samples):
         if a is None:
             continue
         if start is None:
             trough = a if trough is None else min(trough, a)
             if a > lo:
-                start, peak, up = i, a, a >= hi
+                start, peak, peak_i, up = i, a, i, a >= hi
             continue
-        peak = max(peak, a)
+        if a > peak:
+            peak, peak_i = a, i
         up = up or a >= hi
         if a <= lo:
             if up:
                 reps.append({"n": len(reps) + 1, "t_start": round(start / hz, 2),
-                             "t_end": round(i / hz, 2), "peak_deg": round(peak, 1),
-                             "trough_deg": round(trough, 1)})
+                             "t_end": round(i / hz, 2), "t_peak": round(peak_i / hz, 2),
+                             "window": "threshold",
+                             "peak_deg": round(peak, 1), "trough_deg": round(trough, 1)})
             start, trough = None, a
     return reps
 
@@ -156,9 +182,53 @@ def _pct(x: float) -> int:
     return int(round(100 * max(0.0, min(1.0, x))))
 
 
-def score_rep(rep: dict, target: dict) -> dict:
+def _slice(samples: list, hz: float, t0: float, t1: float) -> list:
+    return samples[max(0, int(round(t0 * hz))):int(round(t1 * hz)) + 1]
+
+
+def smoothness(samples: list, hz: float, windowed: bool = False):
+    """How close a rep is to one clean rise and fall, 0 to 100. None if too short.
+    `windowed`: the samples run between the rep's 20 % crossings, not rest to rest."""
+    vals = [a for a in samples if a is not None]
+    if len(vals) < 6:
+        return None
+    vals = [statistics.fmean(vals[max(0, i - 1):i + 2]) for i in range(len(vals))]
+    speed = [(b - a) * hz for a, b in zip(vals, vals[1:])]
+    change = sum(abs(b - a) for a, b in zip(speed, speed[1:]))
+    # The speed change of one smooth (cosine) rise and fall through this range in this
+    # time. Rest to rest the speed goes 0 -> peak -> -peak -> 0, which is 2 pi x the
+    # mean speed. Between the 20 % crossings it starts and ends already moving.
+    rise, fall = max(vals) - vals[0], max(vals) - vals[-1]
+    scale = SMOOTH_WINDOWED if windowed else 2.0
+    ideal = scale * math.pi * (rise + fall) * hz / (len(vals) - 1)
+    if change <= 0 or ideal <= 0:
+        return None
+    return _pct(ideal / change)
+
+
+def _range(samples: list):
+    vals = [a for a in samples if a is not None]
+    return round(max(vals) - min(vals), 1) if len(vals) >= 2 else None
+
+
+def score_rep(rep: dict, target: dict, trace: dict | None = None) -> dict:
     out = dict(rep)
     out["duration_s"] = round(rep["t_end"] - rep["t_start"], 2)
+    if rep.get("t_peak") is not None:
+        out["up_s"] = round(rep["t_peak"] - rep["t_start"], 2)
+        out["down_s"] = round(rep["t_end"] - rep["t_peak"], 2)
+    if trace:
+        hz = float(trace.get("hz") or 10)
+        smooth = smoothness(_slice(trace.get("patient") or [], hz, rep["t_start"], rep["t_end"]), hz,
+                            rep.get("window") == "threshold")
+        if smooth is not None:
+            out["smoothness_pct"] = smooth
+        joints = trace.get("joints") or {}
+        left = _range(_slice(joints.get("left_shoulder") or [], hz, rep["t_start"], rep["t_end"]))
+        right = _range(_slice(joints.get("right_shoulder") or [], hz, rep["t_start"], rep["t_end"]))
+        if left and right:
+            out["left_rom_deg"], out["right_rom_deg"] = left, right
+            out["symmetry_pct"] = _pct(1 - abs(left - right) / max(left, right))
     out["rom_deg"] = round(rep["peak_deg"] - rep["trough_deg"], 1)
     misses = []
     top, bottom, tol = target.get("top"), target.get("bottom"), target.get("tolerance", 15.0)
@@ -174,7 +244,10 @@ def score_rep(rep: dict, target: dict) -> dict:
             misses.append("not_lowered")
     tempo = target.get("tempo_s")
     if tempo and out["duration_s"] > 0:
-        out["pace_ratio"] = round(out["duration_s"] / tempo, 2)
+        # A rep counted from a trace is timed between its 20 % crossings, which is
+        # THRESHOLD_SHARE of a smooth cycle, so the tempo is scaled to match.
+        expected = tempo * (THRESHOLD_SHARE if rep.get("window") == "threshold" else 1.0)
+        out["pace_ratio"] = round(out["duration_s"] / expected, 2)
         if out["pace_ratio"] < PACE_FAST:
             misses.append("fast")
         elif out["pace_ratio"] > PACE_SLOW:
@@ -223,6 +296,150 @@ def score_reps(reps: list) -> dict:
     parts = [p for p in (out["consistency_pct"], out["tempo_match_pct"]) if p is not None]
     if parts:
         out["pacing_pct"] = round(statistics.fmean(parts))
+    for key in ("smoothness_pct", "symmetry_pct"):
+        vals = [r[key] for r in reps if key in r]
+        out[key] = round(statistics.fmean(vals)) if vals else None
+    return out
+
+
+OVERALL_PARTS = (("accuracy_pct", "Range reached", 35), ("pacing_pct", "Pacing", 20),
+                 ("smoothness_pct", "Smoothness", 15), ("symmetry_pct", "Left and right balance", 15),
+                 ("completion_pct", "Reps completed", 15))
+OVERALL_LABELS = ((85, "Strong session"), (70, "Solid session"), (50, "Mixed session"), (0, "Tough session"))
+
+
+def overall(scores: dict) -> dict:
+    """One headline number from whatever was measured; missing parts drop out."""
+    parts = [{"key": k, "label": label, "value": scores[k], "weight": w}
+             for k, label, w in OVERALL_PARTS if scores.get(k) is not None]
+    if not [p for p in parts if p["key"] != "completion_pct"]:
+        return {"score": None, "label": "Not scored", "parts": []}
+    score = round(sum(p["value"] * p["weight"] for p in parts) / sum(p["weight"] for p in parts))
+    return {"score": score, "label": next(text for floor, text in OVERALL_LABELS if score >= floor),
+            "parts": parts}
+
+
+def completion(reps: int, target_reps: int):
+    return _pct(reps / target_reps) if target_reps else None
+
+
+SIDE_JOINTS = ("left_shoulder", "right_shoulder", "left_elbow", "right_elbow")
+
+
+def rom_by_joint(trace: dict, target: dict) -> list:
+    """Range each measured joint moved through over the set."""
+    rows = []
+    span = (target["top"] - target["bottom"]) if target.get("top") is not None \
+        and target.get("bottom") is not None else None
+    for joint in SIDE_JOINTS:
+        vals = [a for a in (trace.get("joints") or {}).get(joint) or [] if a is not None]
+        if len(vals) < 2:
+            continue
+        row = {"joint": joint, "min_deg": round(min(vals), 1), "max_deg": round(max(vals), 1),
+               "rom_deg": round(max(vals) - min(vals), 1)}
+        if span and joint.endswith("shoulder"):
+            row["target_rom_deg"] = round(span, 1)
+            row["pct"] = _pct(row["rom_deg"] / span)
+        rows.append(row)
+    return rows
+
+
+def symmetry(reps: list):
+    """Left against right shoulder range over the scored reps."""
+    pairs = [(r["left_rom_deg"], r["right_rom_deg"]) for r in reps if "symmetry_pct" in r]
+    if not pairs:
+        return None
+    left, right = statistics.fmean(p[0] for p in pairs), statistics.fmean(p[1] for p in pairs)
+    diff = left - right
+    return {"pct": round(statistics.fmean(r["symmetry_pct"] for r in reps if "symmetry_pct" in r)),
+            "left_rom_deg": round(left, 1), "right_rom_deg": round(right, 1), "diff_deg": round(diff, 1),
+            "favours": "even" if abs(diff) < 0.05 * max(left, right) else "left" if diff > 0 else "right"}
+
+
+def tempo(reps: list, target: dict):
+    durs = [r["duration_s"] for r in reps if r.get("duration_s", 0) > 0]
+    if not durs:
+        return None
+    ups, downs = [r["up_s"] for r in reps if "up_s" in r], [r["down_s"] for r in reps if "down_s" in r]
+    mean = statistics.fmean(durs)
+    return {"target_s": target.get("tempo_s"), "mean_s": round(mean, 2),
+            "up_s": round(statistics.fmean(ups), 2) if ups else None,
+            "down_s": round(statistics.fmean(downs), 2) if downs else None,
+            "spread_pct": round(100 * statistics.pstdev(durs) / mean) if len(durs) > 1 else 0}
+
+
+HEAT_BINS = 8
+SMOOTH_GOOD = 50   # a clean rep read through ordinary 10 Hz tracker jitter lands a little above this
+THRESHOLD_PHASE = math.acos(1 - 2 * 0.2) / (2 * math.pi)   # where a smooth cycle crosses 20 %
+THRESHOLD_SHARE = 1 - 2 * THRESHOLD_PHASE                  # share of the cycle above it
+SMOOTH_WINDOWED = (4 - 2 * math.sin(2 * math.pi * THRESHOLD_PHASE)) * THRESHOLD_SHARE / (2 * (1 - 0.2))
+
+
+def heatmap(trace: dict, reps: list, target: dict):
+    """Patient minus the ideal rep, in degrees, for each rep split into HEAT_BINS phases.
+    The ideal rep is the demonstration stretched to that rep's own length, so a slow
+    but well-shaped rep reads as on target here (pace has its own chart)."""
+    top, bottom = target.get("top"), target.get("bottom")
+    if top is None or bottom is None or not reps:
+        return None
+    hz, samples = float(trace.get("hz") or 10), trace.get("patient") or []
+    rows = []
+    for r in reps:
+        i0, i1 = int(round(r["t_start"] * hz)), int(round(r["t_end"] * hz))
+        cells: list = [[] for _ in range(HEAT_BINS)]
+        for i in range(i0, min(i1, len(samples) - 1) + 1):
+            a = samples[i]
+            if a is None or i1 <= i0:
+                continue
+            u = (i - i0) / (i1 - i0)
+            phase = THRESHOLD_PHASE + u * THRESHOLD_SHARE if r.get("window") == "threshold" else u
+            ideal = bottom + (top - bottom) * (0.5 - 0.5 * math.cos(2 * math.pi * phase))
+            cells[min(HEAT_BINS - 1, int(u * HEAT_BINS))].append(a - ideal)
+        rows.append({"rep": r["n"], "cells": [round(statistics.fmean(c), 1) if c else None for c in cells]})
+    return {"bins": HEAT_BINS, "rows": rows}
+
+
+def insights(session: dict) -> list:
+    """Plain sentences from the numbers, most important first. No model involved."""
+    sc, out = session["scores"], []
+
+    def add(tone, text):
+        out.append({"tone": tone, "text": text})
+
+    if session.get("status") == "stopped_pain":
+        add("bad", "The session stopped early because the patient reported pain. Check in before the next one.")
+    if sc.get("target_reps"):
+        done = sc["reps"] >= sc["target_reps"]
+        add("good" if done else "warn", f"{sc['reps']} of {sc['target_reps']} reps were completed"
+            + ("." if done else ", so some sets were cut short or miscounted."))
+    acc = sc.get("accuracy_pct")
+    if acc is not None:
+        add("good" if acc >= 85 else "warn" if acc >= 65 else "bad",
+            f"On average each rep reached {acc}% of the target range"
+            + (", right where it should be." if acc >= 85 else ", a little short of the demonstration."
+               if acc >= 65 else ", well short of the demonstration. Try a smaller target range."))
+    pace = sc.get("pacing_pct")
+    if pace is not None:
+        add("good" if pace >= 75 else "warn",
+            "Pace was steady and close to the demonstration." if pace >= 75
+            else "Pace wandered: some reps were rushed or much slower than the demonstration.")
+    smooth = sc.get("smoothness_pct")
+    if smooth is not None:
+        add("good" if smooth >= SMOOTH_GOOD else "warn",
+            "Movement was smooth, with clean rises and returns." if smooth >= SMOOTH_GOOD
+            else "Movement was stop-start in places. Slower reps usually help.")
+    sym = session.get("symmetry")
+    if sym:
+        even = sym["favours"] == "even" or sym["pct"] >= 90
+        add("good" if even else "warn",
+            "Left and right arms moved about the same amount." if even
+            else f"The {sym['favours']} arm moved further than the other by about "
+                 f"{abs(round(sym['diff_deg']))} degrees.")
+    label = sc["fatigue"]["label"]
+    if label == "tiring":
+        add("warn", "Range or speed dropped toward the end, a sign of tiring. Consider fewer reps or more rest.")
+    elif label == "warming_up":
+        add("good", "Range grew as the session went on, so a longer warm-up may help.")
     return out
 
 
@@ -251,9 +468,16 @@ def upgrade_set(s: dict) -> dict:
     raw = s.get("reps_detail")
     if raw is None and s.get("trace"):
         raw = reps_from_trace(s["trace"], target)
-    out["reps_detail"] = [score_rep(r, target) for r in raw or []]
+    trace = s.get("trace")
+    out["reps_detail"] = [score_rep(r, target, trace) for r in raw or []]
     out["scores"] = score_reps(out["reps_detail"])
-    out["bands"] = trace_bands(s["trace"], out["reps_detail"]) if s.get("trace") else []
+    out["scores"]["completion_pct"] = completion(s.get("reps") or 0, s.get("target_reps") or 0)
+    out["scores"]["overall"] = overall(out["scores"])
+    out["bands"] = trace_bands(trace, out["reps_detail"]) if trace else []
+    out["rom_by_joint"] = rom_by_joint(trace, target) if trace else []
+    out["symmetry"] = symmetry(out["reps_detail"])
+    out["tempo"] = tempo(out["reps_detail"], target)
+    out["heatmap"] = heatmap(trace, out["reps_detail"], target) if trace else None
     return out
 
 
@@ -274,7 +498,18 @@ def upgrade(session: dict) -> dict:
     scores["target_reps"] = sum(s.get("target_reps", 0) for s in out["sets"] + out["interrupted"])
     scores["active_s"] = round(sum(s.get("seconds") or 0 for s in out["sets"] + out["interrupted"]), 1)
     scores["safety_events"] = sum(1 for e in out["events"] if e.get("type") in SAFETY_EVENTS)
+    scores["completion_pct"] = completion(scores["reps"], scores["target_reps"])
+    scores["overall"] = overall(scores)
     out["scores"] = scores
+    out["kind"] = session.get("kind") or "exercise"
+    out["symmetry"] = symmetry(reps)
+    best: dict = {}
+    for s in out["sets"] + out["interrupted"]:
+        for row in s["rom_by_joint"]:
+            if row["joint"] not in best or row["rom_deg"] > best[row["joint"]]["rom_deg"]:
+                best[row["joint"]] = row
+    out["rom_by_joint"] = [best[j] for j in SIDE_JOINTS if j in best]
+    out["insights"] = insights(out)
     return out
 
 

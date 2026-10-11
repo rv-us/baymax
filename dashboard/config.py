@@ -32,5 +32,6 @@ class Settings:
     sessions_dir: str = os.path.join(ROOT, "sessions")
     animations_dir: str = os.path.join(ROOT, "animations")
     plans_dir: str = os.path.join(ROOT, "workout", "plans")
+    calibration_dir: str = os.path.join(ROOT, "calibration")
     web_dir: str = os.path.join(ROOT, "dashboard", "web", "dist")
     monitor: bool = True            # background polling of robot, camera and LLM (off in tests)
