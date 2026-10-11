@@ -70,8 +70,15 @@ def _device():
     return _dev
 
 
+def _rotate_180(cols: list) -> list:
+    """Reverse column order and flip each column's bits (top <-> bottom)."""
+    return [int(f"{c:08b}"[::-1], 2) for c in reversed(cols)]
+
+
 def _write(columns: list) -> None:
     cols = (list(columns) + [0] * WIDTH)[:WIDTH]
+    if config.DOT_MATRIX_ROTATE_180:
+        cols = _rotate_180(cols)
     if config.DRY_RUN:
         from ..fake import STATE
 

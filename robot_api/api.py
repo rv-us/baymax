@@ -10,7 +10,7 @@ import inspect
 
 from .actions import arms, groups, locomotion, poses
 from .errors import RobotError
-from .sensors import buzzer, climate, dot_matrix, health, light, microphone, sonar, voice_box
+from .sensors import buzzer, camera, climate, dot_matrix, health, light, microphone, sonar, voice_box
 from .servo import bus, head
 from .servo.joints import HEAD, JOINTS
 from .servo.limits import HEAD_LIMITS, LIMITS
@@ -51,6 +51,8 @@ ENDPOINTS = {
     "actions/stand": poses.stand,
     "actions/rest": poses.rest,
     # sensors and peripherals
+    "sensors/camera": camera.snapshot,
+    "sensors/camera/close": camera.close,
     "sensors/distance": sonar.distance,
     "sensors/eyes": sonar.set_eyes,
     "sensors/climate": climate.read,

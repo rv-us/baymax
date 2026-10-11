@@ -22,8 +22,9 @@ LIMITS = {
     17: (300, 760), 18: (240, 500),
 }
 
-# Head PWM servos (pulse width in us). Range used by Functions/Head_Control.py.
-HEAD_LIMITS = {1: (1200, 1800), 2: (1200, 1800)}
+# Head PWM servos (pulse width in us). Range used by Functions/Head_Control.py,
+# with tilt extended down to the 984 the factory grab course looks at its feet with.
+HEAD_LIMITS = {1: (950, 1800), 2: (1200, 1800)}
 HEAD_CENTER = 1500
 
 

@@ -26,3 +26,8 @@ def test_tool_happy_path(fake_robot):
     out = t["set_servos"].invoke({"targets": {"left_elbow": 600, "14": 400}})
     assert out["moved"] == {"left_elbow": 600, "right_elbow": 400}
     assert "cleared" in t["show_on_matrix"].invoke({"text": ""})
+
+
+def test_camera_tool_returns_image_block(fake_robot):
+    out = tools_by_name()["camera_view"].invoke({})
+    assert out[0]["type"] == "image" and out[0]["mime_type"] == "image/jpeg"

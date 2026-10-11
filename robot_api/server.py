@@ -6,6 +6,7 @@ Run on the robot (one process owns the servo bus):
 POST /<path> with a JSON object of keyword arguments, e.g.
     curl -X POST :8000/actions/walk -H 'content-type: application/json' -d '{"steps": 2}'
 Endpoints without required arguments also answer GET. GET /endpoints lists all.
+GET /sensors/camera.jpg returns the camera view as an image.
 Set BAYMAX_API_TOKEN to require "Authorization: Bearer <token>".
 """
 from __future__ import annotations
@@ -13,7 +14,7 @@ from __future__ import annotations
 import argparse
 import inspect
 
-from fastapi import Body, Depends, FastAPI, Header, HTTPException
+from fastapi import Body, Depends, FastAPI, Header, HTTPException, Response
 
 from . import config
 from .api import ENDPOINTS
@@ -54,6 +55,17 @@ def _route(path: str, fn):
 
 for _path, _fn in ENDPOINTS.items():
     _route(_path, _fn)
+
+
+@app.get("/sensors/camera.jpg", response_class=Response)
+def camera_jpg(width: int = 640, quality: int = 80):
+    """The head camera's current view as a JPEG (open it in a browser)."""
+    from .sensors import camera
+
+    try:
+        return Response(camera.snapshot_jpeg(width, quality), media_type="image/jpeg")
+    except RobotError as e:
+        raise HTTPException(409, str(e))
 
 
 @app.get("/endpoints")

@@ -19,6 +19,7 @@ MAX_REPEATS = 5  # walking steps / action-group repeats per call
 # Expansion sensors (Pi 5 header is gpiochip4).
 GPIO_CHIP = "gpiochip4"
 DOT_MATRIX_DIO, DOT_MATRIX_CLK = 22, 24  # verified on this robot (docs ch.10.5 example uses 7, 8)
+DOT_MATRIX_ROTATE_180 = True  # mounted upside down on this robot (verified)
 LIGHT_SENSOR_LINE = 7  # tentative: lines 7 and 8 both reacted once; docs example uses 24 (matrix clk here)
 I2C_BUS = 1
 AHT10_ADDR = 0x38  # temperature/humidity; the ultrasonic sensor is 0x77 (fixed in hiwonder.Sonar)

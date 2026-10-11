@@ -85,6 +85,19 @@ def test_sensors_dry_run():
 
 
 def test_dot_matrix_font_columns(fake_robot):
+    from robot_api import config
+    config.DOT_MATRIX_ROTATE_180 = False
     api.call("sensors/matrix/text", text="I")
+    config.DOT_MATRIX_ROTATE_180 = True
     cols = [e for e in fake_robot.log if e[0] == "dot_matrix"][-1][1]
     assert 0x7F in cols and len(cols) == 16
+
+
+def test_dot_matrix_rotated_180(fake_robot, monkeypatch):
+    from robot_api import config
+    from robot_api.sensors import dot_matrix
+
+    monkeypatch.setattr(config, "DOT_MATRIX_ROTATE_180", True)
+    dot_matrix.show_rows(["1" + "0" * 15])  # top-left pixel
+    cols = [e for e in fake_robot.log if e[0] == "dot_matrix"][-1][1]
+    assert cols[-1] == 0x80 and sum(cols) == 0x80  # becomes bottom-right

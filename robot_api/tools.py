@@ -60,8 +60,8 @@ def make_tools(backend) -> list:
 
     @tool
     def look(pan: Optional[int] = None, tilt: Optional[int] = None) -> dict:
-        """Point the head. pan/tilt pulses 1200-1800, 1500 = straight ahead.
-        Omit an axis to leave it."""
+        """Point the head. pan 1200-1800, tilt 950-1800; 1500 = straight ahead.
+        Lower tilt looks down (about 1000 sees the feet). Omit an axis to leave it."""
         return call("servo/head", pan=pan, tilt=tilt)
 
     @tool
@@ -129,6 +129,16 @@ def make_tools(backend) -> list:
         return call("actions/run", name=name, times=times, allow_risky=allow_risky)
 
     # ---- sensors ---------------------------------------------------------------
+
+    @tool
+    def camera_view(width: int = 640):
+        """Take a photo with the head camera and look at it. Use this to find
+        objects, check the path ahead, or see the result of a move. Point the
+        head first with look() to see elsewhere."""
+        out = call("sensors/camera", width=width)
+        if "error" in out:
+            return out
+        return [{"type": "image", "base64": out["jpeg_base64"], "mime_type": "image/jpeg"}]
 
     @tool
     def read_distance() -> dict:
@@ -202,5 +212,5 @@ def make_tools(backend) -> list:
             coast_servos, hold_servos, stop_motion,
             stand, walk, turn, side_step, move_arm, gripper, list_action_groups,
             run_action_group,
-            read_distance, set_eye_color, read_climate, robot_health, is_bright,
+            camera_view, read_distance, set_eye_color, read_climate, robot_health, is_bright,
             show_on_matrix, say, play_sound, listen_for_command, mic_level, beep]
