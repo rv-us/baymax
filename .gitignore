@@ -9,3 +9,4 @@ calibration/
 dashboard/web/e2e/flow/
 dashboard/web/e2e/out/
 reviews/shots/
+.pose_service.pid
