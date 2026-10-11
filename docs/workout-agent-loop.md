@@ -26,7 +26,7 @@ flowchart LR
     end
     SEND -- video over Wi-Fi --> RX
     CLIENT -- HTTP: say, stand, set_servos, ... --> API
-    ASEND -- audio over Wi-Fi, not built yet --> ARX
+    ASEND -- audio over Wi-Fi --> ARX
 ```
 
 Rule of thumb: anything heavy (models, vision, decisions) runs on the GX10. The TonyPi only carries out commands through its HTTP API. So the workout loop is a GX10 program that uses `client.HttpBackend` to talk to the robot.
@@ -164,14 +164,9 @@ TonyPi USB mic ──GStreamer (Opus/RTP/UDP)──▶ GX10 ──▶ Silero VAD
 
 The TonyPi already has a USB audio card with a microphone (`plughw:CARD=Device`, the one `robot_api/sensors/microphone.py` records from). The robot faces the patient for the whole workout, so its mic is in the right place.
 
-Send the audio to the GX10 the same way the video goes: a second GStreamer pipeline started by `streaming/start_pi_sender.sh`, on its own port (for example 5002, set in `streaming/config.env`):
+The audio goes to the GX10 the same way the video does (built in #8): `streaming/start_pi_sender.sh` starts a second GStreamer pipeline that sends the mic as Opus over RTP on port 5002 (`AUDIO_PORT` in `streaming/config.env`). It records from `mic_shared`, a shared device made by `streaming/setup_pi_audio.sh`, so the robot API's `mic_level` can use the mic at the same time.
 
-```text
-alsasrc device=plughw:CARD=Device,DEV=0 ! audioconvert ! audioresample ! audio/x-raw,rate=16000,channels=1
-  ! opusenc ! rtpopuspay ! udpsink host=$GX10_IP port=5002
-```
-
-The GX10 receives it, decodes it back to 16 kHz mono, and keeps a rolling buffer, like `receiver.py` does for frames. Opus at 16 kHz uses well under 50 kbps, so it barely affects the video.
+On the GX10, `streaming/audio_receiver.py` (`AudioReceiver`) decodes it back to 16 kHz mono and keeps the last 30 s, with each chunk stamped with its GX10 arrival time. Opus at 24 kbps barely affects the video. See [running-the-stream.md](running-the-stream.md).
 
 The WonderEcho voice box isn't used for this. It only recognizes a fixed list of command words, and only after its wake phrase ("hello hiwonder").
 
@@ -232,7 +227,7 @@ The robot coaches but doesn't diagnose. All feedback stays about form and effort
 |---|---|---|---|
 | Run the loop / decide what's next | GX10 | `client.HttpBackend` for robot calls | The workout loop program itself |
 | Speak | TonyPi | `say` (espeak-ng), called over HTTP from the GX10 | — |
-| Hear the patient | TonyPi mic → GX10 | The USB mic (`microphone.py`) | The audio sender, receiver, VAD and Whisper `listen()`; see [Voice input](#voice-input) |
+| Hear the patient | TonyPi mic → GX10 | Audio stream (`streaming/audio_receiver.py`) | VAD and Whisper `listen()`; see [Voice input](#voice-input) |
 | Understand answers | GX10 | Ollama with a JSON schema (`coach_test.py`) | The two classifier prompts and the pain keyword list |
 | Demonstrate | TonyPi | `run_action_group`, `set_servos` | Demonstration motions for each exercise in the plan |
 | See the patient | TonyPi camera → GX10 | GX10 stream (`streaming/receiver.py`) | — |
