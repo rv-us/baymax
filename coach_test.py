@@ -19,6 +19,11 @@ import json
 import ollama
 
 MODEL = "qwen3.6:35b"   # swap for "gemma4:26b" or "nemotron3:33b" to compare
+COACH_TIMEOUT = 10      # seconds to wait for a coaching reply before giving up
+
+# Client used for coaching calls: gives up if the model takes longer than COACH_TIMEOUT.
+# (The warm-up uses the default client with no timeout, since first load can be slow.)
+coach_client = ollama.Client(timeout=COACH_TIMEOUT)
 
 SYSTEM_PROMPT = (
     "You are a friendly physical therapy coach. The robot has paused the exercise "
@@ -33,6 +38,27 @@ REPLY_SCHEMA = {
     "properties": {"instruction": {"type": "string"}},
     "required": ["instruction"],
 }
+
+
+DEBUG = True   # prints the model's raw reply; set to False once it works
+
+
+def parse_instruction(text):
+    """Pull the coaching sentence out of a reply.
+    Accepts proper JSON, JSON wrapped in extra text, or plain text."""
+    if not text:
+        return None
+    try:
+        return json.loads(text)["instruction"]
+    except Exception:
+        pass
+    start, end = text.find("{"), text.rfind("}")
+    if start != -1 and end > start:
+        try:
+            return json.loads(text[start:end + 1])["instruction"]
+        except Exception:
+            pass
+    return text   # not JSON: use the plain text as-is
 
 
 def warm_up():
@@ -61,7 +87,7 @@ class Coach:
     def _ask(self, deviation_description):
         t0 = time.time()
         try:
-            response = ollama.chat(
+            response = coach_client.chat(
                 model=MODEL,
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
@@ -72,9 +98,18 @@ class Coach:
                 keep_alive=-1,
                 options={"temperature": 0.3},
             )
-            text = json.loads(response.message.content)["instruction"]
+            raw = (response.message.content or "").strip()
+            thinking = (getattr(response.message, "thinking", None) or "").strip()
+            if DEBUG:
+                print(f"[debug]   raw content: {raw!r}")
+                print(f"[debug]   thinking:    {thinking[:200]!r}")
+            text = parse_instruction(raw) or parse_instruction(thinking) \
+                or "(coach error: model returned an empty reply)"
         except Exception as e:
-            text = f"(coach error: {e})"
+            if "timed out" in str(e).lower() or "timeout" in type(e).__name__.lower():
+                text = f"(coach error: no reply within {COACH_TIMEOUT}s)"
+            else:
+                text = f"(coach error: {e})"
         with self._lock:
             self.latest_text = text
             self.busy = False

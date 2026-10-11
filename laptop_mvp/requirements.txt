@@ -1,0 +1,8 @@
+ultralytics>=8.4.0
+opencv-python>=4.9.0
+numpy>=1.23.0
+torch>=2.0.0
+torchvision>=0.15.0
+open3d>=0.20.0
+requests>=2.31.0
+mediapipe>=0.10.0
