@@ -149,9 +149,10 @@ def main() -> int:
         if args.backend != "http":
             print("--camera stream needs the robot API over HTTP", file=sys.stderr)
             return 2
-        token = os.environ.get("BAYMAX_API_TOKEN")
-        source = FrameSource(f"{backend.url}/sensors/camera.mjpg?width=640"
-                             + (f"&token={token}" if token else ""))
+        from streaming.robot_camera import RobotCamera
+
+        # H.264 over UDP when this machine can decode it, else the API's MJPEG stream.
+        source = RobotCamera(backend.url)
     elif camera == "webcam":
         source = FrameSource(args.cam_index)
     elif camera != "none":

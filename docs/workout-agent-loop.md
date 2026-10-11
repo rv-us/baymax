@@ -5,26 +5,26 @@ How Baymax runs a physical therapy workout with a patient. The robot checks that
 ## Where things run
 
 Two machines:
-- **TonyPi** (the robot, a Raspberry Pi): the body. It runs the robot API server (`robot_api/server.py`) and the camera sender (`streaming/start_pi_sender.sh`). It moves the servos, speaks through its speaker, and shows things on the dot matrix and eye LEDs.
+- **TonyPi** (the robot, a Raspberry Pi): the body. It runs the robot API server (`robot_api/server.py`), which also streams the camera to the GX10 on request, and the microphone sender (`streaming/start_pi_sender.sh`). It moves the servos, speaks through its speaker, and shows things on the dot matrix and eye LEDs.
 - **GX10**: the brain. It runs the workout loop itself, the LLM (Ollama), pose estimation on the video stream, and speech-to-text.
 
 ```mermaid
 flowchart LR
     subgraph Pi[TonyPi]
-        CAM[Camera] --> SEND[GStreamer sender]
+        CAM[Camera] --> API
         API[robot_api server]
         API --> SERVOS[Servos]
         API --> SPK[Speaker / matrix / eyes]
         MIC[Microphone] --> ASEND[GStreamer audio sender]
     end
     subgraph GX[GX10]
-        RX[receiver.py] --> POSE[Pose estimation]
+        RX[robot_camera.py] --> POSE[Pose estimation]
         POSE --> LOOP[Workout loop]
         ARX[Audio receiver] --> VAD[Silero VAD] --> STT[Whisper speech-to-text] --> LOOP
         LOOP <--> LLM[LLM coach, Ollama]
         LOOP --> CLIENT[HttpBackend]
     end
-    SEND -- video over Wi-Fi --> RX
+    API -- video on request, H.264 over UDP --> RX
     CLIENT -- HTTP: say, stand, set_servos, ... --> API
     ASEND -- audio over Wi-Fi --> ARX
 ```
@@ -118,7 +118,7 @@ Each exercise in the plan needs a demonstration motion that the robot can do saf
 
 ### 5. Mirror and track
 
-The main loop for the set. It runs on the GX10 using frames from `streaming/receiver.py`, and sends servo targets back to the TonyPi through the robot API.
+The main loop for the set. It runs on the GX10 using frames from `streaming/robot_camera.py` (or poses from `scripts/pose_server.py --stream`), and sends servo targets back to the TonyPi through the robot API.
 
 Each frame:
 1. Run pose estimation (MediaPipe pose landmarker) on the newest frame.
@@ -230,7 +230,7 @@ The robot coaches but doesn't diagnose. All feedback stays about form and effort
 | Hear the patient | TonyPi mic → GX10 | Audio stream (`streaming/audio_receiver.py`) | VAD and Whisper `listen()`; see [Voice input](#voice-input) |
 | Understand answers | GX10 | Ollama with a JSON schema (`coach_test.py`) | The two classifier prompts and the pain keyword list |
 | Demonstrate | TonyPi | `run_action_group`, `set_servos` | Demonstration motions for each exercise in the plan |
-| See the patient | TonyPi camera → GX10 | GX10 stream (`streaming/receiver.py`) | — |
+| See the patient | TonyPi camera → GX10 | `RobotCamera` (`streaming/robot_camera.py`): H.264 over UDP from the robot API | — |
 | Pose estimation | GX10 | MediaPipe (used in `scripts/face_track.py`) | Run it on the GX10 over the stream |
 | Mirror arms | GX10 computes, TonyPi moves | `scripts/face_track.py --mode human` (runs fully on the Pi) | Move the angle mapping to the GX10 and send servo targets through the robot API |
 | Count reps / check form | GX10 | — | Per-exercise target angles and a rep counter |

@@ -22,54 +22,40 @@ cd ~/baymax/streaming
 
 ## Every session
 
+The robot API streams the camera when the GX10 asks for it, so the Pi only needs its API server running. Tell the GX10 where it is (once per shell, or in `~/.bashrc`):
+
+```bash
+export BAYMAX_API_URL=http://<robot>:8000 BAYMAX_API_TOKEN=<token>
+```
+
 ```bash
 cd ~/baymax/streaming
 ./network_setup.sh      # only at a new venue, or after the Wi-Fi reconnects
-./start_pi_sender.sh    # starts the camera and mic streams on the Pi, aimed at the GX10's current IP
-python3 receiver.py     # prints fps; add --show if a monitor is plugged into the GX10
+./start_pi_sender.sh    # starts the microphone stream on the Pi, aimed at the GX10's current IP
+python3 receiver.py     # asks the robot for its camera and prints fps; add --show with a monitor
 python3 audio_receiver.py   # prints mic loudness; talk to the robot and it should jump from about -60 dBFS
 ```
 
 - `network_setup.sh` turns off Wi-Fi power saving and pins the GX10 to the Pi's access point. Once it's applied at a venue, it stays applied until you run `network_reset.sh`.
-- `start_pi_sender.sh` stops any sender already running on the Pi first, so there is only ever one.
-- The sender also writes 5 fps JPEG snapshots to `/dev/shm/baymax_cam.jpg` on the Pi for the robot API's camera endpoint (`/sensors/camera.jpg`). Only one program can open the camera, so start the stream with this script, not a hand-typed `gst-launch` command, or the robot API loses its camera.
-- You can start the sender and the receiver in either order.
-
-## Video from the robot API instead (no sender script)
-
-The robot API can stream the camera itself: the GX10 asks for it, and the Pi sends H.264 over UDP back to the GX10's address, the same format as above. The request is a lease: repeat it every few seconds, or the Pi stops streaming within `lease_s` (10 s), so a crashed program never leaves the camera running.
-
-```bash
-cd ~/baymax/streaming && VIDEO_ENABLED=0 ./start_pi_sender.sh   # microphone only; leaves the camera to the API
-cd ~/baymax && BAYMAX_API_URL=http://<robot>:8000 python scripts/pose_server.py --stream   # asks for the video itself
-```
-
-In your own code, `UdpVideoLease` (in `streaming/robot_camera.py`) starts and renews it:
-
-```python
-from streaming.receiver import FrameReceiver
-from streaming.robot_camera import UdpVideoLease
-
-lease = UdpVideoLease("http://<robot>:8000").start()   # token from BAYMAX_API_TOKEN
-rx = FrameReceiver(port=lease.port).start()
-```
-
-- Only one program at a time gets the UDP video; the API refuses a second target with a 409 until the first stops (`POST /sensors/camera/udp/stop`) or its lease runs out. Status: `GET /sensors/camera/udp/status`.
-- While it runs, `/sensors/camera.jpg` and the MJPEG stream (`/sensors/camera.mjpg`) still work, from 15 fps snapshots.
-- Don't run `start_pi_sender.sh` without `VIDEO_ENABLED=0` at the same time: it stops every camera pipeline on the Pi.
+- Video: `receiver.py` (and every tool below) asks the API for the camera (`POST /sensors/camera/udp`) and the Pi sends H.264 over UDP back to whoever asked. The request is a lease, renewed every few seconds; if the program stops renewing (closed, crashed), the Pi stops streaming within 10 s. Status: `GET /sensors/camera/udp/status`.
+- Only one machine gets the UDP video at a time. Tools that find it taken (or that run where GStreamer can't decode H.264, like most laptops) use the API's MJPEG stream instead, automatically.
+- While the UDP stream runs, `/sensors/camera.jpg` and the MJPEG stream still work, from 15 fps snapshots.
+- `start_pi_sender.sh` stops any microphone sender already running first, so there is only ever one. `VIDEO_ENABLED=1 ./start_pi_sender.sh` also pushes video the old way (without the API); don't mix the two, since it stops every camera pipeline on the Pi.
 
 ## Using the frames in your own code
 
 ```python
-from streaming.receiver import FrameReceiver   # run from ~/baymax; or from inside streaming/: from receiver import FrameReceiver
+from streaming.robot_camera import RobotCamera   # run from ~/baymax
 
-rx = FrameReceiver().start()
-frame, ts = rx.latest()        # newest 640x480 BGR frame (None until the first one arrives)
+cam = RobotCamera().start()      # BAYMAX_API_URL / BAYMAX_API_TOKEN; UDP if it can, else MJPEG
+frame, ts = cam.latest()         # newest 640x480 BGR frame (None until the first one arrives)
+cam.mode                         # "udp" or "mjpeg"
+cam.stop()                       # stops the robot's UDP stream too
 ```
 
-The receiver decodes with `gst-launch-1.0` in a subprocess and only needs numpy, so it works in a venv with NumPy 2 and alongside pip's `opencv-python` (which ultralytics installs). OpenCV is only needed for `--show`.
+`RobotCamera(mode="udp")` insists on UDP and says why if it can't. Underneath, the UDP path is `UdpVideoLease` (asks for and renews the stream) plus `streaming.receiver.FrameReceiver` (decodes it with `gst-launch-1.0` in a subprocess, needing only numpy, so it works in a venv with NumPy 2 next to pip's `opencv-python`). The MJPEG fallback needs OpenCV and sends the token in a header, never the URL.
 
-Only one program can receive the stream at a time, so stop `receiver.py` before running your own code. If it prints `0.0 fps (no frames yet)` while the sender is running, look for a leftover receiver holding the port: `ss -ulpn | grep 5000`.
+Only one program per machine can receive the UDP stream; a second `RobotCamera` on the same GX10 uses MJPEG. If `receiver.py` prints `0.0 fps (no frames yet)`, check `GET /sensors/camera/udp/status` on the robot and look for a leftover receiver holding the port: `ss -ulpn | grep 5000`.
 
 ## Using the audio in your own code
 
@@ -90,15 +76,14 @@ Like the video, only one program can receive the audio at a time. If the robot A
 `scripts/pose_server.py --stream` reads the robot's video and runs MediaPipe on each frame it can (measured on the GX10: 28 fps from a 30 fps stream, 30 ms per frame, a pose ready 39 ms after its frame arrives). Because only one program can receive the video, other programs should read poses from it instead of opening the stream themselves.
 
 ```bash
-cd ~/baymax && python scripts/pose_server.py --stream --port 9000   # needs mediapipe in the venv
-# add --robot-url http://<robot>:8000 to have it ask the robot API for the video itself
+cd ~/baymax && python scripts/pose_server.py --stream --port 9000   # needs mediapipe; uses BAYMAX_API_URL
 curl localhost:9000/latest     # newest pose: landmarks, joint angles, whether the body is in view
 curl localhost:9000/stats      # fps, model time, latency
 ```
 
 `/latest` includes `angles` (degrees; left/right are the patient's own): `left_shoulder_elevation` (0 = arm down, 90 = forward or sideways, 180 = overhead), `left_elbow` and `left_knee` (180 = straight), the `right_` versions, `trunk_lean`, and `hip_shift_cm` (+ = toward the patient's left). An angle is `null` when the joints it needs aren't visible. `in_view` says whether the `upper_body` and `full_body` are in the frame and lists `missing` parts.
 
-In Python, without the server: `PoseStream(FrameReceiver().start(), Pose()).start()` from `vision/stream.py`. MediaPipe tracks one person, the most prominent in the frame.
+In Python, without the server: `PoseStream(RobotCamera().start(), Pose()).start()` from `vision/stream.py`. MediaPipe tracks one person, the most prominent in the frame.
 
 ## Speech to text (`voice.Listener`)
 

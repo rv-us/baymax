@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Run on the GX10. Starts the camera and microphone senders on the Pi over SSH, pointed at this GX10.
+# Run on the GX10. Starts the microphone sender (and, with VIDEO_ENABLED=1, the camera sender) on the Pi
+# over SSH, pointed at this GX10.
 # The GX10's IP is detected automatically, so nothing needs editing when it changes.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -12,9 +13,9 @@ if [[ -z "$GX10_IP" ]]; then
 fi
 echo "GX10 address on $GX10_IFACE: $GX10_IP"
 
-# VIDEO_ENABLED=0 ./start_pi_sender.sh starts only the microphone, and leaves the camera alone
-# (for when the robot API streams it: POST /sensors/camera/udp, see streaming/robot_camera.py).
-VIDEO_ENABLED="${VIDEO_ENABLED:-1}"
+# By default (VIDEO_ENABLED=0 in config.env) this starts only the microphone and leaves the
+# camera to the robot API (POST /sensors/camera/udp, see streaming/robot_camera.py).
+# VIDEO_ENABLED=1 ./start_pi_sender.sh also pushes video to the GX10, the old way.
 
 # Stop any senders that are already running so we don't fight over the camera or mic.
 if [[ "$VIDEO_ENABLED" == 1 ]]; then

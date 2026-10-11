@@ -104,9 +104,9 @@ def main():
                     help="also run on the robot's video stream (GET /latest, GET /stats)")
     ap.add_argument("--video-port", type=int, default=5000, help="robot video stream UDP port")
     ap.add_argument("--robot-url", default=os.environ.get("BAYMAX_API_URL"),
-                    help="with --stream: ask this robot API for the video (POST /sensors/camera/udp) "
-                         "and keep it going; without it, start the stream yourself "
-                         "(streaming/start_pi_sender.sh). Default: BAYMAX_API_URL")
+                    help="with --stream: get the video from this robot API (H.264 over UDP if it can, "
+                         "else MJPEG). Default: BAYMAX_API_URL. Without one, start_pi_sender.sh with "
+                         "VIDEO_ENABLED=1 must send it")
     args = ap.parse_args()
 
     started = time.time()
@@ -123,12 +123,15 @@ def main():
         from vision.stream import PoseStream
 
         if args.robot_url:
-            from streaming.robot_camera import UdpVideoLease
+            from streaming.robot_camera import RobotCamera
 
-            UdpVideoLease(args.robot_url, port=args.video_port).start()
-            print(f"asked {args.robot_url} for its camera on UDP {args.video_port}")
-        stream = PoseStream(FrameReceiver(port=args.video_port).start(), pose).start()
-        print(f"reading the robot's video on UDP {args.video_port}; poses at /latest")
+            source = RobotCamera(args.robot_url, port=args.video_port).start()
+            print(f"reading the robot's camera from {args.robot_url} ({source.mode}); poses at /latest")
+        else:
+            source = FrameReceiver(port=args.video_port).start()
+            print(f"reading the robot's video on UDP {args.video_port} (started by start_pi_sender.sh); "
+                  "poses at /latest")
+        stream = PoseStream(source, pose).start()
 
     import uvicorn
 
