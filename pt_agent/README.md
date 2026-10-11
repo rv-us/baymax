@@ -11,7 +11,7 @@ python -m pt_agent --dry-run --camera webcam --ears keyboard   # laptop: webcam,
 python -m pt_agent --dry-run --camera none --ears keyboard     # no camera: type /wave to "wave"
 ```
 
-Thinking is off by default for Ollama models (replies take seconds instead of up to half a minute); `--thinking low` turns it on. Add `--ollama-url http://<gx10-ip>:11434` when not on the GX10, `--stationary` when the robot is on a table (it turns toward the patient but never walks), and `--detector mediapipe` to use MediaPipe instead of YOLO (it usually finds only one person).
+Thinking is off by default for Ollama models (replies take seconds instead of up to half a minute); `--thinking low` turns it on. Add `--ollama-url http://<gx10-ip>:11434` when not on the GX10, `--skip-safety-demo` and/or `--skip-name` for quicker test runs (the demo's tool is removed too), `--stationary` when the robot is on a table (it turns toward the patient but never walks), and `--detector mediapipe` to use MediaPipe instead of YOLO (it usually finds only one person).
 
 ## How it works
 

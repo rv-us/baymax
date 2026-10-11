@@ -9,7 +9,7 @@ person's face position, the shoulders their size (a distance cue), the wrists wh
     source = RobotCamera("http://robot:8000")   # streaming.robot_camera; or FrameSource(0) for a webcam
     perception = Perception(source, PoseDetector(), backend).start()
     perception.people()          # [{"id": 1, "bearing_deg": 12, "waving": False, ...}]
-    perception.track(1)          # keep the head pointed at person 1
+    perception.follow(True)      # keep the head pointed at whoever is closest
 """
 from __future__ import annotations
 
@@ -332,7 +332,7 @@ class Perception:
         self.source, self.detector, self.backend = source, detector, backend
         self.tracker = PeopleTracker()
         self.head = HeadState()
-        self.target_id = None
+        self.following = False    # head follows the closest person (the patient is whoever is in front)
         self.fps = 0.0
         self._lock = threading.Lock()
         self._running = False
@@ -373,7 +373,7 @@ class Perception:
             times.append(now)
             if len(times) > 1:
                 self.fps = (len(times) - 1) / (times[-1] - times[0])
-            if self.target_id is not None:
+            if self.following:
                 self._follow(t)
 
     def persons(self) -> list:
@@ -394,7 +394,7 @@ class Perception:
         b = self.bearing(p)
         return {"id": p.id, "bearing_deg": round(b), "where": "left" if b > 15 else "right" if b < -15 else "ahead",
                 "size": round(p.body.size, 3), "waving": p.waving(now), "hand_raised": p.hand_raised(now),
-                "followed": p.id == self.target_id, "seen_s_ago": round(now - p.last_seen, 1)}
+                "followed": self.following and p is self.closest(), "seen_s_ago": round(now - p.last_seen, 1)}
 
     def people(self) -> list:
         return [self.describe(p) for p in sorted(self.persons(), key=lambda p: -p.body.size)]
@@ -417,9 +417,14 @@ class Perception:
 
     # ---- head --------------------------------------------------------------------
 
-    def track(self, pid):
-        """Follow this person with the head (None stops following)."""
-        self.target_id = pid
+    def follow(self, on: bool = True):
+        """Keep the head pointed at the closest person (off: leave the head where it is)."""
+        self.following = on
+
+    def closest(self):
+        """The biggest (closest) person in view, or None. The patient is whoever is in front."""
+        people = self.persons()
+        return max(people, key=lambda p: p.body.size) if people else None
 
     def point_head(self, pan: int, tilt: int, ms: int = 150):
         pan = max(PAN_LIMITS[0], min(PAN_LIMITS[1], int(pan)))
@@ -441,7 +446,7 @@ class Perception:
             return
         if frame_t is not None and frame_t < self.head.last_move + self.SETTLE_S:
             return  # this frame may predate the last move: wait for one that shows its result
-        p = self.person(self.target_id)
+        p = self.closest()
         if p is None or p.simulated:
             return
         err_x, err_y = p.body.face[0] - 0.5, p.body.face[1] - 0.5

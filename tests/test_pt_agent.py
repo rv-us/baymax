@@ -156,7 +156,7 @@ def test_tool_set():
     tools, _, _ = tools_for(LocalBackend())
     assert not LEFT_OUT & set(tools) - {"say", "camera_view", "look"}  # replaced ones come back
     for name in ("wait_for_patient", "approach_patient", "take_temperature", "listen", "say", "ask",
-                 "people_in_view", "follow_person", "record", "end_session", "clear_alert", "move_arm"):
+                 "people_in_view", "follow_patient", "record", "end_session", "clear_alert", "move_arm"):
         assert name in tools
 
 
@@ -170,15 +170,17 @@ def test_wait_for_patient_engages_on_greeting(fake_robot):
     pid = perception.simulate_person(waving=False)
     out = tools["wait_for_patient"].invoke({"timeout_s": 5})
     assert out["engaged_by"] == "voice" and out["said"] == "hi baymax"
-    assert out["patient"]["id"] == pid and perception.target_id == pid
+    assert out["patient"]["id"] == pid and perception.following
 
 
 def test_wait_for_patient_engages_on_wave(fake_robot):
     tools, perception, _ = tools_for(LocalBackend())
-    perception.simulate_person(waving=False)
-    waver = perception.simulate_person(waving=True)
+    near = perception.simulate_person(waving=False)
+    perception.person(near).body = Body((0.5, 0.4), 0.4, {})   # the closest person
+    perception.simulate_person(waving=True)                     # someone further back waves
     out = tools["wait_for_patient"].invoke({"timeout_s": 5})
-    assert out["engaged_by"] == "wave" and out["patient"]["id"] == waver
+    assert out["engaged_by"] == "wave"
+    assert out["patient"]["id"] == near   # the patient is whoever is in front
 
 
 def test_wait_for_patient_searches_and_times_out(fake_robot):
@@ -186,7 +188,7 @@ def test_wait_for_patient_searches_and_times_out(fake_robot):
     out = tools["wait_for_patient"].invoke({"timeout_s": 0.3})
     assert out["engaged_by"] is None
     icons = [e for e in fake_robot.log if e[0] == "matrix_icon"] if fake_robot.log else []
-    assert perception.target_id is None and icons is not None
+    assert perception.closest() is None and icons is not None
 
 
 def test_pain_word_stops_robot_and_blocks_motion(fake_robot):
@@ -245,7 +247,7 @@ def test_take_temperature_without_contact(fake_robot):
 def test_approach_walks_until_close(fake_robot):
     backend = Backend(fake_robot)
     tools, perception, _ = tools_for(backend)
-    perception.track(perception.simulate_person())
+    perception.simulate_person()
     out = tools["approach_patient"].invoke({"stop_distance_cm": 50})
     assert out["result"] == "arrived" and out["walk_moves"] == 2   # 800 -> 650 -> 500 mm
     assert backend.calls.count("actions/walk") == 2
@@ -255,7 +257,6 @@ def test_approach_turns_toward_patient_off_to_the_side(fake_robot):
     backend = Backend(fake_robot)
     tools, perception, _ = tools_for(backend)
     pid = perception.simulate_person()
-    perception.track(pid)
     perception.person(pid).body = Body((0.95, 0.4), 0.25, {})   # far right of the frame
     out = tools["approach_patient"].invoke({"max_moves": 1})
     assert out["turns"] == 1 and "actions/turn" in backend.calls
@@ -265,7 +266,7 @@ def test_approach_turns_toward_patient_off_to_the_side(fake_robot):
 def test_approach_stationary_only_faces_patient(fake_robot):
     backend = Backend(fake_robot)
     tools, perception, _ = tools_for(backend, stationary=True)
-    perception.track(perception.simulate_person())
+    perception.simulate_person()
     out = tools["approach_patient"].invoke({})
     assert out["result"].startswith("facing_patient") and "actions/walk" not in backend.calls
 
@@ -273,7 +274,6 @@ def test_approach_stationary_only_faces_patient(fake_robot):
 def test_approach_close_by_camera_size(fake_robot):
     tools, perception, _ = tools_for(Backend(fake_robot))
     pid = perception.simulate_person()
-    perception.track(pid)
     perception.person(pid).body = Body((0.5, 0.4), CLOSE_SIZE + 0.05, {})
     assert tools["approach_patient"].invoke({})["result"] == "arrived"
 
@@ -312,11 +312,10 @@ class SpeechBackend(Backend):
 def test_safety_demo_warns_falls_says_help_and_gets_up(fake_robot):
     backend = SpeechBackend(fake_robot)
     tools, perception, session = tools_for(backend)
-    pid = perception.simulate_person()
-    perception.track(pid)
+    perception.follow(True)
     out = tools["safety_demo"].invoke({})
     assert out["completed"]
-    assert perception.target_id == pid  # still following the patient afterwards
+    assert perception.following  # back to following whoever is closest afterwards
     groups = [e[1] for e in fake_robot.log if e[0] == "runActionGroup"]
     assert groups[:2] == ["lie_down", "stand_up_back"]
     order = [p if p != "actions/run" else "run" for p in backend.calls
@@ -390,10 +389,34 @@ def test_head_waits_for_a_frame_taken_after_the_last_move(fake_robot):
     pid = perception.simulate_person()
     perception.person(pid).simulated = False          # let _follow steer toward it
     perception.person(pid).body = Body((0.9, 0.5), 0.25, {})
-    perception.track(pid)
+    perception.follow(True)
     perception.head.last_move = time.time() - 1
     pan0 = perception.head.pan
     perception._follow(frame_t=perception.head.last_move - 0.1)   # stale frame: no move
     assert perception.head.pan == pan0
     perception._follow(frame_t=time.time())                       # fresh frame: moves
     assert perception.head.pan != pan0
+
+
+def test_approach_uses_whoever_is_closest_even_after_ids_change(fake_robot):
+    """On the robot the tracker gave the patient a new id after the safety demo's fall, and
+    approach_patient refused ("not following anyone"). It now just uses the closest person."""
+    backend = Backend(fake_robot)
+    tools, perception, _ = tools_for(backend)
+    perception.simulate_person()
+    tools["safety_demo"].invoke({})
+    perception.tracker.people.clear()          # everyone forgotten while lying down
+    perception.simulate_person()               # back in view with a new id
+    assert tools["approach_patient"].invoke({})["result"] == "arrived"
+
+
+def test_system_prompt_can_skip_the_name_and_the_safety_demo():
+    from pt_agent.agent import SYSTEM_PROMPT, system_prompt
+
+    assert system_prompt() == SYSTEM_PROMPT
+    no_demo = system_prompt(skip_safety_demo=True)
+    assert "call safety_demo" not in no_demo and "No safety demo" in no_demo
+    no_name = system_prompt(skip_name=True)
+    assert 'record("name"' not in no_name and "Don't ask their name" in no_name
+    both = system_prompt(True, True)
+    assert "call safety_demo" not in both and 'record("name"' not in both

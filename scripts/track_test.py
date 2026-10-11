@@ -1,7 +1,7 @@
 """Test pt_agent's face tracking on the real robot, without the LLM. Run on the GX10.
 
 Uses the same pieces as python -m pt_agent: the robot's camera (streaming.robot_camera),
-YOLO pose and pt_agent.perception's head following. Follows the biggest person in view and
+YOLO pose and pt_agent.perception's head following. Follows the closest (biggest) person in view and
 prints, twice a second, what it sees and what it sends:
 
     11:40:05  cam 24.8 fps  pose 11.9 fps  people 1  [id 1 face x=0.71 y=0.32 size 0.21]  head pan 1460 tilt 1650
@@ -62,7 +62,7 @@ def annotate(frame, people, perception):
     cv2.line(out, (0, h // 2), (w, h // 2), (255, 255, 255), 1)
     for p in people:
         x, y = int(p.body.face[0] * w), int(p.body.face[1] * h)
-        color = (0, 0, 255) if p.id == perception.target_id else (0, 255, 0)
+        color = (0, 0, 255) if perception.following and p is perception.closest() else (0, 255, 0)
         cv2.circle(out, (x, y), 8, color, -1)
         cv2.putText(out, f"id {p.id} size {p.body.size:.2f}", (x + 10, y), cv2.FONT_HERSHEY_SIMPLEX,
                     0.5, color, 1)
@@ -90,7 +90,7 @@ def step_test(perception, backend, perc, step=120):
         print(f"  {label}: face x={x:.2f} y={y:.2f}  (head pan {perception.head.pan} tilt {perception.head.tilt})")
         return x, y
 
-    perception.track(None)
+    perception.follow(False)
     print("stand still facing the robot")
     perception.point_head(perc.HEAD_CENTER, perc.SCAN_TILT, ms=400)
     base = face("center")
@@ -180,9 +180,8 @@ def main():
                 cam_times.append(t)
                 last_t = t
             people = sorted(perception.persons(), key=lambda p: -p.body.size)
-            if people and (perception.target_id is None or perception.person(perception.target_id) is None):
-                perception.track(people[0].id)
-            target = perception.person(perception.target_id) if perception.target_id else None
+            perception.follow(True)
+            target = perception.closest()
 
             # Did head moves bring the face toward the center?
             with backend._lock:
@@ -202,7 +201,7 @@ def main():
                 stats["with_people"] += bool(people)
                 recent = [x for x in cam_times if now - x < 2]
                 desc = "  ".join(f"[id {p.id} face x={p.body.face[0]:.2f} y={p.body.face[1]:.2f} "
-                                 f"size {p.body.size:.2f}{' *' if p.id == perception.target_id else ''}]"
+                                 f"size {p.body.size:.2f}{' *' if p is target else ''}]"
                                  for p in people[:3])
                 print(f"{time.strftime('%H:%M:%S')}  cam {len(recent) / 2:4.1f} fps  pose {perception.fps:4.1f} fps  "
                       f"people {len(people)}  {desc or '-'}  head pan {perception.head.pan} tilt {perception.head.tilt}",

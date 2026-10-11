@@ -85,7 +85,8 @@ one-sentence summary, then say goodbye. After that, stop calling tools.
 
 ## Your body and senses
 - The camera is on your head. people_in_view lists who you see; camera_view shows you a photo. \
-follow_person keeps your head on someone (wait_for_patient turns it on for your patient). \
+Your patient is always the closest person; follow_patient keeps your head on them \
+(wait_for_patient turns it on). \
 look() aims the head by hand and stops following.
 - The temperature sensor is on top of your right claw. The ultrasonic distance sensor is on your \
 left shoulder. You also have a 16x8 LED matrix on your chest, eye LEDs and a buzzer.
@@ -103,6 +104,28 @@ and want to continue; otherwise wrap up and end_session.
 limp. The only fall is the one inside safety_demo.
 - If robot_health shows any servo at 80 C or more, stop moving and tell the patient you need a \
 short rest."""
+
+
+GREET_STEP = """2. Greet them: introduce yourself as Baymax, their physical therapy assistant. Ask their name \
+with ask(), then record("name", ...). Show the heart icon while greeting."""
+GREET_NO_NAME = """2. Greet them: introduce yourself as Baymax, their physical therapy assistant. Don't ask their \
+name. Show the heart icon while greeting."""
+DEMO_STEP = """3. Safety demo: call safety_demo. It says everything itself (the intro, the warning, "say help or \
+call your handler", and "that was just practice"), so don't repeat it. Once per session. Your own \
+fall here is practice, not an emergency."""
+NO_DEMO = "3. (No safety demo in this session; go straight to the next step.)"
+
+
+def system_prompt(skip_name: bool = False, skip_safety_demo: bool = False) -> str:
+    """SYSTEM_PROMPT, minus the name question and/or the safety demo (for testing)."""
+    prompt = SYSTEM_PROMPT
+    if skip_name:
+        assert GREET_STEP in prompt
+        prompt = prompt.replace(GREET_STEP, GREET_NO_NAME)
+    if skip_safety_demo:
+        assert DEMO_STEP in prompt
+        prompt = prompt.replace(DEMO_STEP, NO_DEMO)
+    return prompt
 
 
 def main() -> int:
@@ -123,6 +146,9 @@ def main() -> int:
                     help="default: off for Ollama models (much faster replies), low for claude-*")
     ap.add_argument("--max-steps", type=int, default=300, help="agent loop steps for the session")
     ap.add_argument("--stationary", action="store_true", help="never walk (robot on a table)")
+    ap.add_argument("--skip-safety-demo", action="store_true",
+                    help="no fall demo (testing); the safety_demo tool is removed too")
+    ap.add_argument("--skip-name", action="store_true", help="don't ask the patient's name (testing)")
     ap.add_argument("--real-temperature", action="store_true",
                     help="report the right-hand sensor's reading (default: a normal placeholder)")
     ap.add_argument("--show-thinking", action="store_true")
@@ -188,10 +214,13 @@ def main() -> int:
     tools = make_pt_tools(backend, perception, ears, session,
                           Settings(stationary=args.stationary, sessions_dir=args.sessions_dir,
                                    real_temperature=args.real_temperature))
-    agent = build_agent(backend, args.model, args.thinking, api_key, args.ollama_url,
-                        tools=tools, system_prompt=SYSTEM_PROMPT)
+    if args.skip_safety_demo:  # take the tool away too, so the model can't fall anyway
+        tools = [t for t in tools if t.name != "safety_demo"]
+    agent = build_agent(backend, args.model, args.thinking, api_key, args.ollama_url, tools=tools,
+                        system_prompt=system_prompt(args.skip_name, args.skip_safety_demo))
     print(f"model {args.model}, thinking {args.thinking}, backend {args.backend}, ears {args.ears}"
-          + (", walking off" if args.stationary else ""))
+          + (", walking off" if args.stationary else "")
+          + (", no safety demo" if args.skip_safety_demo else "") + (", no name" if args.skip_name else ""))
     class PTSession(Session):
         """Speaks whatever text the model writes (with thinking off, Qwen talks in text next to
         its tool calls rather than through say()), before that step's tools run."""
@@ -202,8 +231,8 @@ def main() -> int:
             super()._show(msg, state)
             if msg.type != "ai" or session.emergency:
                 return
-            if any(tc["name"] == "say" for tc in getattr(msg, "tool_calls", None) or []):
-                return  # it spoke through the tool; its text is the same words
+            if any(tc["name"] in ("say", "ask") for tc in getattr(msg, "tool_calls", None) or []):
+                return  # it speaks through the tool this step; its text is the same words
             text = re.sub(r"[*_`#>]", "", _text(msg)).strip()
             if text:
                 self.spoken.add(text.split("\n")[0].strip()[:200])

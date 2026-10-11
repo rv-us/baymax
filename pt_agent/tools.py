@@ -47,7 +47,6 @@ SAFETY_DONE = "I'm okay, that was just practice. Remember, if you ever need me, 
 APPROACH_WALK = "I'm going to walk over to you now."
 APPROACH_TURN = "I'm going to turn to face you."
 
-SWITCH_PERSON_S = 4.0     # while waiting, look at each visible person in turn this long
 SCAN_EVERY_S = 1.5        # with nobody in view, move the head to the next search spot
 CLOSE_SIZE = 0.45         # shoulder width / frame width when the patient is about arm's length away
 TURN_BEARING_DEG = 20     # turn the body when the patient is further off-center than this
@@ -130,7 +129,7 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         """The patient asked for help: stop, tell them to call 911, stand, end the session."""
         log.warning("help requested: %r", text)
         session.event("emergency", text)
-        perception.track(None)
+        perception.follow(False)
         perception.head.paused = True
         for path in ("actions/stop", "servo/stop"):
             call(path)
@@ -244,21 +243,20 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         return [{"type": "image", "base64": jpg, "mime_type": "image/jpeg"}]
 
     @tool
-    def follow_person(person_id: Optional[int] = None) -> dict:
-        """Keep your head pointed at this person (id from people_in_view). No id stops following."""
-        if person_id is not None and perception.person(person_id) is None:
-            return {"error": f"nobody with id {person_id} in view", "people": perception.people()}
-        perception.track(person_id)
+    def follow_patient(on: bool = True) -> dict:
+        """Keep your head pointed at the closest person, your patient (on=False stops)."""
+        perception.follow(on)
         perception.head.paused = False
-        return {"following": person_id}
+        p = perception.closest()
+        return {"following": on, "patient": perception.describe(p) if p else None}
 
     @tool
     def look(pan: Optional[int] = None, tilt: Optional[int] = None) -> dict:
         """Point the head yourself: pan 1200-1800, tilt 950-1800, 1500 = straight ahead.
-        This stops following a person; call follow_person to resume."""
+        This stops following the patient; call follow_patient to resume."""
         if blocked():
             return blocked()
-        perception.track(None)
+        perception.follow(False)
         out = call("servo/head", pan=pan, tilt=tilt)
         if "error" not in out:
             perception.head.pan = out.get("head", {}).get("pan", perception.head.pan)
@@ -271,14 +269,14 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
     def wait_for_patient(timeout_s: float = 90) -> dict:
         """Look around for your patient and wait until someone waves, raises a hand or
         greets you (says hi, hello, Baymax, ready...). Your head sweeps the room when
-        nobody is in view and follows each person it sees in turn; the LED matrix shows a
-        question mark while searching and a smile while following someone. Returns who
-        engaged and how, and keeps following them."""
+        nobody is in view and follows the closest person when someone is; the LED matrix
+        shows a question mark while searching and a smile while following someone. Your
+        patient is the closest person; the head keeps following them afterwards."""
         session.event("waiting_for_patient")
         ears.clear()
-        perception.track(None)
+        perception.follow(True)
         perception.head.paused = False
-        shown, current, switched, scanned = None, None, 0.0, 0.0
+        shown, scanned = None, 0.0
         deadline = time.time() + timeout_s
 
         def show(icon):
@@ -288,8 +286,7 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
                 shown = icon
 
         def engaged(how, person, said=None):
-            if person is not None:
-                perception.track(person.id)
+            perception.follow(True)
             show("smile")
             out = {"engaged_by": how, "said": said, "people_in_view": len(perception.persons())}
             if person is not None:
@@ -303,26 +300,18 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
             if alert.text:
                 return blocked()
             now = time.time()
-            people = sorted(perception.persons(), key=lambda p: -p.body.size)
-            gesture = [p for p in people if p.waving(now) or p.hand_raised(now)]
-            if gesture:  # before listening, so a greeting after the wave is left for listen()
-                p = max(gesture, key=lambda p: p.body.size)
-                return engaged("wave" if p.waving(now) else "raised_hand", p)
+            people = perception.persons()
+            if any(p.waving(now) or p.hand_raised(now) for p in people):
+                # Checked before listening, so a greeting after the wave is left for listen().
+                how = "wave" if any(p.waving(now) for p in people) else "raised_hand"
+                return engaged(how, perception.closest())
             heard = ears.poll()
             if heard and is_wake(heard):
-                target = perception.person(perception.target_id) or (people[0] if people else None)
-                return engaged("voice", target, heard)
+                return engaged("voice", perception.closest(), heard)
             if people:
-                show("smile")
-                ids = [p.id for p in people]
-                if current not in ids or (len(ids) > 1 and now - switched > SWITCH_PERSON_S):
-                    current = ids[(ids.index(current) + 1) % len(ids)] if current in ids else ids[0]
-                    perception.track(current)
-                    switched = now
+                show("smile")  # the head is on the closest person
             else:
                 show("question")
-                current = None
-                perception.track(None)
                 if now - scanned > SCAN_EVERY_S:
                     perception.scan_step()
                     scanned = now
@@ -332,14 +321,16 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
 
     @tool
     def approach_patient(stop_distance_cm: int = 50, max_moves: int = 6) -> dict:
-        """Walk up to the patient you're following: tells them you're coming over, turns to
+        """Walk up to the patient (the closest person): tells them you're coming over, turns to
         face them, then walks forward a couple of steps at a time until they're about
         stop_distance_cm away (ultrasonic) or fill the camera view."""
         if blocked():
             return blocked()
-        pid = perception.target_id
-        if pid is None or perception.person(pid) is None:
-            return {"error": "not following anyone in view; use wait_for_patient or follow_person first"}
+        perception.follow(True)
+        if perception.closest() is None:
+            sleep(1.0)  # e.g. just stood up: give the camera a moment
+            if perception.closest() is None:
+                return {"error": "nobody in view; ask the patient to step in front of you"}
         stand = call("actions/stand")
         if "error" in stand:
             return stand
@@ -349,10 +340,10 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         for _ in range(max_moves):
             if blocked():
                 return blocked()
-            p = perception.person(pid)
+            p = perception.closest()
             if p is None:
-                sleep(1.0)  # give the tracker a moment to find them again
-                p = perception.person(pid)
+                sleep(1.0)  # give the camera a moment to find them again
+                p = perception.closest()
                 if p is None:
                     reason = "lost"
                     break
@@ -381,7 +372,7 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
                 return {**r, "turns": turns, "walk_moves": walks}
             walks += 1
             sleep(0.5)
-        p = perception.person(pid)
+        p = perception.closest()
         out = {"result": reason, "turns": turns, "walk_moves": walks,
                "distance_mm": call("sensors/distance").get("distance_mm")}
         if p is not None:
@@ -465,8 +456,7 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         the demo, warns them, falls on your back on purpose, tells them from the floor to say
         help or call their handler, gets back up, and reassures them. About 25 seconds. Run it
         once, after greeting and before approaching; don't repeat its lines."""
-        following = perception.target_id
-        perception.track(None)
+        perception.follow(False)
         perception.head.paused = True
         try:
             speak(SAFETY_INTRO)
@@ -483,7 +473,7 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
             call("actions/stand")
             speak(SAFETY_DONE)
         finally:
-            perception.track(following)  # back on the patient
+            perception.follow(True)  # back on whoever is closest: the patient
             perception.head.paused = False
         session.record["safety_demo"] = "completed"
         session.event("safety_demo", "completed")
@@ -517,6 +507,6 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         call("sensors/matrix/icon", name="heart")
         return {"saved": path}
 
-    own = [say, ask, listen, people_in_view, camera_view, follow_person, look, wait_for_patient,
+    own = [say, ask, listen, people_in_view, camera_view, follow_patient, look, wait_for_patient,
            approach_patient, take_temperature, safety_demo, clear_alert, record, end_session]
     return [gate(t) for t in base + own]
