@@ -172,16 +172,32 @@ def stream_jpegs(width: int = 640, quality: int = 70, fps: float = 30.0):
         _stream_controls(start=False)
 
 
+def _shared_stamp():
+    """Modification time of a fresh shared frame (to spot new ones), or None if the
+    shared stream isn't running."""
+    try:
+        st = os.stat(SHARED_FRAME)
+    except OSError:
+        return None
+    return st.st_mtime_ns if time.time() - st.st_mtime <= SHARED_MAX_AGE_S else None
+
+
 def _stream(period: float, width: int, quality: int):
-    last = 0.0
+    last, last_shared = 0.0, None
     while True:
         if config.DRY_RUN:
             time.sleep(period)
             yield base64.b64decode(FAKE_JPEG_B64)
             continue
-        frame = _shared_frame()
-        if frame is not None:
-            time.sleep(max(0.0, period - (time.monotonic() - last)))  # the file doesn't block
+        stamp = _shared_stamp()
+        if stamp is not None:
+            if stamp == last_shared:  # no new frame in the file yet; don't resend the old one
+                time.sleep(0.005)
+                continue
+            last_shared = stamp
+            frame = _shared_frame()
+            if frame is None:
+                continue
         else:
             frame = _device_frame(stale=0)  # blocks until the camera's next frame
         if time.monotonic() - last < 0.8 * period:  # slack, or camera jitter would halve 30 fps

@@ -7,7 +7,8 @@ POST /<path> with a JSON object of keyword arguments, e.g.
     curl -X POST :8000/actions/walk -H 'content-type: application/json' -d '{"steps": 2}'
 Endpoints without required arguments also answer GET. GET /endpoints lists all.
 GET /sensors/camera.jpg returns the camera view as an image, GET /sensors/camera.mjpg as a
-live MJPEG stream (browsers and cv2.VideoCapture open it).
+live MJPEG stream (browsers and cv2.VideoCapture open it). POST /sensors/camera/udp streams
+H.264 over UDP to the caller (the GX10's streaming/receiver.py), renewed like a lease.
 Set BAYMAX_API_TOKEN to require "Authorization: Bearer <token>" (or ?token=<token> for clients
 that can't set headers, like cv2.VideoCapture on the stream).
 """
@@ -16,7 +17,7 @@ from __future__ import annotations
 import argparse
 import inspect
 
-from fastapi import Body, Depends, FastAPI, Header, HTTPException, Query, Response
+from fastapi import Body, Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.responses import StreamingResponse
 from starlette.concurrency import run_in_threadpool
 
@@ -55,6 +56,17 @@ def _route(path: str, fn):
     if not required:
         app.get("/" + path, name=path + " (GET)", description=fn.__doc__ or "")(
             lambda: _invoke(path, fn, {}))
+
+
+@app.post("/sensors/camera/udp", name="sensors/camera/udp")
+def camera_udp_start(request: Request, body: dict | None = Body(default=None)):
+    """Stream the camera as H.264 over UDP to the caller (or body "host"), port 5000 by default.
+    Call again within lease_s seconds to keep it going; it stops by itself otherwise."""
+    from .sensors import camera_udp
+
+    kwargs = dict(body or {})
+    kwargs.setdefault("host", request.client.host if request.client else None)
+    return _invoke("sensors/camera/udp", camera_udp.start, kwargs)
 
 
 for _path, _fn in ENDPOINTS.items():
