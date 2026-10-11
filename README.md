@@ -25,7 +25,7 @@ Most GX10 tools need `BAYMAX_API_URL=http://<robot>:8000` and `BAYMAX_API_TOKEN`
 | `digital_twin/` | 3D model of the robot in the browser, next to the real robot's servo readings | [digital_twin/README.md](digital_twin/README.md) |
 | `arm_mvp/` | Arm mimic: one camera to the robot's (or twin's) arms, with calibration | docstring of `arm_mvp/arm_mimic.py` |
 | `laptop_mvp/` | Earlier pose-estimation experiments (MediaPipe, YOLO, depth fusion, retargeting) | docstrings |
-| `scripts/` | Tools and experiments: pose server, calibration, teleop, arm limit capture, tests on hardware | docstrings |
+| `scripts/` | `start_gx10.sh` / `stop_gx10.sh` (the GX10's pose service and dashboard, one command), then tools and experiments: pose server, calibration, teleop, arm limit capture, tests on hardware | docstrings |
 | `animations/` | Keyframe animations made in the dashboard: exercises and gestures | [dashboard/README.md](dashboard/README.md) |
 | `docs/` | Guides and design docs (`docs/site/` is the vendor's TonyPi manual) | below |
 | `tests/` | `python -m pytest tests` (runs with the fake robot) | |

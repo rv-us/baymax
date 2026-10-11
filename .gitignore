@@ -13,3 +13,4 @@ reviews/shots/
 
 # The GX10 login password for the dashboard (dashboard/gx10.py); never commit it.
 .gx10_password
+.dashboard.pid
