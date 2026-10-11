@@ -33,6 +33,11 @@ import time
 
 import numpy as np
 
+try:  # from the repo root (streaming.receiver) or run inside streaming/ (python3 receiver.py)
+    from streaming.subproc import popen
+except ImportError:
+    from subproc import popen
+
 
 def build_command(port: int = 5000, latency_ms: int = 50,
                   width: int = 640, height: int = 480) -> list:
@@ -70,7 +75,7 @@ class FrameReceiver:
         """Start receiving in the background. Returns without waiting for the Pi to start sending."""
         if not shutil.which("gst-launch-1.0"):
             raise RuntimeError("gst-launch-1.0 not found. Run ./install.sh")
-        self._proc = subprocess.Popen(self.command, stdout=subprocess.PIPE,
+        self._proc = popen(self.command, stdout=subprocess.PIPE,
                                       stderr=subprocess.PIPE, stdin=subprocess.DEVNULL)
         self._threads = [threading.Thread(target=self._read_frames, daemon=True),
                          threading.Thread(target=self._read_errors, daemon=True)]

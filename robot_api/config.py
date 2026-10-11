@@ -25,6 +25,13 @@ CAMERA_DEVICE = "/dev/video0"
 STREAM_CAMERA_CONTROLS = os.environ.get(
     "BAYMAX_STREAM_CAMERA", "auto_exposure=1,exposure_time_absolute=250,brightness=30,gamma=150")
 
+# H.264 over UDP (sensors/camera_udp.py), the format streaming/receiver.py on the GX10 reads.
+# While it runs, JPEG snapshots go to /dev/shm at UDP_SNAPSHOT_FPS for the API's other camera
+# users (camera.jpg, the MJPEG stream, agents); 15 keeps those usable without loading the Pi.
+UDP_VIDEO_WIDTH, UDP_VIDEO_HEIGHT, UDP_VIDEO_FPS = 640, 480, 30
+UDP_VIDEO_KEYFRAME = 15
+UDP_SNAPSHOT_FPS = int(os.environ.get("BAYMAX_UDP_SNAPSHOT_FPS", "15"))
+
 # Expansion sensors (Pi 5 header is gpiochip4).
 GPIO_CHIP = "gpiochip4"
 DOT_MATRIX_DIO, DOT_MATRIX_CLK = 22, 24  # verified on this robot (docs ch.10.5 example uses 7, 8)
