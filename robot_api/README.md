@@ -20,8 +20,8 @@ let a Claude agent use it.
 - **Clamping:** pulses are clamped to each servo's range. That range is what the 127 factory action
   groups use (`servo/limits.py`).
 - **Speed limit:** at most 1 pulse/ms, and every move takes at least 300 ms.
-- **Temperature:** motion is refused while any body servo is above 82.5 °C (reads 83 °C or more; cutoff 85 °C)
-  (`BAYMAX_MAX_TEMP`), or when temperatures can't be read.
+- **Temperature:** off by default. With `BAYMAX_TEMP_CHECK=1`, motion is refused while any body servo is
+  above 82.5 °C (reads 83 °C or more; cutoff 85 °C) (`BAYMAX_MAX_TEMP`), or when temperatures can't be read.
 - **One move at a time:** a lock serializes motion. Walking, turning and repeat counts are capped at
   5 steps per call.
 - **Risky action groups need opt-in:** groups that fall, kick or get up require

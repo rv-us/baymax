@@ -3,6 +3,7 @@ Arms-only mimic: one RGB camera -> TonyPi digital twin arms (servos 6, 7, 8, 14,
 
     python arm_mimic.py                  webcam, opens the twin viewer
     python arm_mimic.py --source clip.mp4 --headless-test 300
+    python arm_mimic.py --api-url http://192.168.1.149:8000   robot's head camera in, arm pulses out
 
 Keys: c = recalibrate from scratch, x = emergency stand and pause (press again to resume), q = quit.
 Calibration is automatic: face the camera with straight arms (hanging or T-pose) and hold still.
@@ -29,7 +30,8 @@ LOST_STEP_SCALE = 1.0 / 6.0  # a lost arm eases back to rest at a sixth of the t
 
 def parse_args(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--source", default="0", help="camera index or video file for offline replay (default 0)")
+    p.add_argument("--source", default=None, help="camera index, stream URL, or video file for offline replay "
+                   "(default: the robot's camera stream with --api-url, else webcam 0)")
     p.add_argument("--focal-px", type=float, default=None, help="focal length in pixels (default 0.9 * width)")
     p.add_argument("--min-cutoff", type=float, default=1.5, help="One Euro min cutoff in Hz (lower = smoother when still)")
     p.add_argument("--beta", type=float, default=4.0, help="One Euro beta (higher = less lag when moving)")
@@ -38,25 +40,40 @@ def parse_args(argv=None):
     p.add_argument("--max-jump", type=float, default=0.5, help="max wrist move per frame in metres (left/right swap guard)")
     p.add_argument("--max-step-deg", type=float, default=12.0, help="joint slew limit in degrees per frame at 30 fps")
     p.add_argument("--max-pulse-step", type=int, default=33, help="max servo pulse change per tick (33 = robot_api's 1 pulse/ms)")
-    p.add_argument("--api-url", default=None, help="robot_api base URL. Only when given, arm pulses go to servo/set_many at 30 Hz "
-                   "and calibration progress to the LED matrix")
+    p.add_argument("--api-url", default=None, help="robot_api base URL. Only when given, arm pulses go to servo/set_many at 30 Hz, "
+                   "calibration progress to the LED matrix, and frames come from the robot's camera")
     p.add_argument("--no-twin", action="store_true", help="do not start the digital twin")
     p.add_argument("--twin-port", type=int, default=8765)
     p.add_argument("--record-landmarks", default=None, metavar="OUT.npz", help="save raw landmarks of the run")
     p.add_argument("--sim-camera", action="store_true", help="degrade frames like the robot's GC0308 camera")
     p.add_argument("--headless-test", type=int, default=0, metavar="N", help="process N frames without a window, print stats, exit")
-    return p.parse_args(argv)
+    args = p.parse_args(argv)
+    if args.source is None:
+        args.source = robot_stream_url(args.api_url) if args.api_url else "0"
+    return args
+
+
+def robot_stream_url(api_url):
+    """robot_api's MJPEG stream. cv2 can't send headers, so the token goes in the query."""
+    token = os.environ.get("BAYMAX_API_TOKEN")
+    return api_url.rstrip("/") + "/sensors/camera.mjpg?width=640" + (f"&token={token}" if token else "")
+
+
+def is_live(source):
+    return source.isdigit() or "://" in source
 
 
 class LatestFrame:
-    """Camera reader thread that keeps only the newest frame, so inference never works on a stale one."""
+    """Camera or stream reader thread that keeps only the newest frame, so inference never works on
+    a stale one."""
 
-    def __init__(self, index):
-        self.cap = cv2.VideoCapture(index)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    def __init__(self, source):
+        self.cap = cv2.VideoCapture(int(source) if source.isdigit() else source)
+        if source.isdigit():
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         if not self.cap.isOpened():
-            raise SystemExit(f"could not open camera {index}")
+            raise SystemExit(f"could not open camera {source.split('token=')[0]}")
         self.cond, self.frame, self.stamp, self.seq, self.alive = threading.Condition(), None, 0.0, 0, True
         threading.Thread(target=self._run, daemon=True).start()
 
@@ -77,9 +94,9 @@ class LatestFrame:
 
 
 def frames(source, realtime):
-    """Yields (bgr frame, seconds). Live cameras drop stale frames, files replay every frame."""
-    if source.isdigit():
-        cam, seq, t0 = LatestFrame(int(source)), 0, time.monotonic()
+    """Yields (bgr frame, seconds). Live cameras and streams drop stale frames, files replay every frame."""
+    if is_live(source):
+        cam, seq, t0 = LatestFrame(source), 0, time.monotonic()
         try:
             while cam.alive:
                 got = cam.read(seq)
@@ -238,7 +255,7 @@ def main():
     args = parse_args()
     headless = args.headless_test > 0
     calib = calibration.new_state(calibration.load())
-    persist = args.source.isdigit()  # replaying a file never overwrites your calibration.json
+    persist = is_live(args.source)  # replaying a file never overwrites your calibration.json
     detect, close_landmarker = make_landmarker()
     sim = GC0308HardwareSimulator() if args.sim_camera else None
     twin = None

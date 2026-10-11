@@ -31,6 +31,7 @@ ENDPOINTS = {
     "servo/joints": joint_map,
     "servo/status": bus.status,
     "servo/read": bus.read_servo,
+    "servo/positions": bus.positions,
     "servo/set": bus.set_servo,
     "servo/set_many": bus.set_servos,
     "servo/coast": bus.coast,

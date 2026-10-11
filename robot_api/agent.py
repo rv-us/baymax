@@ -68,7 +68,7 @@ over raw set_servo; use raw servos only for small deliberate adjustments (check 
 is down at the side (it hits the leg). Never bend leg joints one at a time while standing.
 - Stand before walking. Before walking forward, check read_distance and the camera; don't walk if \
 something is closer than 200 mm. Watch for table edges in the camera.
-- Servos heat up while holding a pose. Motion is refused at 83 C (hardware cutoff 85 C). If \
+- Servos heat up while holding a pose (hardware cutoff 85 C). If \
 robot_health shows any servo at 80 C or more, stop moving, say so, and ask the human to hold you \
 so you can rest.
 - coast_servos (going limp) and risky action groups make you fall or move violently: ask the human \

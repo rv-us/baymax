@@ -1,0 +1,198 @@
+{
+ "about": "Coupled arm limits fitted by scripts/fit_arm_limits.py from scripts/arm_limits.json. Left-arm pulse frame (right arm mirrored as 1000 - pulse). Each row: shoulder pitch, then [elbow bend inward from straight, max shoulder roll inward] boundary points.",
+ "margin": 15,
+ "elbow_straight": {
+  "L": 516,
+  "R": 503
+ },
+ "rows": {
+  "L": [
+   {
+    "name": "p90",
+    "pitch": 313,
+    "points": [
+     [
+      11,
+      924
+     ],
+     [
+      199,
+      923
+     ],
+     [
+      199,
+      923
+     ]
+    ],
+    "from": [
+     "L_p90_elbow_max",
+     "L_p90_rollin_bent",
+     "L_p90_rollin_straight"
+    ]
+   },
+   {
+    "name": "p45",
+    "pitch": 384,
+    "points": [
+     [
+      -20,
+      953
+     ],
+     [
+      167,
+      953
+     ],
+     [
+      168,
+      953
+     ]
+    ],
+    "from": [
+     "L_p45_elbow_max",
+     "L_p45_rollin_bent",
+     "L_p45_rollin_straight"
+    ]
+   },
+   {
+    "name": "p0",
+    "pitch": 685,
+    "points": [
+     [
+      58,
+      869
+     ],
+     [
+      371,
+      671
+     ],
+     [
+      478,
+      571
+     ]
+    ],
+    "from": [
+     "L_p0_elbow_max",
+     "L_p0_rollin_bent",
+     "L_p0_rollin_straight"
+    ]
+   },
+   {
+    "name": "back30",
+    "pitch": 851,
+    "points": [
+     [
+      -4,
+      886
+     ],
+     [
+      123,
+      886
+     ],
+     [
+      195,
+      886
+     ]
+    ],
+    "from": [
+     "L_back30_elbow_max",
+     "L_back30_rollin_bent",
+     "L_back30_rollin_straight"
+    ]
+   }
+  ],
+  "R": [
+   {
+    "name": "p90",
+    "pitch": 333,
+    "points": [
+     [
+      7,
+      967
+     ],
+     [
+      165,
+      967
+     ],
+     [
+      319,
+      900
+     ]
+    ],
+    "from": [
+     "R_p90_elbow_max",
+     "R_p90_rollin_bent",
+     "R_p90_rollin_straight"
+    ]
+   },
+   {
+    "name": "p45",
+    "pitch": 498,
+    "points": [
+     [
+      23,
+      930
+     ],
+     [
+      164,
+      930
+     ],
+     [
+      285,
+      876
+     ]
+    ],
+    "from": [
+     "R_p45_elbow_max",
+     "R_p45_rollin_bent",
+     "R_p45_rollin_straight"
+    ]
+   },
+   {
+    "name": "p0",
+    "pitch": 710,
+    "points": [
+     [
+      15,
+      888
+     ],
+     [
+      24,
+      865
+     ],
+     [
+      213,
+      770
+     ]
+    ],
+    "from": [
+     "R_p0_elbow_max",
+     "R_p0_rollin_bent",
+     "R_p0_rollin_straight"
+    ]
+   },
+   {
+    "name": "back30",
+    "pitch": 803,
+    "points": [
+     [
+      -18,
+      897
+     ],
+     [
+      55,
+      897
+     ],
+     [
+      55,
+      897
+     ]
+    ],
+    "from": [
+     "R_back30_elbow_max",
+     "R_back30_rollin_bent",
+     "R_back30_rollin_straight"
+    ]
+   }
+  ]
+ }
+}
