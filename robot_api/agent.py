@@ -4,9 +4,12 @@ On the robot:      .venv/bin/python -m robot_api
 From the laptop:   python -m robot_api --backend http --url http://169.233.72.93:8000
 One-shot:          python -m robot_api -p "how far is the wall?"
 Fake hardware:     python -m robot_api --dry-run
+Local model:       python -m robot_api --model qwen3.6:35b --ollama-url http://<gx10-ip>:11434
 
 The API key comes from robot_api/.env (claude_key = ...), a repo-root .env, or
-ANTHROPIC_API_KEY. Default model: Claude Haiku 5.5 with low thinking.
+ANTHROPIC_API_KEY. Default model: Claude Haiku 5.5 with low thinking. Any model
+name not starting with "claude-" runs on Ollama ($OLLAMA_HOST, default localhost);
+no API key needed.
 Commands: /stop /rest /status /clear /help /quit. Ctrl+C stops the current task.
 """
 from __future__ import annotations
@@ -18,6 +21,8 @@ import re
 import sys
 
 DEFAULT_MODEL = "claude-haiku-5-5"
+DEFAULT_OLLAMA_URL = "http://localhost:11434"
+OLLAMA_NUM_CTX = 32768  # Ollama's default context is too small for the system prompt + tools
 THINKING_BUDGET = {"off": 0, "low": 1024, "medium": 4096, "high": 12000}
 IMAGE_OMITTED = "[earlier camera image omitted]"
 FEEDBACK_TOOLS = {"show_on_matrix", "set_eye_color", "beep"}
@@ -101,6 +106,15 @@ def make_backend(name: str, url: str | None):
     return HttpBackend(url)
 
 
+def is_claude(model: str) -> bool:
+    return model.startswith("claude-")
+
+
+def ollama_url(url: str | None) -> str:
+    url = url or os.environ.get("OLLAMA_HOST") or DEFAULT_OLLAMA_URL
+    return url if "://" in url else f"http://{url}"
+
+
 def uses_adaptive_thinking(model: str) -> bool:
     """Claude 5.x models take adaptive thinking + an effort level instead of a
     fixed token budget (they reject thinking.type=enabled)."""
@@ -119,13 +133,21 @@ def thinking_kwargs(model: str, thinking: str) -> dict:
     return kwargs
 
 
-def build_agent(backend, model: str, thinking: str, api_key: str):
+def build_agent(backend, model: str, thinking: str, api_key: str | None,
+                base_url: str | None = None):
     from langchain.agents import create_agent
-    from langchain_anthropic import ChatAnthropic
 
     from .tools import make_tools
 
-    llm = ChatAnthropic(model=model, api_key=api_key, **thinking_kwargs(model, thinking))
+    if is_claude(model):
+        from langchain_anthropic import ChatAnthropic
+
+        llm = ChatAnthropic(model=model, api_key=api_key, **thinking_kwargs(model, thinking))
+    else:
+        from langchain_ollama import ChatOllama
+
+        llm = ChatOllama(model=model, base_url=ollama_url(base_url), num_ctx=OLLAMA_NUM_CTX,
+                         reasoning=thinking != "off")
     return create_agent(llm, make_tools(backend), system_prompt=SYSTEM_PROMPT)
 
 
@@ -188,6 +210,9 @@ class Session:
             for b in _blocks(msg):
                 if self.show_thinking and isinstance(b, dict) and b.get("type") == "thinking":
                     print(f"  ~ {b.get('thinking', '').strip()}")
+            reasoning = msg.additional_kwargs.get("reasoning_content")  # Ollama models
+            if self.show_thinking and reasoning:
+                print(f"  ~ {reasoning.strip()}")
             for tc in getattr(msg, "tool_calls", None) or []:
                 state["tools"].add(tc["name"])
                 # Has it spoken since its last real action? Feedback-only tools
@@ -292,7 +317,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Baymax agent CLI")
     ap.add_argument("--backend", choices=["local", "http"], default="local")
     ap.add_argument("--url", help="robot API URL for --backend http (default $BAYMAX_API_URL)")
-    ap.add_argument("--model", default=os.environ.get("BAYMAX_MODEL", DEFAULT_MODEL))
+    ap.add_argument("--model", default=os.environ.get("BAYMAX_MODEL", DEFAULT_MODEL),
+                    help="claude-* runs on Anthropic; anything else (e.g. qwen3.6:35b) on Ollama")
+    ap.add_argument("--ollama-url", help=f"Ollama server (default $OLLAMA_HOST or {DEFAULT_OLLAMA_URL})")
     ap.add_argument("--thinking", choices=list(THINKING_BUDGET), default="low")
     ap.add_argument("--max-steps", type=int, default=40, help="agent loop steps per task")
     ap.add_argument("--show-thinking", action="store_true")
@@ -303,7 +330,7 @@ def main() -> int:
         os.environ["BAYMAX_DRY_RUN"] = "1"  # before robot_api.config is imported
 
     api_key = load_api_key()
-    if not api_key:
+    if is_claude(args.model) and not api_key:
         print("no API key: put claude_key=... in robot_api/.env or set ANTHROPIC_API_KEY",
               file=sys.stderr)
         return 2
@@ -312,8 +339,9 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001
         print(e, file=sys.stderr)
         return 2
-    agent = build_agent(backend, args.model, args.thinking, api_key)
-    print(f"model {args.model}, thinking {args.thinking}, backend {args.backend}")
+    agent = build_agent(backend, args.model, args.thinking, api_key, args.ollama_url)
+    where = "" if is_claude(args.model) else f" at {ollama_url(args.ollama_url)}"
+    print(f"model {args.model}{where}, thinking {args.thinking}, backend {args.backend}")
     session = Session(agent, backend, args.max_steps, args.show_thinking)
     if args.prompt:
         session.run_task(args.prompt)
