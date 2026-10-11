@@ -50,7 +50,7 @@ export function CameraPanel({ compact = false }: { compact?: boolean }) {
       <header class="screen-head">
         <span class="screen-title">Camera</span>
         {fake && <span class="tag on-screen">Fake frame</span>}
-        {s?.webcam && <span class="tag on-screen">Laptop webcam{s.webcam.pose === "gx10" ? " · pose on GX10" : ""}</span>}
+        {s?.webcam && <span class="tag on-screen">Laptop webcam{s.webcam.pose === "gx10" ? ` · pose on GX10${s.webcam.delivery != null ? ` · ${Math.round(s.webcam.delivery * 100)}% of frames answered` : ""}` : ""}</span>}
       </header>
       <footer class="screen-foot">
         {!f.visible
