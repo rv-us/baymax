@@ -7,7 +7,7 @@ Step-by-step usage: [docs/running-the-stream.md](../docs/running-the-stream.md).
 | File | What it does |
 |---|---|
 | `config.env` | All settings (Pi SSH host, interface names, Wi-Fi connection, video and audio settings) |
-| `install.sh` | One-time setup: installs packages and checks GStreamer, OpenCV, and SSH to the Pi |
+| `install.sh` | One-time setup: installs packages and checks GStreamer, numpy, and SSH to the Pi |
 | `setup_pi_audio.sh` | One-time setup: makes a shared mic device (`mic_shared`) on the Pi so the stream and the robot API can both record |
 | `network_setup.sh` | Turns off Wi-Fi power saving on both and pins the GX10 to the Pi's access point |
 | `network_reset.sh` | Removes the access-point pin (run before leaving a venue) |

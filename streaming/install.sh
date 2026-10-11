@@ -12,17 +12,16 @@ sudo apt install -y gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-pl
 chmod +x ./*.sh
 
 echo "== Checking GStreamer elements"
-for e in udpsrc rtpjitterbuffer rtph264depay h264parse avdec_h264 appsink \
+for e in udpsrc rtpjitterbuffer rtph264depay h264parse avdec_h264 videoconvert videoscale \
          rtpopusdepay opusdec audioconvert audioresample fdsink; do
   gst-inspect-1.0 "$e" >/dev/null 2>&1 && echo "  OK       $e" || echo "  MISSING  $e"
 done
 
-echo "== Checking OpenCV GStreamer support"
-if python3 -c "import cv2, sys; sys.exit(0 if any('GStreamer' in l and 'YES' in l for l in cv2.getBuildInformation().splitlines()) else 1)"; then
-  echo "  OK       OpenCV has GStreamer"
+echo "== Checking numpy (receiver.py needs it; any OpenCV works, with or without GStreamer)"
+if python3 -c "import numpy" 2>/dev/null; then
+  echo "  OK       numpy $(python3 -c 'import numpy; print(numpy.__version__)') in $(python3 -c 'import sys; print(sys.prefix)')"
 else
-  echo "  PROBLEM  OpenCV lacks GStreamer. A pip-installed opencv-python is probably shadowing the apt one:"
-  echo "           pip uninstall -y opencv-python opencv-python-headless"
+  echo "  PROBLEM  $(command -v python3) can't import numpy. In a venv: pip install numpy"
 fi
 
 echo "== Checking SSH to the Pi ($PI_HOST)"

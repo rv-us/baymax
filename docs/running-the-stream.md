@@ -16,7 +16,7 @@ Use `~/baymax/streaming`. Older copies (such as `~/robot-stream` or files from a
 
 ```bash
 cd ~/baymax/streaming
-./install.sh          # installs packages (asks for your sudo password) and checks GStreamer, OpenCV, and SSH to the Pi
+./install.sh          # installs packages (asks for your sudo password) and checks GStreamer, numpy, and SSH to the Pi
 ./setup_pi_audio.sh   # makes a shared mic device on the Pi so the audio stream and the robot API can both record
 ```
 
@@ -44,7 +44,9 @@ rx = FrameReceiver().start()
 frame, ts = rx.latest()        # newest 640x480 BGR frame (None until the first one arrives)
 ```
 
-Only one program can receive the stream at a time, so stop `receiver.py` before running your own code.
+The receiver decodes with `gst-launch-1.0` in a subprocess and only needs numpy, so it works in a venv with NumPy 2 and alongside pip's `opencv-python` (which ultralytics installs). OpenCV is only needed for `--show`.
+
+Only one program can receive the stream at a time, so stop `receiver.py` before running your own code. If it prints `0.0 fps (no frames yet)` while the sender is running, look for a leftover receiver holding the port: `ss -ulpn | grep 5000`.
 
 ## Using the audio in your own code
 
