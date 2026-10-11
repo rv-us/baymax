@@ -1,0 +1,5 @@
+# Dashboard server (python -m dashboard). The web app is prebuilt in dashboard/web/dist.
+fastapi
+uvicorn
+httpx
+pyyaml

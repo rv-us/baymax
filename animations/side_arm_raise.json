@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "name": "Side arm raise",
+  "keyframes": [
+    {
+      "ms": 2000,
+      "hold_ms": 500,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "right_shoulder_pitch": 275,
+        "left_shoulder_roll": 490,
+        "right_shoulder_roll": 510,
+        "left_elbow": 575,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 2000,
+      "hold_ms": 500,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "right_shoulder_pitch": 275,
+        "left_shoulder_roll": 800,
+        "right_shoulder_roll": 200,
+        "left_elbow": 575,
+        "right_elbow": 425
+      }
+    }
+  ],
+  "exercise": {
+    "cue": "Lift both arms out to your sides like wings, then lower them slowly.",
+    "sets": 2,
+    "reps": 8,
+    "mirror": "arms",
+    "track_joint": "shoulder_elevation",
+    "targets": {
+      "shoulder_elevation": {
+        "top": 75,
+        "bottom": 15,
+        "tolerance": 15
+      }
+    }
+  },
+  "source": "manual",
+  "loop": false,
+  "speed": 1.0,
+  "updated": 1791707100.8661513
+}

@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "name": "Overhead reach",
+  "keyframes": [
+    {
+      "ms": 2500,
+      "hold_ms": 600,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 125,
+        "right_shoulder_pitch": 875,
+        "left_shoulder_roll": 800,
+        "right_shoulder_roll": 200,
+        "left_elbow": 575,
+        "right_elbow": 425
+      }
+    },
+    {
+      "ms": 2500,
+      "hold_ms": 500,
+      "ease": "inout",
+      "servos": {
+        "left_shoulder_pitch": 725,
+        "right_shoulder_pitch": 275,
+        "left_shoulder_roll": 800,
+        "right_shoulder_roll": 200,
+        "left_elbow": 575,
+        "right_elbow": 425
+      }
+    }
+  ],
+  "exercise": {
+    "cue": "Reach both arms up over your head, then lower them slowly.",
+    "sets": 2,
+    "reps": 6,
+    "mirror": "arms",
+    "track_joint": "shoulder_elevation",
+    "targets": {
+      "shoulder_elevation": {
+        "top": 160,
+        "bottom": 15,
+        "tolerance": 20
+      }
+    }
+  },
+  "source": "manual",
+  "loop": false,
+  "speed": 1.0,
+  "updated": 1791707100.865163
+}
