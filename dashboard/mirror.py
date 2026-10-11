@@ -25,6 +25,7 @@ import time
 
 from robot_api.errors import RobotError
 
+from .feed import open_feed
 from .robot import Refused
 
 log = logging.getLogger(__name__)
@@ -84,21 +85,7 @@ class Mirror:
 
     def _open_feed(self):
         """The camera and tracker to mirror from: the dry run's webcam, or the robot's own camera."""
-        if self.settings.dry_run:
-            cam = self.gateway.webcam
-            if cam is None or not cam.tracking:
-                raise Refused("Mirror needs a camera that can track arms: start the dashboard on a computer "
-                              "with a webcam, and either the GX10 pose service or MediaPipe.")
-            return cam, False
-        from .webcam import Webcam
-        cam = Webcam(robot_url=self.settings.robot_url, pose_url=self.settings.pose_url)
-        if not cam.start():
-            raise Refused(cam.status["detail"])
-        if not cam.tracking:
-            cam.stop()
-            raise Refused("Nothing can track arms: the GX10 pose service isn't answering and MediaPipe "
-                          "isn't installed here.")
-        return cam, True
+        return open_feed(self.settings, self.gateway)
 
     def stop(self, rest: bool = True) -> None:
         """End mirroring. `rest` eases the arms back to the stand pose; a safety stop passes False

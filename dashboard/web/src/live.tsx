@@ -4,6 +4,7 @@ import { api, attempt, live, playback, robot, safety, status, words } from "./ap
 import { CameraPanel } from "./camera";
 import { Icon } from "./icons";
 import { go } from "./route";
+import { TrackingPanel } from "./tracking";
 import { TwinPanel, twinView } from "./twin";
 
 const STEPS: [string, string][] = [
@@ -197,14 +198,16 @@ function SessionRunner() {
             </div>
             <label class="check"><input type="checkbox" checked={simulate} onChange={(e) => setSimulate(e.currentTarget.checked)} />
               Simulate the patient's answers</label>
-            {!status.value?.webcam && <label>Pace
+            {status.value?.dry_run && !status.value?.webcam && <label>Pace
               <select value={pace} onChange={(e) => setPace(+e.currentTarget.value)}>
                 <option value="1">Real time</option><option value="3">3× faster (demo)</option><option value="6">6× faster (demo)</option>
               </select>
             </label>}
             {status.value?.webcam
               ? <p class="note"><Icon name="camera" size={16} />The laptop webcam tracks the patient's arms, so the session runs in real time on real movement. Face the camera with your arms in view.</p>
-              : <p class="note"><Icon name="alert" size={16} />No webcam, so the patient's movement in a session is simulated. The log is marked synthetic.</p>}
+              : status.value?.dry_run
+                ? <p class="note"><Icon name="alert" size={16} />No webcam, so the patient's movement in a session is simulated. The log is marked synthetic.</p>
+                : <p class="note"><Icon name="camera" size={16} />The robot's own camera watches the patient and the GX10 tracks their arms, so the session runs in real time on real movement and the robot keeps a quarter of a rep ahead. If the camera or the tracker can't be reached, the patient is simulated instead and the log says so.</p>}
             <button class="btn primary big" disabled={!!stopped || !draft.length} onClick={startDraft}>
               <Icon name="play" />Start session
             </button>
@@ -388,6 +391,7 @@ export function LiveScreen() {
       <div class="live-views"><TwinPanel /><CameraPanel /></div>
       <div class="live-main"><SessionRunner /></div>
       <div class="live-side">
+        {live.value.running && <TrackingPanel />}
         <Coaching />
         {status.value?.dry_run && <DryRunPanel />}
         <button class="btn quiet" onClick={() => go("/patient")}><Icon name="patient" />Open the large-type patient view</button>

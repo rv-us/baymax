@@ -18,7 +18,8 @@ Only joints drawn green (state TRACKING) count. An arm that is holding or lost c
 so nothing it guessed reaches the robot, and `angles` (what a workout is scored on) is only given while
 BOTH arms are green: half a body's worth of angles would score a rep that wasn't seen. `green` says
 which arms qualify. `overlay` is what is needed to draw the arms on the
-picture, in pixels: {shoulders: [[x, y], [x, y]] | None, arms: {L: {pts, state}, R: ...}}.
+picture, in pixels: {shoulders: [[x, y], [x, y]] | None, arms: {L: {pts, state}, R: ...},
+person: [x0, y0, x1, y1] | None}; `person` is the box round the one being tracked.
 """
 from __future__ import annotations
 
@@ -50,6 +51,17 @@ def elevation_deg(shoulder, elbow) -> float | None:
     d = [e - s for e, s in zip(elbow, shoulder)]
     n = math.sqrt(sum(c * c for c in d))
     return None if n < 1e-6 else math.degrees(math.acos(max(-1.0, min(1.0, -d[2] / n))))
+
+
+def person_box(px, vis, size, min_vis: float = 0.3) -> list | None:
+    """[x0, y0, x1, y1] in pixels around the landmarks that can be seen: who is being tracked."""
+    w, h = size
+    pts = [p for p, v in zip(px, vis) if v >= min_vis and np.all(np.isfinite(p))]
+    if not pts:
+        return None
+    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+    clamp = lambda v, hi: round(float(max(0.0, min(float(hi), v))), 1)  # noqa: E731
+    return [clamp(min(xs), w), clamp(min(ys), h), clamp(max(xs), w), clamp(max(ys), h)]
 
 
 class ArmTracker:
@@ -110,5 +122,6 @@ class ArmTracker:
                 "green": green}
         overlay = {"shoulders": [px[11].round(1).tolist(), px[12].round(1).tolist()],
                    "arms": {s: {"pts": [px[i].round(1).tolist() for i in self.mimic.ARM_IDX[s]],
-                                "state": a["state"]} for s, a in self.arms.items()}}
+                                "state": a["state"]} for s, a in self.arms.items()},
+                   "person": person_box(px, lm[2], (w, h))}
         return pose, overlay

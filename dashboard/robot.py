@@ -52,6 +52,7 @@ class Gateway:
         self.limiter = Limiter()         # the active calibration profile (app.py sets it)
         self.blocked = lambda: None      # set by Safety: returns a reason while latched
         self.webcam = None               # a dashboard.webcam.Webcam standing in for the robot's camera
+        self.feed = None                 # the robot's camera, opened by a running session (it can only be opened once)
         self.fake_stall: dict = {}       # dry-run only: {servo id: pulse it is stuck at}
         self._lock = threading.Lock()
         self.link = {"ok": None, "error": None, "last_ok": None, "latency_ms": None}
@@ -128,10 +129,11 @@ class Gateway:
         return errors
 
     def camera_jpeg(self, width: int = 640, quality: int = 70) -> bytes:
-        if self.webcam is not None:
-            jpeg = self.webcam.jpeg(width, quality)
+        cam = self.feed or self.webcam
+        if cam is not None:
+            jpeg = cam.jpeg(width, quality)
             if jpeg is None:
-                raise Refused(self.webcam.status["detail"], 502)
+                raise Refused(cam.status["detail"], 502)
             return jpeg
         frame = self.call("sensors/camera", width=width, quality=quality)
         return base64.b64decode(frame["jpeg_base64"])

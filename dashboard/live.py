@@ -26,6 +26,8 @@ from workout.robot import Robot
 from workout.session import reps_from_trace, set_target
 
 from . import preview, synthetic
+from .feed import open_feed
+from .robot import Refused
 
 log = logging.getLogger(__name__)
 
@@ -165,6 +167,7 @@ class SimTracker:
         ref = list(self.carry_ref)
         sent: dict = {}
         finished = True
+        began = time.monotonic()
         for i, angle in enumerate(angles):
             if not live.frame["visible"]:
                 post_event("left_frame")
@@ -181,7 +184,11 @@ class SimTracker:
                 reps = len(reps_from_trace({"hz": synthetic.HZ, "patient": done}, target))
                 live.update(reps=reps, angle=angle, reference=ref[-1], target=target,
                             lead=round(leader.ahead_of(patient), 2))
-            live.sleep(1 / synthetic.HZ)
+            # A sample is 1/HZ of the exercise's time. Moving the robot and counting reps take time of
+            # their own, so only the rest of the period is slept: the robot's lead and the trace's time
+            # axis would otherwise run slow, and the robot would fall behind the patient it should lead.
+            live.sleep(max(0.0, 1 / synthetic.HZ - (time.monotonic() - began) * live.pace))
+            began = time.monotonic()
         if finished:
             self._move_robot(frames, 0, sent)  # back to the start pose
         self.carry, self.carry_ref, self.paused_at = (done, ref, time.time()) if not finished else ([], [], 0.0)
@@ -194,16 +201,16 @@ class SimTracker:
 
 
 class WebcamTracker(SimTracker):
-    """The same loop, with the patient's joint angle read from the webcam's arm tracking
-    (arm_mvp) instead of a synthetic patient. A joint the tracker can't read (knees, trunk)
-    falls back to the simulated patient for that exercise, and the log says so."""
+    """The same loop, with the patient's joint angle read from arm_mvp's arm tracking (computed
+    on the GX10 when it is there) instead of a synthetic patient. A joint the tracker can't read
+    (knees, trunk) falls back to the simulated patient for that exercise, and the log says so."""
 
     TRACKED = ("shoulder_elevation", "elbow")
     STALE_S = 1.0
 
-    def __init__(self, live, seed: int):
+    def __init__(self, live, seed: int, cam):
         super().__init__(live, seed)
-        self.cam = live.gateway.webcam
+        self.cam = cam
         self.synthetic = False
 
     def patient_visible(self) -> bool:
@@ -237,6 +244,7 @@ class Live:
         self.ears: Ears | None = None
         self.simulate, self.pace, self.said = True, 1.0, None
         self.answering = False      # a pain answer is being handled by the loop itself
+        self.feed = None            # the robot's camera, when this session opened it (and must let go of it)
         self.frame = {"visible": True, "x": 0.0, "size": 0.6, "simulated": True}
         self.state = {"running": False, "state": None, "plan": None, "frame": self.frame,
                       "advice": None, "last": None}
@@ -293,21 +301,52 @@ class Live:
             self.simulate, self.pace = bool(simulate), max(0.25, min(8.0, float(pace)))
             self.ears = Ears(self)
             self.frame.update(visible=True, x=0.0, size=0.6)
-            use_cam = self.gateway.webcam is not None and self.gateway.webcam.tracking
-            tracker = (WebcamTracker if use_cam else SimTracker)(self, seed if seed is not None else int(time.time()))
-            if use_cam:
-                self.pace = 1.0  # a real patient moves in real time
-            loop_settings = LoopSettings(ready_wait_s=8, answer_timeout_s=30, pause_timeout_s=30,
-                                         sessions_dir=self.settings.sessions_dir)
-            self.workout = Workout(plan, Robot(TapBackend(self)), self.ears, tracker, TemplateCoach(),
-                                   loop_settings, sleep=self.sleep)
+            cam, own, note = self._tracking_camera()
+            try:
+                seed = seed if seed is not None else int(time.time())
+                tracker = WebcamTracker(self, seed, cam) if cam is not None else SimTracker(self, seed)
+                if cam is not None:
+                    self.pace = 1.0  # a real patient moves in real time
+                loop_settings = LoopSettings(ready_wait_s=8, answer_timeout_s=30, pause_timeout_s=30,
+                                             sessions_dir=self.settings.sessions_dir)
+                self.workout = Workout(plan, Robot(TapBackend(self)), self.ears, tracker, TemplateCoach(),
+                                       loop_settings, sleep=self.sleep)
+            except BaseException:
+                if own:
+                    cam.stop()
+                raise
+            if own:
+                self.feed = self.gateway.feed = cam
             self.state = {"running": True, "plan": plan.name, "plan_id": plan_name, "simulate": self.simulate,
                           "pace": self.pace, "frame": self.frame, "advice": None, "reps": 0,
-                          "synthetic_tracker": not use_cam, "last": None, "error": None}
+                          "synthetic_tracker": cam is None, "tracker_note": note, "tracking": None,
+                          "last": None, "error": None}
             self.update()
             self._thread = threading.Thread(target=self._run, name="dashboard-live", daemon=True)
             self._thread.start()
         return self.state
+
+    def _tracking_camera(self):
+        """(camera, opened here, why there's no camera). With a robot the session watches through the
+        robot's own camera, tracked on the GX10 (dashboard/feed.py); in a dry run through the webcam the
+        dashboard already holds. With neither the patient is simulated, and the reason is shown."""
+        webcam = self.gateway.webcam
+        if webcam is not None:
+            return (webcam, False, None) if webcam.tracking else (None, False, None)
+        if self.settings.dry_run:
+            return None, False, None
+        try:
+            cam, own = open_feed(self.settings, self.gateway, "A session", self.apply_pose)
+        except Refused as e:
+            return None, False, str(e)
+        return cam, own, None
+
+    def _release_feed(self) -> None:
+        feed, self.feed = self.feed, None
+        if feed is not None:
+            self.gateway.feed = None
+            feed.stop()
+            self.frame["simulated"] = True   # nothing is supplying where the patient stands any more
 
     def _run(self) -> None:
         w, error, sid = self.workout, None, None
@@ -317,6 +356,7 @@ class Live:
             w.run()
         except Exception as e:  # the loop already froze the robot and saved what it had
             error = str(e)
+        self._release_feed()
         path = getattr(w, "saved_path", None)
         if path:
             sid = path.replace("\\", "/").rsplit("/", 1)[-1][:-5]
@@ -328,7 +368,7 @@ class Live:
                 self.sessions.save(sid, data)
             except (OSError, ValueError):
                 pass
-        self.state = {**self.state, "running": False, "state": "END", "waiting": None, "error": error,
+        self.state = {**self.state, "running": False, "state": "END", "waiting": None, "error": error, "tracking": None,
                       "last": {"id": sid, "status": w.session.status, "flagged": w.session.flagged}}
         self.publish()
         self.hub.publish("sessions", {"changed": sid})
@@ -386,6 +426,21 @@ class Live:
             else:
                 self.frame.update(new)
                 self.update(frame=dict(self.frame), advice=frame_advice(self.frame))
+        if self.running:
+            tracking = self._tracking(pose)
+            if tracking != self.state.get("tracking"):
+                self.update(tracking=tracking)
+
+    def _tracking(self, pose: dict) -> dict:
+        """What the tracker (on the GX10 when it can) says it sees, for the Live screen: who is
+        followed, which arms are green, and the angles the session is scored on."""
+        cam = self.feed or self.gateway.webcam
+        angles = {k: None if v is None else round(v) for k, v in (pose.get("angles") or {}).items()}
+        return {"on": getattr(cam, "source", "none"), "transport": getattr(cam, "transport", None),
+                "delivery": getattr(cam, "delivery", None), "ms": getattr(cam, "ms", None),
+                "camera": getattr(cam, "label", None), "visible": bool(pose.get("visible")),
+                "calibrated": bool(pose.get("calibrated")), "people": pose.get("people", 0),
+                "arms": pose.get("arms") or {}, "green": pose.get("green") or {}, "angles": angles}
 
     def reposition(self, kind: str, steps: int = 1) -> dict:
         if kind not in REPOSITION:

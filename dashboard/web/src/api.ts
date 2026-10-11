@@ -17,6 +17,13 @@ export interface Status {
 export interface SafetyStop { kind: "pain" | "fall"; title: string; detail: string; transcript: string | null; t: number; stop_errors: string[] }
 export interface Safety { stop: SafetyStop | null; alerts: { kind: string; detail: string; t: number }[] }
 export interface Frame { visible: boolean; x: number; size: number; simulated?: boolean }
+/** What arm_mvp's tracker says it sees, as the session gets it (computed on the GX10 when it is there). */
+export interface Tracking {
+  on: "gx10" | "local" | "none"; transport: "udp" | "http" | null; delivery: number | null; ms: number | null;
+  camera: string | null; visible: boolean; calibrated: boolean; people: number;
+  arms: Record<string, "TRACKING" | "HOLD" | "LOST">; green: Record<string, boolean>;
+  angles: { shoulder_elevation?: number | null; elbow?: number | null };
+}
 export interface Live {
   running: boolean; state?: string | null; plan?: string | null; simulate?: boolean; pace?: number;
   exercise?: { name: string; cue: string; index: number; count: number };
@@ -24,6 +31,7 @@ export interface Live {
   angle?: number | null; reference?: number; lead?: number; target?: Target;
   said?: string | null; waiting?: string | null; heard?: string | null; matrix?: string;
   frame: Frame; advice: { kind: string; text: string } | null;
+  synthetic_tracker?: boolean; tracker_note?: string | null; tracking?: Tracking | null;
   last?: { id: string | null; status: string; flagged: boolean } | null; error?: string | null;
 }
 export interface Playback {

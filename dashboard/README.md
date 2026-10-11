@@ -61,6 +61,14 @@ There is no login. On `--host 0.0.0.0` anyone on the network can move the robot 
 - **A safety stop ends mirroring at once** and leaves the robot frozen where it is. It won't start while a session, an animation or a recording is using the robot, and none of those start while it runs.
 - Several people in view: it follows the one closest to the centre. Arms at the person's side read as pitch 0 with the elbows slightly out. Calibration is automatic (stand square to the camera, arms at your sides, hold still) and forgiving of camera noise.
 
+## Live sessions on the GX10's tracking
+
+A session reads the patient the same way Mirror does: with a robot, from the robot's own camera (opened for the length of the session and let go at the end: `dashboard/feed.py`), with every frame tracked by `arm_mvp` on the GX10 pose service; in a dry run, from the laptop webcam. If there is no camera, or nothing can track (the GX10 isn't answering and MediaPipe isn't installed here), the patient is simulated instead, the log is marked synthetic, and the Live screen says why.
+
+- **The Live screen shows the tracker's output.** The picture has the tracked person boxed (`Tracking`, or `Tracking 1 of N` when several are in view) and each arm drawn green, amber or red; the Tracking panel beside it says where the maths ran (GX10, over UDP, how many frames were answered, how long one took), who is followed, whether the patient is calibrated, which arms count, and the shoulder and elbow angles the session is scored on. It is the `tracking` field of `live` in `GET /api/status` and on the event stream. While a session owns the robot's camera, `GET /api/camera.jpg` is that annotated picture (the camera can't be opened twice).
+- **The robot follows the patient's pace.** The GX10 answers with the tracked joint angle; `workout/pacing.py` turns it into progress in reps (2.25 is two reps and a quarter), and the robot's demonstration is played at that progress plus a quarter of a rep (`LEAD`), never further ahead and at most 1.5x the exercise's tempo. A patient who slows down gets a robot that waits a quarter-rep ahead of them; one who stops, the same. The Live screen shows how far ahead the robot is. The loop runs on a fixed clock of `synthetic.HZ` samples a second whatever the robot calls take, so the lead doesn't drift slow.
+- Reps are counted only on frames where both arms are green. When the patient is out of view the session pauses, as before.
+
 ## Safety
 
 - **Stop** is in the top bar of every screen, and again in the robot bar wherever something can be played. It freezes every servo and ends playback, recording and any running session. It never latches.
@@ -83,7 +91,8 @@ There is no login. On `--host 0.0.0.0` anyone on the network can move the robot 
 | `generator.py` | Prompt to animation through Ollama, in degrees, clamped in code; rule-based mock |
 | `chat.py` | Streamed coach chat (SSE) with session facts as context; offline answer when Ollama is down |
 | `coach.py` | Summary facts, Ollama call with a `format` schema, template fallback, background jobs |
-| `live.py` | Runs `workout.loop.Workout` with dashboard ears and `SimTracker` (replace it with the pose tracker) |
+| `live.py` | Runs `workout.loop.Workout` with dashboard ears and a tracker: `WebcamTracker` (the patient read from the GX10's pose answers) or, with no camera, `SimTracker` (a synthetic patient) |
+| `feed.py` | Opens the camera a session or Mirror reads from: the robot's own, tracked on the GX10, or the dry run's webcam |
 | `synthetic.py` | Seeded synthetic patient traces (with left and right joints) and sessions |
 | `store.py` | JSON and YAML files: `sessions/`, `animations/`, `workout/plans/` |
 | `tunnel.py` | `ssh -N -L 11434:127.0.0.1:11434 user@gx10` from the Connections drawer |

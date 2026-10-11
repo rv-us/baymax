@@ -690,3 +690,10 @@ textarea {
 .mirror-angles div { background: var(--sunk); border-radius: 12px; padding: 10px 12px; }
 .mirror-angles dt { font-size: 0.8125rem; color: var(--ink-2); }
 .mirror-angles dd { margin: 0; font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ---- live: what the pose tracker sees ----------------------------------------------- */
+
+.tracking { display: grid; gap: 12px; }
+.tracking h3 { margin: 0; }
+.mirror-people.is-warn { color: var(--warn); }
+.mirror-angles.two { grid-template-columns: repeat(2, 1fr); }

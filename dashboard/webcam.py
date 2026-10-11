@@ -34,6 +34,7 @@ from .armtrack import EMPTY_POSE
 from .pose_service import REPLY_HEADER, REPLY_MAGIC, SERVICE, encode_frame
 
 COLORS = {"TRACKING": (80, 220, 80), "HOLD": (0, 210, 255), "LOST": (60, 60, 255)}  # BGR
+PERSON_COLOR = (255, 190, 40)   # BGR: the box round whoever is being tracked
 REMOTE_TIMEOUT_S = 2.0
 SEND_HZ = 15.0           # frames offered to the GX10 per second, at most
 STALE_REPLY_S = 3.0      # no answer for this long: the GX10 is treated as down (a lossy link can be quiet a while)
@@ -41,6 +42,18 @@ TIERS = [(480, 65), (320, 60), (240, 50)]   # (frame width, JPEG quality), best 
 WINDOW_S = 2.0           # how often the share of answered frames is checked
 SLOW_RTT_S = 0.35        # beyond this smoothed round trip, frames go to the GX10 at half size
 REMOTE_RETRY_S = 5.0     # after a failure, use the local tracker this long before asking the GX10 again
+
+
+def scale_overlay(overlay: dict, k: float) -> dict:
+    """The overlay for a picture `k` times the size of the one that was tracked (it was sent smaller)."""
+    if k == 1.0 or not overlay.get("shoulders"):
+        return overlay
+    out = {**overlay,
+           "shoulders": [[x * k, y * k] for x, y in overlay["shoulders"]],
+           "arms": {a: {**v, "pts": [[x * k, y * k] for x, y in v["pts"]]} for a, v in overlay["arms"].items()}}
+    if overlay.get("person"):
+        out["person"] = [v * k for v in overlay["person"]]
+    return out
 
 
 class RobotCameraSource:
@@ -133,11 +146,17 @@ class Webcam:
         self.tracking = remote or self._local is not None
         self._set_status()
         self._alive = True
-        threading.Thread(target=self._run, name="dashboard-webcam", daemon=True).start()
+        self._thread = threading.Thread(target=self._run, name="dashboard-webcam", daemon=True)
+        self._thread.start()
         return True
 
     def stop(self) -> None:
+        """Stop reading, and wait (briefly) for the camera to be let go: the robot's video can only be
+        received by one program, so the next session or Mirror must not start before it is free."""
         self._alive = False
+        thread = getattr(self, "_thread", None)
+        if thread is not None and thread is not threading.current_thread():
+            thread.join(timeout=5.0)
 
     def use_pose_service(self, url: str) -> bool:
         """Start sending frames to a pose service that turned up after startup (the GX10 was not
@@ -232,11 +251,7 @@ class Webcam:
             if sent is None or (self._reply and seq <= self._reply["seq"]):
                 continue
             now = time.monotonic()
-            overlay, k = out["overlay"], sent[1]
-            if k != 1.0 and overlay.get("shoulders"):
-                overlay = {"shoulders": [[x * k, y * k] for x, y in overlay["shoulders"]],
-                           "arms": {a: {**v, "pts": [[x * k, y * k] for x, y in v["pts"]]}
-                                    for a, v in overlay["arms"].items()}}
+            overlay = scale_overlay(out["overlay"], sent[1])
             self._window[2] += 1
             self._rtt = 0.7 * self._rtt + 0.3 * (now - sent[0])
             self._reply = {"pose": out["pose"], "overlay": overlay, "mono": now, "seq": seq, "wall": time.time()}
@@ -313,12 +328,7 @@ class Webcam:
             raise
         self._rtt = 0.7 * self._rtt + 0.3 * (time.monotonic() - started)
         out = json.loads(body)
-        k = 2.0 if small else 1.0
-        overlay = out["overlay"]
-        if small and overlay.get("shoulders"):
-            overlay = {"shoulders": [[x * k, y * k] for x, y in overlay["shoulders"]],
-                       "arms": {s: {**a, "pts": [[x * k, y * k] for x, y in a["pts"]]} for s, a in overlay["arms"].items()}}
-        return out["pose"], overlay
+        return out["pose"], scale_overlay(out["overlay"], 2.0 if small else 1.0)
 
     def _compute(self, frame, t: float):
         """(pose, overlay, where) for one frame: the GX10 if it's answering, else here."""
@@ -358,7 +368,7 @@ class Webcam:
             if where != self.source:
                 self.source = where
                 self._set_status()
-            jpeg = self._annotate(frame, overlay)
+            jpeg = self._annotate(frame, overlay, pose.get("people", 0))
             with self._lock:
                 self._jpeg, self._pose = jpeg, pose
             if self.on_pose and now - last_push > 0.2:
@@ -371,10 +381,15 @@ class Webcam:
         if self._local is not None:
             self._local.close()
 
-    def _annotate(self, frame, overlay) -> bytes | None:
-        """The frame with the tracked arms drawn on it, as the dashboard shows it."""
+    def _annotate(self, frame, overlay, people: int = 0) -> bytes | None:
+        """The frame with the tracked person and arms drawn on it, as the dashboard shows it."""
         cv2 = self._cv2
         view = frame.copy()
+        if overlay.get("person"):
+            x0, y0, x1, y1 = (int(v) for v in overlay["person"])
+            cv2.rectangle(view, (x0, y0), (x1, y1), PERSON_COLOR, 2, cv2.LINE_AA)
+            label = "Tracking" if people <= 1 else f"Tracking 1 of {people}"
+            cv2.putText(view, label, (x0 + 4, max(16, y0 - 6)), cv2.FONT_HERSHEY_SIMPLEX, 0.55, PERSON_COLOR, 2, cv2.LINE_AA)
         if overlay.get("shoulders"):
             a, b = (tuple(int(v) for v in p) for p in overlay["shoulders"])
             cv2.line(view, a, b, (220, 220, 220), 1, cv2.LINE_AA)
