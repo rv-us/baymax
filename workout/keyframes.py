@@ -14,8 +14,8 @@ import math
 import time
 
 from robot_api.config import MIN_MOVE_MS
-from robot_api.servo.joints import JOINTS, STAND_POSE
-from robot_api.servo.limits import HEAD_CENTER
+from robot_api.servo.joints import HEAD, JOINTS, STAND_POSE
+from robot_api.servo.limits import HEAD_CENTER, HEAD_LIMITS, LIMITS
 from workout.plan import KEYFRAME_JOINTS
 
 STEP_MS = MIN_MOVE_MS  # the robot API's shortest move; eased motion is sent in steps this long
@@ -32,6 +32,29 @@ def start_pose() -> dict:
     """Arms hanging as in the stand pose, head centered."""
     return {"servos": {j: STAND_POSE[JOINTS[j]] for j in KEYFRAME_JOINTS},
             "head": {"pan": HEAD_CENTER, "tilt": HEAD_CENTER}}
+
+
+def mirrored(frames) -> list:
+    """The same animation done by the other arm: left and right swapped, and the head turned the other way.
+    An exercise with `alternate: true` is one side on one rep and this on the next."""
+    out = []
+    for kf in frames:
+        servos = {}
+        for joint, pulse in (kf.get("servos") or {}).items():
+            side, part = joint.split("_", 1)
+            other = f"{'right' if side == 'left' else 'left'}_{part}"
+            a, b = JOINTS[joint], JOINTS[other]
+            lo, hi = LIMITS[b]
+            servos[other] = max(lo, min(hi, int(round(STAND_POSE[b] - (pulse - STAND_POSE[a])))))
+        new = {**kf, "servos": servos}
+        if kf.get("head"):
+            head = dict(kf["head"])
+            if "pan" in head:
+                lo, hi = HEAD_LIMITS[HEAD["pan"]]
+                head["pan"] = max(lo, min(hi, 2 * HEAD_CENTER - head["pan"]))
+            new["head"] = head
+        out.append(new)
+    return out
 
 
 def duration_ms(frames) -> int:

@@ -122,7 +122,7 @@ listener.on_transcript(lambda t: print(t.text))  # every transcript, even betwee
 
 ## The whole thing in one command
 
-`scripts/start_gx10.sh` starts the pose service (which owns the robot's camera and tracks it), the dashboard (which gets the camera from the pose service) and the microphone bridge (Whisper on the robot's mic, to the dashboard); `scripts/stop_gx10.sh` stops them. Details: [dashboard/README.md](../dashboard/README.md#live-sessions-on-the-gx10s-tracking). Don't run `receiver.py`, `audio_receiver.py` or `pose_server.py --stream` at the same time: each wants the camera or the microphone for itself.
+`scripts/start_gx10.sh` starts the pose service (which owns the robot's camera and tracks it), the voice service (which owns its microphone: Whisper on the GPU) and the dashboard (which gets the picture, the pose and what the patient says from those two); `scripts/stop_gx10.sh` stops them. Details: [dashboard/README.md](../dashboard/README.md#live-sessions-on-the-gx10s-tracking). Don't run `receiver.py`, `audio_receiver.py` or `pose_server.py --stream` at the same time: each wants the camera or the microphone for itself.
 
 ## When you're done
 

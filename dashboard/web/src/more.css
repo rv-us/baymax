@@ -697,3 +697,17 @@ textarea {
 .tracking h3 { margin: 0; }
 .mirror-people.is-warn { color: var(--warn); }
 .mirror-angles.two { grid-template-columns: repeat(2, 1fr); }
+
+/* ---- live: the microphone caption ---------------------------------------------------- */
+
+.mic { display: grid; gap: 6px; }
+.mic p { margin: 0; display: flex; gap: 8px; align-items: flex-start; }
+.mic-state { font-size: 0.9375rem; color: var(--ink-2); }
+.mic-state svg, .mic-caption svg { flex: none; margin-top: 3px; }
+.mic-listening .mic-state { color: var(--good); }
+.mic-down .mic-state { color: var(--warn); }
+.mic-caption { font-size: 1.25rem; font-weight: 600; }
+.mic-caption em { display: block; font-size: 0.875rem; font-weight: 400; font-style: normal; color: var(--ink-2); }
+.mic-caption.outcome-answer { color: var(--good); }
+.mic-caption.outcome-pain { color: var(--stop); }
+.mic-caption.outcome-echo, .mic-caption.outcome-unprompted, .mic-caption.outcome-stale { color: var(--ink-2); font-weight: 400; }

@@ -9,7 +9,7 @@ import asyncio
 import json
 import threading
 
-STICKY = ("status", "safety", "live", "playback", "tunnel", "recorder", "calibration", "mirror", "gx10")
+STICKY = ("status", "safety", "live", "playback", "tunnel", "recorder", "calibration", "mirror", "gx10", "voice")
 
 
 class Hub:

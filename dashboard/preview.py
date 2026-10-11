@@ -7,7 +7,7 @@ no preview and contributes nothing to the loop.
 """
 from __future__ import annotations
 
-from workout.keyframes import duration_ms, pose_at
+from workout.keyframes import duration_ms, mirrored, pose_at
 
 from . import poses
 
@@ -30,6 +30,8 @@ def session_pose(exercises: list, t_ms: float) -> dict:
     for i, ex in enumerate(exercises):
         demo = ex.get("demo") or {}
         once = demo_frames(demo)
+        if once and demo.get("alternate"):
+            once = once + mirrored(once)
         if once:
             frames = once * max(1, int(demo.get("times", 1))) + [poses.frame(GAP_MS, poses.REST)]
             parts.append((i, frames, duration_ms(frames)))

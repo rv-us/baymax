@@ -31,6 +31,7 @@ class Settings:
     gx10_host: str = "169.233.72.183"
     gx10_user: str = "asus"
     gx10_password: str | None = None  # never stored in code: see dashboard/gx10.py
+    voice_url: str | None = None    # the GX10 voice service (python -m voice.service); None = beside the pose service
     pose_url: str | None = None     # the GX10 pose service (python -m dashboard.pose_service); None = track here
     stub_llm: bool = False          # dry-run without --ollama-url: a canned coach, labelled as such
     host: str = "127.0.0.1"

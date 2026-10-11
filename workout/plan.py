@@ -24,7 +24,9 @@ moving both arms there and back), a factory `action_group` from the safe list, o
             - { ms: 1500, ease: inout, servos: { left_shoulder_pitch: 350, right_shoulder_pitch: 650 } }
             - { ms: 1500, hold_ms: 500, servos: { left_shoulder_pitch: 725, right_shoulder_pitch: 275 } }
 
-`ms` is the time to move into the keyframe, `hold_ms` a pause there. Only arm joints
+Add `alternate: true` to a keyframes demo when the keyframes are one side's rep: the demonstration does
+that side, then the other, and the robot mirrors the patient with one side on one rep and the other on
+the next (alternating reach). `ms` is the time to move into the keyframe, `hold_ms` a pause there. Only arm joints
 and the head are allowed: moving one leg joint at a time makes the robot fall.
 `tempo_s` (optional) is the seconds one rep should take; pacing is scored against it.
 """
@@ -130,6 +132,8 @@ def _check_demo(demo, where: str):
     times = demo.get("times", 1)
     if not isinstance(times, int) or not 1 <= times <= 5:
         raise PlanError(f"{where}: demo times must be 1 to 5")
+    if "alternate" in demo and (not isinstance(demo["alternate"], bool) or "keyframes" not in demo):
+        raise PlanError(f"{where}: demo alternate must be true or false, and only goes with keyframes")
 
 
 def _whole(value, lo: int, hi: int) -> bool:

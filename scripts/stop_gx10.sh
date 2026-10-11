@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Stop what scripts/start_gx10.sh started (by pid file, never by pattern).
 cd "$(dirname "$0")/.."
-for pid in .voice_bridge.pid .dashboard.pid .pose_service.pid; do
+for pid in .dashboard.pid .voice_service.pid .voice_bridge.pid .pose_service.pid; do
   if [ -f "$pid" ] && kill -0 "$(cat "$pid")" 2>/dev/null; then kill "$(cat "$pid")" && echo "stopped $pid"; fi
   rm -f "$pid"
 done

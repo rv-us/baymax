@@ -1,6 +1,6 @@
 // Live: run a session and coach it. Everything the robot does here goes through the server.
 import { useEffect, useRef, useState } from "preact/hooks";
-import { api, attempt, live, playback, robot, safety, status, words } from "./api";
+import { api, attempt, live, playback, robot, safety, status, voice, words } from "./api";
 import { CameraPanel } from "./camera";
 import { Icon } from "./icons";
 import { go } from "./route";
@@ -55,6 +55,39 @@ function LiveTrace() {
         <span class="legend-item">Target {bottom}° to {top}°</span>
       </figcaption>
     </figure>
+  );
+}
+
+const OUTCOME: Record<string, string> = {
+  answer: "taken as the answer", pain: "pain: the robot was stopped", echo: "the robot's own voice, ignored",
+  unprompted: "nothing was asked, so it was ignored", stale: "too old, ignored", error: "couldn't be handled",
+};
+
+/** What the GX10's microphone hears, as it is read: the words, and what the dashboard did with them. */
+function Microphone() {
+  const v = voice.value;
+  const last = v.last;
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id); }, []);
+  const fresh = last && now - last.t * 1000 < 20000;
+  return (
+    <div class={`mic mic-${v.state}`} role="status" aria-live="polite">
+      <p class="mic-state">
+        <Icon name={v.state === "listening" ? "speak" : "alert"} size={16} />
+        <span>
+          {v.state === "listening" && (v.muted ? "The robot is talking, so the microphone is off." : "Listening on the GX10. Just say your answer.")}
+          {v.state === "connecting" && "Connecting to the GX10's microphone…"}
+          {v.state === "down" && (v.error ?? "The GX10's microphone isn't answering.")}
+          {v.state === "off" && "No microphone: type the patient's answers below."}
+        </span>
+      </p>
+      {fresh && (
+        <p class={`mic-caption outcome-${last!.outcome}`}>
+          <Icon name="patient" size={18} />
+          <span>“{last!.text}”<em>{OUTCOME[last!.outcome] ?? last!.outcome}</em></span>
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -255,11 +288,11 @@ function SessionRunner() {
       <LiveTrace />
       <div class="said">
         <p><Icon name="speak" size={18} /><span>{l.said ?? "…"}</span></p>
-        {l.heard && !l.waiting && <p class="heard"><Icon name="patient" size={18} /><span>{l.heard}</span></p>}
+        {l.simulate ? (l.heard && !l.waiting && <p class="heard"><Icon name="patient" size={18} /><span>{l.heard}</span></p>) : <Microphone />}
       </div>
       {l.waiting && (
         <div class="answer">
-          <strong>{l.simulate ? "Waiting for the simulated patient…" : "What did the patient say?"}</strong>
+          <strong>{l.simulate ? "Waiting for the simulated patient…" : voice.value.state === "listening" ? "Listening for the patient's answer… or type it" : "What did the patient say?"}</strong>
           {!l.simulate && (
             <>
               <div class="row">{quick.map((q) => <button key={q} class="btn" onClick={() => send(q)}>{q}</button>)}</div>

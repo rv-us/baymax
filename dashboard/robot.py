@@ -8,6 +8,7 @@ moves, and risky action groups can't be requested from a browser.
 from __future__ import annotations
 
 import base64
+import collections
 import inspect
 import re
 import threading
@@ -56,6 +57,8 @@ class Gateway:
         self.feed = None                 # the robot's camera, opened by a running session (it can only be opened once)
         self.fake_stall: dict = {}       # dry-run only: {servo id: pulse it is stuck at}
         self._speaking = 0               # calls in flight that make the robot talk (see speaking())
+        self.on_speaking = None          # called with True / False when the robot starts / stops talking
+        self.said = collections.deque(maxlen=8)   # (time, text) of what the robot said, newest last
         self._lock = threading.Lock()
         self.link = {"ok": None, "error": None, "last_ok": None, "latency_ms": None}
 
@@ -80,8 +83,7 @@ class Gateway:
         self._check_local(path, kwargs)
         began = time.monotonic()
         if path in SPEAKS:
-            with self._lock:
-                self._speaking += 1
+            self._talking(+1, kwargs.get("text") if path == "sensors/voice/say" else None)
         try:
             result = self.backend.call(path, **kwargs)
         except Refused:
@@ -92,8 +94,7 @@ class Gateway:
             raise Refused(message, status) from e
         finally:
             if path in SPEAKS:
-                with self._lock:
-                    self._speaking -= 1
+                self._talking(-1)
         self._seen(True, None, began)
         if path == "servo/status":
             for s in result.get("servos", []) if self.fake_stall else []:
@@ -125,6 +126,20 @@ class Gateway:
             if ok:
                 self.link["last_ok"] = time.time()
                 self.link["latency_ms"] = round((time.monotonic() - began) * 1000)
+
+    def _talking(self, step: int, text: str | None = None) -> None:
+        """A call that makes the robot talk starts (+1) or ends (-1); `on_speaking` hears of every start and stop."""
+        with self._lock:
+            before = self._speaking
+            self._speaking = before + step
+            changed = (before == 0) != (self._speaking == 0)
+            if text:
+                self.said.append((time.time(), str(text)))
+        if changed and self.on_speaking:
+            try:
+                self.on_speaking(self._speaking > 0)
+            except Exception:
+                pass
 
     def speaking(self) -> bool:
         """The robot is talking (or playing a sound) right now: the microphone must not listen."""

@@ -30,9 +30,11 @@ from .generator import Generator
 from .live import Live
 from .mirror import Mirror
 from .monitor import Monitor
+from .echo import is_echo
 from .player import Player
 from .recorder import Recorder
 from .robot import ARM_SERVOS, Gateway, Refused
+from .voice_link import VoiceLink
 from .safety import LATCHING, Safety
 from .tunnel import Tunnel, TunnelError
 
@@ -103,6 +105,25 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
             old.stop()
         return True
 
+    def hear(text: str, age: float = 0.0) -> str:
+        """What became of a line from the microphone: "echo" (the robot's own voice coming back, ignored), "pain"
+        (the robot is stopped), "answer" (a session was waiting for one and took it), or "unprompted" (nothing
+        was asked, so it is shown and dropped: a stray remark must never answer a later question)."""
+        if not text:
+            return "unprompted"
+        if is_echo(text, list(gateway.said)):
+            return "echo"
+        live.update(heard=text)
+        if safety.heard(text):
+            return "pain"
+        if live.running and live.state.get("waiting") and not live.simulate:
+            live.answer(text[:300])
+            return "answer"
+        return "unprompted"
+
+    voice = VoiceLink(settings, hear, hub)
+    gateway.on_speaking = voice.set_speaking
+
     mirror = Mirror(settings, gateway, hub, busy=lambda: (
         "A session is running. End it first." if live.running else
         "An animation is playing. Stop it first." if player.playing else
@@ -113,7 +134,7 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     app.state.parts = dict(settings=settings, hub=hub, gateway=gateway, safety=safety, sessions=sessions,
                            animations=animations, plans=plans, coach=coach, monitor=monitor,
                            twin=twin, player=player, live=live, tunnel=tunnel, profiles=profiles,
-                           recorder=recorder, chat=chat, generator=generator, webcam=gateway.webcam, mirror=mirror, gx10=gx10,
+                           recorder=recorder, chat=chat, generator=generator, webcam=gateway.webcam, mirror=mirror, gx10=gx10, voice=voice,
                            attach_gx10_camera=attach_gx10_camera)
 
     def calibration_state() -> dict:
@@ -157,6 +178,7 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
                 synthetic.refresh(sessions)
             twin.attach_robot(gateway, hz=4.0, label="dry run" if settings.dry_run else settings.robot_url)
             monitor.start()
+            voice.start()
             if settings.pose_url and not settings.webcam and not settings.dry_run:
                 threading.Thread(target=_attach_when_up, name="dashboard-gx10-camera-attach", daemon=True).start()
             if settings.gx10_auto:
@@ -165,6 +187,7 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
         @app.on_event("shutdown")
         def _stop():
             attach_stop.set()
+            voice.stop()
             gx10.stop()
             mirror.stop(rest=False)
             monitor.stop()
@@ -176,7 +199,7 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     def status():
         return {**monitor.snapshot(), "safety": safety.snapshot(), "live": live.state,
                 "playback": player.state, "tunnel": tunnel.status(), "recorder": recorder.state,
-                "mirror": mirror.snapshot(), "gx10": gx10.snapshot(),
+                "mirror": mirror.snapshot(), "gx10": gx10.snapshot(), "voice": voice.snapshot(),
                 "calibration": calibration_state(),
                 "settings": {"ollama_url": settings.ollama_url, "model": settings.model,
                              "stub_llm": settings.stub_llm, "robot": "fake hardware" if settings.dry_run
@@ -228,28 +251,19 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
         text = str(body.get("text") or "")[:500]
         return {"pain": safety.heard(text), "text": text}
 
-    # ---- the microphone (voice/bridge.py runs on the GX10 and talks to these) ----------------------
+    # ---- the microphone (voice/service.py runs on the GX10; dashboard/voice_link.py reads it) ----------------------
 
     @app.get("/api/voice")
     def voice_state():
-        """Whether the microphone should be ignored (the robot is talking) and whether an answer is awaited."""
-        return {"speaking": gateway.speaking(), "waiting": bool(live.running and live.state.get("waiting")
-                                                               and not live.simulate)}
+        """The microphone link (to the GX10's voice service), what it heard last, and whether an answer is awaited."""
+        return {**voice.snapshot(), "speaking": gateway.speaking(),
+                "waiting": bool(live.running and live.state.get("waiting") and not live.simulate)}
 
     @app.post("/api/voice/heard")
     def voice_heard(body: dict = Body(...)):
-        """What the patient said, from the speech-to-text on the GX10. Pain words stop the robot at once;
-        anything else is the patient's answer if a session is waiting for one, and is dropped otherwise
-        (a stray remark must never become the answer to a later question)."""
-        text = str(body.get("text") or "")[:500].strip()
-        if not text:
-            return {"pain": False, "answered": False}
-        if safety.heard(text):
-            return {"pain": True, "answered": False}
-        if live.running and live.state.get("waiting") and not live.simulate:
-            live.answer(text[:300])
-            return {"pain": False, "answered": True}
-        return {"pain": False, "answered": False}
+        """Something the patient said (the voice link posts here; so can a script). See hear()."""
+        outcome = hear(str(body.get("text") or "")[:500].strip())
+        return {"outcome": outcome, "pain": outcome == "pain", "answered": outcome == "answer"}
 
     @app.post("/api/safety/report")
     def safety_report(body: dict = Body(...)):

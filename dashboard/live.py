@@ -19,7 +19,7 @@ from robot_api.errors import RobotError
 from workout.loop import Settings as LoopSettings
 from workout.loop import Workout
 from workout import pacing
-from workout.keyframes import duration_ms, pose_at
+from workout.keyframes import duration_ms, mirrored, pose_at
 from workout.parts import SetResult, TemplateCoach, is_pain
 from workout.plan import load_plan
 from workout.robot import Robot
@@ -164,6 +164,7 @@ class SimTracker:
         leader = pacing.PaceLeader(target["tempo_s"], exercise.reps, start=reps_done)
         frames = preview.demo_frames(exercise.demo) if exercise.mirror == "arms" else []
         cycle_ms = duration_ms(frames)
+        other_side = mirrored(frames) if frames and exercise.demo.get("alternate") else None   # every second rep
         ref = list(self.carry_ref)
         sent: dict = {}
         finished = True
@@ -180,7 +181,8 @@ class SimTracker:
             ref.append(leader.angle(target))
             if i % 2 == 0:
                 if frames:
-                    sent = self._move_robot(frames, leader.phase() * cycle_ms, sent)
+                    now = other_side if other_side is not None and int(leader.progress) % 2 else frames
+                    sent = self._move_robot(now, leader.phase() * cycle_ms, sent)
                 reps = len(reps_from_trace({"hz": synthetic.HZ, "patient": done}, target))
                 live.update(reps=reps, angle=angle, reference=ref[-1], target=target,
                             lead=round(leader.ahead_of(patient), 2))

@@ -51,6 +51,9 @@ def main():
                          "OLLAMA_HOST says otherwise, the dashboard connects to it at startup (Ollama directly, or "
                          "through an SSH tunnel with the password from BAYMAX_GX10_PASSWORD or a git-ignored "
                          ".gx10_password file) and uses its pose service if it is running; 'off' skips all that")
+    ap.add_argument("--voice-url", default=None, metavar="URL|off",
+                    help="the GX10's microphone service (python -m voice.service). Default: beside the pose service, "
+                         "on port 9200. Without it answers and pain words have to be typed")
     ap.add_argument("--host", default="127.0.0.1", help="0.0.0.0 to serve tablets and phones on the LAN")
     ap.add_argument("--port", type=int, default=8080)
     args = ap.parse_args()
@@ -73,6 +76,8 @@ def main():
     choice = args.webcam or ("auto" if args.dry_run else "off")
     settings.webcam = None if choice == "off" else choice
     settings.pose_url = pose_service_url(args.pose_url, args.ollama_url)
+    if args.voice_url:
+        settings.voice_url = args.voice_url if args.voice_url == "off" or "://" in args.voice_url else f"http://{args.voice_url}"
     settings.stub_llm = args.dry_run and not args.ollama_url
     gx10 = args.gx10 or os.environ.get("BAYMAX_GX10")
     if (gx10 or "").lower() != "off":

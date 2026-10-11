@@ -35,3 +35,6 @@ Pain words ("hurts," "ow," "stop," ...) are checked on everything the mic hears,
 | `classify_ready`, `classify_trouble`, `is_pain` (keyword rules) | LLM classifier, #10. Misses seen on the real robot: a bystander's conversation was taken as the patient's answer, and "just a little bit" (to "any trouble?") counted as no trouble |
 | `FakeTracker` (simulated reps; the dashboard uses its own `SimTracker`) | Pose-based rep counting and form checks, #12. Joint angles already exist: `vision/`, `scripts/pose_server.py --stream` |
 | `TemplateCoach` | LLM coach, #15. The dashboard already summarizes sessions with an Ollama coach (`dashboard/coach.py`) |
+
+
+`demo.alternate: true` (keyframes only) makes the keyframes one side's rep: the demonstration does that side, then the other (`workout/keyframes.py` `mirrored`), and in a session the robot mirrors the patient with one side on one rep and the other on the next. `workout/plans/arm_flow.yaml` uses it for alternating reach.

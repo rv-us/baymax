@@ -1,0 +1,72 @@
+# A gentle arm-mobility flow: four moves, one set each. Generated from dashboard/poses.py (the same moves the
+# dashboard's Library plays), so the pulses stay inside the robot's limits. See workout/plan.py for the format.
+name: Arm flow
+exercises:
+  - name: Arm circles
+    cue: Hold both arms out in front of you and draw slow, big circles in the air, then let them rest.
+    demo:
+      times: 1
+      keyframes:
+        - {"ms": 1100, "ease": "in", "servos": {"left_shoulder_pitch": 433, "left_shoulder_roll": 758, "left_elbow": 575, "right_shoulder_pitch": 567, "right_shoulder_roll": 242, "right_elbow": 425}}
+        - {"ms": 1000, "ease": "linear", "servos": {"left_shoulder_pitch": 267, "left_shoulder_roll": 612, "left_elbow": 575, "right_shoulder_pitch": 733, "right_shoulder_roll": 388, "right_elbow": 425}}
+        - {"ms": 1000, "ease": "linear", "servos": {"left_shoulder_pitch": 475, "left_shoulder_roll": 467, "left_elbow": 575, "right_shoulder_pitch": 525, "right_shoulder_roll": 533, "right_elbow": 425}}
+        - {"ms": 1000, "ease": "linear", "servos": {"left_shoulder_pitch": 683, "left_shoulder_roll": 612, "left_elbow": 575, "right_shoulder_pitch": 317, "right_shoulder_roll": 388, "right_elbow": 425}}
+        - {"ms": 1100, "ease": "out", "servos": {"left_shoulder_pitch": 725, "left_shoulder_roll": 800, "left_elbow": 575, "right_shoulder_pitch": 275, "right_shoulder_roll": 200, "right_elbow": 425}, "hold_ms": 300}
+    sets: 1
+    reps: 3
+    tempo_s: 6
+    mirror: arms
+    track_joint: shoulder_elevation
+    targets:
+      shoulder_elevation: { top: 100, bottom: 10, tolerance: 25 }
+      elbow: { min: 150 }                # keep the arms straight
+
+  - name: Alternating reach
+    cue: Reach one arm up and forward, bring it down, then reach with the other arm. We take turns, left then right.
+    demo:
+      times: 1
+      alternate: true                    # one side on one rep, the other side on the next
+      keyframes:
+        - {"ms": 2000, "ease": "inout", "servos": {"left_shoulder_pitch": 100, "left_shoulder_roll": 800, "left_elbow": 575, "right_shoulder_pitch": 275, "right_shoulder_roll": 200, "right_elbow": 425}, "hold_ms": 400, "head": {"pan": 1630, "tilt": 1500}}
+        - {"ms": 1800, "ease": "inout", "servos": {"left_shoulder_pitch": 725, "left_shoulder_roll": 800, "left_elbow": 575, "right_shoulder_pitch": 275, "right_shoulder_roll": 200, "right_elbow": 425}, "hold_ms": 300}
+    sets: 1
+    reps: 2
+    tempo_s: 5
+    mirror: arms
+    track_joint: shoulder_elevation
+    targets:
+      shoulder_elevation: { top: 70, bottom: 10, tolerance: 25 }
+      elbow: { min: 150 }                # keep the arms straight
+
+  - name: Overhead reach
+    cue: Reach both arms straight up over your head, hold for a moment, then lower them slowly.
+    demo:
+      times: 1
+      keyframes:
+        - {"ms": 2600, "ease": "inout", "servos": {"left_shoulder_pitch": 58, "left_shoulder_roll": 800, "left_elbow": 575, "right_shoulder_pitch": 942, "right_shoulder_roll": 200, "right_elbow": 425}, "hold_ms": 600}
+        - {"ms": 2600, "ease": "inout", "servos": {"left_shoulder_pitch": 725, "left_shoulder_roll": 800, "left_elbow": 575, "right_shoulder_pitch": 275, "right_shoulder_roll": 200, "right_elbow": 425}, "hold_ms": 400}
+    sets: 1
+    reps: 2
+    tempo_s: 6.5
+    mirror: arms
+    track_joint: shoulder_elevation
+    targets:
+      shoulder_elevation: { top: 150, bottom: 10, tolerance: 20 }
+      elbow: { min: 150 }                # keep the arms straight
+
+  - name: Gentle hug
+    cue: Wrap both arms gently across your chest as if giving yourself a hug, then let them go.
+    demo:
+      times: 1
+      keyframes:
+        - {"ms": 1800, "ease": "inout", "servos": {"left_shoulder_pitch": 392, "left_shoulder_roll": 550, "left_elbow": 575, "right_shoulder_pitch": 608, "right_shoulder_roll": 450, "right_elbow": 425}}
+        - {"ms": 1600, "ease": "inout", "servos": {"left_shoulder_pitch": 371, "left_shoulder_roll": 779, "left_elbow": 804, "right_shoulder_pitch": 629, "right_shoulder_roll": 221, "right_elbow": 196}, "hold_ms": 1200}
+        - {"ms": 1800, "ease": "inout", "servos": {"left_shoulder_pitch": 725, "left_shoulder_roll": 800, "left_elbow": 575, "right_shoulder_pitch": 275, "right_shoulder_roll": 200, "right_elbow": 425}}
+    sets: 1
+    reps: 1
+    tempo_s: 6.5
+    mirror: arms
+    track_joint: shoulder_elevation
+    targets:
+      shoulder_elevation: { top: 85, bottom: 10, tolerance: 25 }
+

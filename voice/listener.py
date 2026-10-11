@@ -120,7 +120,13 @@ class WhisperTranscriber:
             kwargs = {"prompt_ids": self._prompt} if self._prompt is not None else {}
             ids = self.model.generate(features, max_length=self._max_length, **kwargs)
         text = self.processor.batch_decode(ids, skip_special_tokens=True)[0].strip()
-        return "" if _normalize(text) in HALLUCINATIONS else text
+        return "" if _normalize(text) in HALLUCINATIONS or _looping(text) else text
+
+
+def _looping(text: str) -> bool:
+    """Whisper sometimes gets stuck on noise and repeats a phrase ("No, the... No, the... ...")."""
+    words = _normalize(text).split()
+    return len(words) >= 8 and len(set(words)) * 4 <= len(words)
 
 
 def _normalize(text: str) -> str:
@@ -131,8 +137,10 @@ class Listener:
     """Turns the robot's microphone into transcripts. One background thread does
     VAD and transcription, so every utterance is heard even between listen() calls."""
 
-    def __init__(self, receiver=None, vad=None, transcribe=None, model: str = MODEL):
+    def __init__(self, receiver=None, vad=None, transcribe=None, model: str = MODEL,
+                 mute_after_s: float = MUTE_AFTER_S):
         self.receiver = receiver
+        self.mute_after_s = mute_after_s
         self._vad = vad
         self._transcribe = transcribe
         self._model = model
@@ -163,14 +171,14 @@ class Listener:
     def robot_speaking(self):
         """Wrap the robot's say/play_sound calls: audio that arrives while they run,
         and for MUTE_AFTER_S after, is ignored so the robot doesn't hear itself."""
-        window = [time.time(), float("inf")]
+        window = [time.time(), float("inf")]  # closes mute_after_s after the with-block ends
         with self._cond:
             self._mutes.append(window)
         try:
             yield
         finally:
             with self._cond:
-                window[1] = time.time() + MUTE_AFTER_S
+                window[1] = time.time() + self.mute_after_s
 
     def on_transcript(self, callback):
         """Call callback(Transcript) for every transcript, from the listener's thread."""

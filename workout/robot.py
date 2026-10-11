@@ -48,9 +48,11 @@ class Robot:
             if cancelled():
                 return
             if "keyframes" in demo:
-                from workout.keyframes import play
+                from workout.keyframes import mirrored, play
 
                 if not play(self._call, demo["keyframes"], cancelled=cancelled):
+                    return
+                if demo.get("alternate") and not play(self._call, mirrored(demo["keyframes"]), cancelled=cancelled):
                     return
             elif "arm" in demo:
                 self.say("Up...")

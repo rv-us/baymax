@@ -1,6 +1,4 @@
-"""The GX10 owns the robot's camera; the dashboard asks it for the picture and the pose. And the microphone
-bridge: what the patient says reaches the dashboard, and the robot never hears itself."""
-import contextlib
+"""The GX10 owns the robot's camera; the dashboard asks it for the picture and the pose."""
 import threading
 import time
 
@@ -14,7 +12,7 @@ from dashboard import pose_service  # noqa: E402
 from dashboard.gx10_camera import Gx10Camera  # noqa: E402
 from test_dashboard_api import make, tiny_plan, wait_for  # noqa: E402
 from test_pose_service import free_port  # noqa: E402
-from voice.bridge import Bridge  # noqa: E402
+from voice import service as voice_service  # noqa: E402
 
 
 class RobotCam:
@@ -135,95 +133,3 @@ def test_a_session_on_the_robot_uses_the_camera_the_gx10_owns(gx10, tmp_path, fa
     client.post("/api/live/stop")
     assert wait_for(lambda: not parts["live"].running, 20)
     parts["gateway"].webcam.stop()
-
-
-# ---- the microphone ---------------------------------------------------------------------------
-
-def test_the_robot_talking_is_known_while_a_speech_call_is_in_flight(tmp_path, fake_robot):
-    client, parts = make(tmp_path)
-    release, inside = threading.Event(), threading.Event()
-
-    class Slow:
-        def call(self, path, **kw):
-            inside.set()
-            release.wait(5)
-            return {"said": kw.get("text")}
-
-    parts["gateway"].backend = Slow()
-    parts["gateway"].local = False
-    assert client.get("/api/voice").json()["speaking"] is False
-    t = threading.Thread(target=lambda: parts["gateway"].call("sensors/voice/say", text="Hello"))
-    t.start()
-    assert inside.wait(5)
-    assert client.get("/api/voice").json()["speaking"] is True
-    release.set()
-    t.join(5)
-    assert client.get("/api/voice").json()["speaking"] is False
-
-
-def test_pain_stops_the_robot_and_an_answer_goes_only_to_a_question_that_is_waiting(tmp_path, fake_robot):
-    client, parts = make(tmp_path)
-    tiny_plan(tmp_path)
-    assert client.post("/api/voice/heard", json={"text": "Yes I'm ready"}).json() == {"pain": False, "answered": False}
-    client.post("/api/live/start", json={"plan": "tiny", "simulate": False})
-    assert wait_for(lambda: parts["live"].state.get("waiting"), 10)
-    assert client.get("/api/voice").json()["waiting"] is True
-    assert client.post("/api/voice/heard", json={"text": "Yes I'm ready"}).json() == {"pain": False, "answered": True}
-    assert wait_for(lambda: parts["live"].state.get("state") not in (None, "READY_CHECK"), 10)
-    assert client.post("/api/voice/heard", json={"text": "ow, that hurts"}).json() == {"pain": True, "answered": False}
-    assert client.get("/api/safety").json()["stop"]["kind"] == "pain"
-    assert wait_for(lambda: not parts["live"].running, 20)
-
-
-class FakeListener:
-    def __init__(self):
-        self.callbacks, self.events = [], []
-
-    def on_transcript(self, cb):
-        self.callbacks.append(cb)
-
-    @contextlib.contextmanager
-    def robot_speaking(self):
-        self.events.append("mute")
-        try:
-            yield
-        finally:
-            self.events.append("unmute")
-
-
-class Said:
-    def __init__(self, text, age=0.0):
-        self.text, self.end = text, time.time() - age
-
-
-def test_the_bridge_sends_what_is_heard_and_mutes_while_the_robot_talks():
-    listener, posted, speaking = FakeListener(), [], {"on": False}
-    get = lambda path: {"speaking": speaking["on"]}                                  # noqa: E731
-    post = lambda path, body: posted.append((path, body)) or {"pain": False, "answered": True}   # noqa: E731
-    bridge = Bridge(listener, get, post)
-    threading.Thread(target=bridge.run, daemon=True).start()
-    listener.callbacks[0](Said("I'm ready"))
-    listener.callbacks[0](Said("a long time ago", age=60))                           # too old to act on
-    assert posted == [("/api/voice/heard", {"text": "I'm ready"})]
-    speaking["on"] = True
-    assert wait_for(lambda: listener.events == ["mute"], 2)
-    speaking["on"] = False
-    assert wait_for(lambda: listener.events == ["mute", "unmute"], 2)
-    bridge.stop()
-
-
-def test_the_bridge_survives_a_dashboard_that_is_not_there():
-    listener = FakeListener()
-
-    def down(*a):
-        raise OSError("connection refused")
-
-    bridge = Bridge(listener, down, down)
-    listener.callbacks[0](Said("ow"))                                                # logged, not raised
-    t = threading.Thread(target=bridge.run, daemon=True)
-    t.start()
-    time.sleep(0.2)
-    assert t.is_alive() and listener.events == []                                    # keeps its last state, keeps trying
-    bridge.stop()
-    t.join(2)
-    assert not t.is_alive()

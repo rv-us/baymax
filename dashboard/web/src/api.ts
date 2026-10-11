@@ -140,6 +140,12 @@ export interface MirrorState {
 }
 export const mirror = signal<MirrorState>({ running: false, source: null, pose_on: "none", transport: null, delivery: null,
   visible: false, calibrated: false, people: 0, sent: 0, error: null, arms: {}, green: {}, angles: {}, since: null });
+/** The microphone on the GX10 (voice service): is it listening, and the last thing it heard and what became of it. */
+export interface VoiceState {
+  state: "off" | "connecting" | "listening" | "down"; url: string | null; muted: boolean; error: string | null;
+  last: { text: string; outcome: "answer" | "pain" | "echo" | "unprompted" | "stale" | "error"; t: number } | null;
+}
+export const voice = signal<VoiceState>({ state: "off", url: null, muted: false, error: null, last: null });
 export const live = signal<Live>({ running: false, frame: { visible: true, x: 0, size: 0.6 }, advice: null });
 export const playback = signal<Playback>({ playing: false, t_ms: 0, total_ms: 0, error: null, name: null });
 export const tunnel = signal<Tunnel | null>(null);
@@ -177,6 +183,7 @@ export async function loadStatus() {
     const s = await api("GET", "/api/status");
     status.value = s; safety.value = s.safety; live.value = s.live; playback.value = s.playback;
     if (s.mirror) mirror.value = s.mirror;
+    if (s.voice) voice.value = s.voice;
     tunnel.value = s.tunnel; settings.value = s.settings; serverUp.value = true;
     recorder.value = s.recorder; calibration.value = s.calibration;
   } catch { serverUp.value = false; }
@@ -190,6 +197,7 @@ export function connectEvents() {
   on("live", (d) => { live.value = d; });
   on("playback", (d) => { playback.value = d; });
   on("mirror", (d) => { mirror.value = d; });
+  on("voice", (d) => { voice.value = d; });
   on("tunnel", (d) => { tunnel.value = d; });
   on("recorder", (d) => { recorder.value = d; });
   on("calibration", (d) => { calibration.value = d; });

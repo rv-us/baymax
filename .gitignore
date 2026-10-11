@@ -15,3 +15,4 @@ reviews/shots/
 .gx10_password
 .dashboard.pid
 .voice_bridge.pid
+.voice_service.pid
