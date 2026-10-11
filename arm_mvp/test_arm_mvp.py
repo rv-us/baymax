@@ -4,6 +4,7 @@ import math
 import numpy as np
 import pytest
 
+import arm_mimic
 import calibration
 import solver
 from filters import OneEuro, slew
@@ -168,3 +169,76 @@ def test_calibration_roundtrip(tmp_path):
     assert calibration.sample(px, world, vis) is None
     calibration.save(cal, str(tmp_path / "c.json"))
     assert calibration.load(str(tmp_path / "c.json")) == cal
+
+
+def landmarks_for(angles, distance=2.0, size=(640, 480)):
+    """MediaPipe style (image, world, vis) for a subject facing the camera whose arms are at the
+    given robot angles {side: (pitch, roll, flex) in degrees}."""
+    from retarget import arm_fk
+
+    torso = np.zeros((33, 3))
+    for side, y in (("L", 0.5 * WIDTH), ("R", -0.5 * WIDTH)):
+        sh, el, wr = ARM_IDX[side]
+        upper, fore = arm_fk(*np.radians(angles[side]))
+        torso[sh] = (0.0, y, 0.0)
+        torso[el] = torso[sh] + UPPER * upper
+        torso[wr] = torso[el] + FORE * fore
+    cam = np.stack([torso[:, 1], -torso[:, 2], -torso[:, 0]], axis=1)  # x right, y down, z away
+    px = 0.9 * size[0] * (cam[:, :2] + (0.1, -0.05)) / (cam[:, 2:] + distance) + (size[0] / 2, size[1] / 2)
+    return np.concatenate([px / size, cam[:, 2:]], axis=1), cam, np.ones(33)
+
+
+def test_tracking_end_to_end_copy_mode():
+    """Known robot arm angles -> synthetic camera landmarks -> full tracker -> the same angles,
+    with the subject's left arm driving the robot's left servos (copy mode, not mirror)."""
+    args = arm_mimic.parse_args([])
+    cal = {"calibrated": True, "shoulder_m": WIDTH, "shoulder_px": None,
+           "upper": {"L": UPPER, "R": UPPER}, "fore": {"L": FORE, "R": FORE}}
+    cases = [
+        {"L": (-90, 0, 0), "R": (0, 0, 0)},        # left arm forward, right hanging
+        {"L": (0, 60, 0), "R": (-90, 0, 60)},      # left out to the side, right forward with bent elbow
+        {"L": (-150, 20, 30), "R": (0, -80, 0)},   # left overhead, right near T-pose
+        {"L": (-40, 30, 70), "R": (-120, -40, 45)},
+    ]
+    for want in cases:
+        arms = {side: arm_mimic.new_arm(side, args) for side in "LR"}
+        lm = landmarks_for(want)
+        for i in range(60):
+            arm_mimic.track_arms(arms, lm, cal, i / 30.0, 1 / 30.0, (640, 480), args)
+        for side in "LR":
+            pitch, roll, interior = arms[side]["angles"]
+            assert arms[side]["state"] == "TRACKING"
+            assert abs(pitch - want[side][0]) < 3 and abs(roll - want[side][1]) < 3, (side, want[side], arms[side]["angles"])
+            assert abs(180 - interior - want[side][2]) < 3, (side, want[side], interior)
+    # Left arm forward lowers S8 toward 350 and leaves the right arm servos at stand.
+    arms = {side: arm_mimic.new_arm(side, args) for side in "LR"}
+    for i in range(60):
+        arm_mimic.track_arms(arms, landmarks_for(cases[0]), cal, i / 30.0, 1 / 30.0, (640, 480), args)
+    assert abs(solver.arm_pulses("L", *arms["L"]["angles"])[8] - 350) <= 12
+    assert abs(solver.arm_pulses("R", *arms["R"]["angles"])[16] - 275) <= 12
+
+
+def test_tracking_gates_hold_then_lost():
+    args = arm_mimic.parse_args([])
+    cal = {**calibration.default_calibration(WIDTH), "upper": {"L": UPPER, "R": UPPER}, "fore": {"L": FORE, "R": FORE}}
+    arms = {side: arm_mimic.new_arm(side, args) for side in "LR"}
+    good = landmarks_for({"L": (-90, 0, 0), "R": (-90, 0, 0)})
+    t = 0.0
+    for _ in range(40):
+        t += 1 / 30.0
+        arm_mimic.track_arms(arms, good, cal, t, 1 / 30.0, (640, 480), args)
+    held = list(arms["L"]["angles"])
+    hidden = (good[0], good[1], good[2].copy())
+    hidden[2][15] = 0.2  # left wrist occluded
+    swapped = landmarks_for({"L": (-90, 0, 0), "R": (0, -90, 0)})  # right wrist teleports 0.7 m
+    for _ in range(10):
+        t += 1 / 30.0
+        arm_mimic.track_arms(arms, (swapped[0], swapped[1], hidden[2]), cal, t, 1 / 30.0, (640, 480), args)
+    assert arms["L"]["state"] == "HOLD" and arms["L"]["angles"] == held          # visibility gate
+    assert arms["R"]["state"] == "HOLD" and abs(arms["R"]["angles"][0] + 90) < 3  # swap guard
+    for _ in range(150):
+        t += 1 / 30.0
+        arm_mimic.track_arms(arms, None, cal, t, 1 / 30.0, (640, 480), args)
+    for side in "LR":
+        assert arms[side]["state"] == "LOST"
+        assert np.allclose(arms[side]["angles"], solver.REST, atol=0.5)  # eased back to rest
