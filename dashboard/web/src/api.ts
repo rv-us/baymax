@@ -151,6 +151,21 @@ export async function stopRobot() {
   }
 }
 
+// ---- theme: follows the system unless one is chosen here ----------------------------------
+
+export type Theme = "system" | "light" | "dark";
+function savedTheme(): Theme {
+  try { const t = localStorage.getItem("baymax.theme"); return t === "light" || t === "dark" ? t : "system"; } catch { return "system"; }
+}
+export const theme = signal<Theme>(savedTheme());
+export function setTheme(t: Theme) {
+  theme.value = t;
+  if (t === "system") delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = t;
+  try { localStorage.setItem("baymax.theme", t); } catch { /* private mode */ }
+}
+setTheme(theme.value);
+
 // ---- small helpers --------------------------------------------------------------------
 
 export const words = (s: string) => s.replace(/_/g, " ");

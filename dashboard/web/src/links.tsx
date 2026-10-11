@@ -1,7 +1,7 @@
 // The three links (robot, camera, coach): always-visible status, and a drawer to fix them.
 import { signal } from "@preact/signals";
 import { useEffect, useState } from "preact/hooks";
-import { api, attempt, cap, settings, status, tunnel, words } from "./api";
+import { api, attempt, cap, setTheme, settings, status, theme, Theme, tunnel, words } from "./api";
 import { Icon, StateMark } from "./icons";
 
 export const drawerOpen = signal(false);
@@ -116,6 +116,14 @@ export function LinksDrawer() {
           <h2>Connections</h2>
           <button class="btn icon-only quiet" aria-label="Close" onClick={() => { drawerOpen.value = false; }}><Icon name="cross" /></button>
         </header>
+        <section class="link-card">
+          <h3>Appearance</h3>
+          <div class="theme" role="group" aria-label="Colour theme">
+            {(["system", "light", "dark"] as Theme[]).map((t) => (
+              <button key={t} aria-pressed={theme.value === t} onClick={() => setTheme(t)}>{t === "system" ? "Match this device" : cap(t)}</button>
+            ))}
+          </div>
+        </section>
         {!s ? <p>Waiting for the dashboard server…</p> : (
           <>
             {NAMES.map(([key, name, icon]) => {
