@@ -142,7 +142,7 @@ def test_pulses_never_leave_servo_limits():
             for roll in angles:
                 for elbow in (0.0, 90.0, 180.0, 400.0, float("nan"), float("inf"), float("-inf")):
                     for sid, pulse in solver.arm_pulses(side, pitch, roll, elbow).items():
-                        lo, hi = solver.SERVO_LIMITS[sid]
+                        lo, hi = solver.ARM_LIMITS[sid]
                         assert isinstance(pulse, int) and lo <= pulse <= hi, (side, pitch, roll, elbow, sid, pulse)
     assert solver.arm_pulses("L", float("nan"), float("nan"), float("nan")) == solver.arm_pulses("L", *solver.REST)
 

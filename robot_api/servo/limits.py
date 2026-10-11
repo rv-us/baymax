@@ -4,7 +4,7 @@ No servo has firmware angle limits set (all report 0-1000), so these are the
 only bounds. They are the range each servo reaches across the 127 factory
 action groups: poses the robot is known to survive. They do not prevent
 collisions between joints (e.g. shoulder roll inward with the arm at the
-side hits the leg).
+side hits the leg); servo.arm_limits does that for the arms.
 
 Regenerate on the robot with: python -m robot_api.servo.limits
 """
@@ -24,13 +24,16 @@ LIMITS = {
 
 # Symmetrical boundaries based on 4.167 ticks/deg
 LIMITS.update({
-    # Elbows: +-90 deg around neutral (500 +- 375)
-    6: (125, 875),
-    14: (125, 875),
+    # Elbows: outward as far as the factory actions go; inward (6 up, 14 down) to the deepest
+    # curl captured by scripts/arm_limit_capture.py (L 994). Whether the forearm hits the body
+    # first is up to servo.arm_limits.
+    6: (125, 990),
+    14: (10, 875),
 
-    # Shoulder Roll: physical bracket protection (~ +-90 deg)
-    7: (125, 875),
-    15: (125, 875),
+    # Shoulder Roll: outward to the bracket (~ 90 deg); inward to the deepest captured contact
+    # (L 953, R 33). servo.arm_limits keeps it off the body for the actual arm pose.
+    7: (125, 970),
+    15: (30, 875),
 
     # Shoulder Pitch (running swing): maximum mechanical range (0-1000)
     8: (0, 1000),
