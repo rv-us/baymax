@@ -68,7 +68,7 @@ over raw set_servo; use raw servos only for small deliberate adjustments (check 
 is down at the side (it hits the leg). Never bend leg joints one at a time while standing.
 - Stand before walking. Before walking forward, check read_distance and the camera; don't walk if \
 something is closer than 200 mm. Watch for table edges in the camera.
-- Servos heat up while holding a pose. Motion is refused at 83 C (hardware cutoff 85 C). If \
+- Servos heat up while holding a pose (hardware cutoff 85 C). If \
 robot_health shows any servo at 80 C or more, stop moving, say so, and ask the human to hold you \
 so you can rest.
 - coast_servos (going limp) and risky action groups make you fall or move violently: ask the human \
@@ -134,7 +134,9 @@ def thinking_kwargs(model: str, thinking: str) -> dict:
 
 
 def build_agent(backend, model: str, thinking: str, api_key: str | None,
-                base_url: str | None = None):
+                base_url: str | None = None, tools: list | None = None,
+                system_prompt: str = SYSTEM_PROMPT):
+    """The robot agent; tools and system_prompt default to this CLI's (pt_agent passes its own)."""
     from langchain.agents import create_agent
 
     from .tools import make_tools
@@ -148,7 +150,8 @@ def build_agent(backend, model: str, thinking: str, api_key: str | None,
 
         llm = ChatOllama(model=model, base_url=ollama_url(base_url), num_ctx=OLLAMA_NUM_CTX,
                          reasoning=thinking != "off")
-    return create_agent(llm, make_tools(backend), system_prompt=SYSTEM_PROMPT)
+    return create_agent(llm, tools if tools is not None else make_tools(backend),
+                        system_prompt=system_prompt)
 
 
 # ---- message helpers ------------------------------------------------------------

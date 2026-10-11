@@ -70,7 +70,7 @@ def make_tools(backend) -> list:
     def coast_servos(servos: Optional[list[str]] = None) -> dict:
         """Turn servo torque off (limp) so they cool down. Default: all body
         servos. THE ROBOT WILL FALL unless a human is holding it; ask first.
-        Motion is refused once any servo reaches 83 C (cutoff 85 C)."""
+        Servos cut out at 85 C."""
         return call("servo/coast", servos=servos)
 
     @tool

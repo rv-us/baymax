@@ -26,12 +26,18 @@ Standalone test (prints fps; add --show if the GX10 has a display and OpenCV):
 
 import argparse
 import collections
+import os
 import shutil
 import subprocess
 import threading
 import time
 
 import numpy as np
+
+try:  # from the repo root (streaming.receiver) or run inside streaming/ (python3 receiver.py)
+    from streaming.subproc import popen
+except ImportError:
+    from subproc import popen
 
 
 def build_command(port: int = 5000, latency_ms: int = 50,
@@ -70,7 +76,7 @@ class FrameReceiver:
         """Start receiving in the background. Returns without waiting for the Pi to start sending."""
         if not shutil.which("gst-launch-1.0"):
             raise RuntimeError("gst-launch-1.0 not found. Run ./install.sh")
-        self._proc = subprocess.Popen(self.command, stdout=subprocess.PIPE,
+        self._proc = popen(self.command, stdout=subprocess.PIPE,
                                       stderr=subprocess.PIPE, stdin=subprocess.DEVNULL)
         self._threads = [threading.Thread(target=self._read_frames, daemon=True),
                          threading.Thread(target=self._read_errors, daemon=True)]
@@ -129,11 +135,22 @@ def main():
     parser.add_argument("--port", type=int, default=5000)
     parser.add_argument("--latency", type=int, default=50, help="jitter buffer in ms")
     parser.add_argument("--show", action="store_true", help="display frames in a window (needs OpenCV)")
+    parser.add_argument("--robot-url", default=os.environ.get("BAYMAX_API_URL"),
+                        help="ask this robot API for the video (POST /sensors/camera/udp) and keep it "
+                             "going; default BAYMAX_API_URL. Without one, start_pi_sender.sh must send it")
     args = parser.parse_args()
 
     if args.show:
         import cv2
 
+    lease = None
+    if args.robot_url:
+        try:  # from the repo root or inside streaming/
+            from streaming.robot_camera import UdpVideoLease
+        except ImportError:
+            from robot_camera import UdpVideoLease
+        lease = UdpVideoLease(args.robot_url, port=args.port).start()
+        print(f"asked {args.robot_url} for its camera")
     rx = FrameReceiver(args.port, args.latency).start()
     print(f"Listening on UDP {args.port}... (Ctrl+C to stop)")
     last_count, last_time = 0, time.time()
@@ -159,6 +176,8 @@ def main():
         pass
     finally:
         rx.stop()
+        if lease:
+            lease.stop()
         if args.show:
             cv2.destroyAllWindows()
 

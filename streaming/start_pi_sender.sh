@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Run on the GX10. Starts the camera and microphone senders on the Pi over SSH, pointed at this GX10.
+# Run on the GX10. Starts the microphone sender (and, with VIDEO_ENABLED=1, the camera sender) on the Pi
+# over SSH, pointed at this GX10.
 # The GX10's IP is detected automatically, so nothing needs editing when it changes.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -12,10 +13,18 @@ if [[ -z "$GX10_IP" ]]; then
 fi
 echo "GX10 address on $GX10_IFACE: $GX10_IP"
 
+# By default (VIDEO_ENABLED=0 in config.env) this starts only the microphone and leaves the
+# camera to the robot API (POST /sensors/camera/udp, see streaming/robot_camera.py).
+# VIDEO_ENABLED=1 ./start_pi_sender.sh also pushes video to the GX10, the old way.
+
 # Stop any senders that are already running so we don't fight over the camera or mic.
-ssh "$PI_HOST" "pkill -f '[g]st-launch-1.0.* v4l2src'; pkill -f '[g]st-launch-1.0.* alsasrc'; true"
+if [[ "$VIDEO_ENABLED" == 1 ]]; then
+  ssh "$PI_HOST" "pkill -f '[g]st-launch-1.0.* v4l2src'; true"
+fi
+ssh "$PI_HOST" "pkill -f '[g]st-launch-1.0.* alsasrc'; true"
 sleep 1
 
+if [[ "$VIDEO_ENABLED" == 1 ]]; then
 # The camera feed is split (tee): one branch is the H.264 stream to the GX10,
 # the other writes JPEG snapshots on the Pi for the robot API's camera endpoint
 # (only one program can open the camera, so this sender feeds both).
@@ -29,6 +38,7 @@ ssh "$PI_HOST" "nohup gst-launch-1.0 v4l2src device=$VIDEO_DEVICE \
   ! video/x-h264,profile=baseline ! h264parse ! rtph264pay config-interval=1 pt=96 \
   ! udpsink host=$GX10_IP port=$VIDEO_PORT sync=false \
   < /dev/null > /tmp/tonypi-sender.log 2>&1 &"
+fi
 
 # The microphone (WonderEcho Pro) as Opus over RTP. It records from the shared
 # dsnoop device made by setup_pi_audio.sh, so the robot API can still use the mic.
@@ -44,7 +54,9 @@ fi
 
 sleep 2
 failed=0
-if ssh "$PI_HOST" "pgrep -f '[g]st-launch-1.0.* v4l2src' >/dev/null"; then
+if [[ "$VIDEO_ENABLED" != 1 ]]; then
+  echo "Video not started (VIDEO_ENABLED=0)"
+elif ssh "$PI_HOST" "pgrep -f '[g]st-launch-1.0.* v4l2src' >/dev/null"; then
   echo "Video sender running on the Pi, streaming to $GX10_IP:$VIDEO_PORT"
   echo "  Pi log: ssh $PI_HOST 'tail -f /tmp/tonypi-sender.log'"
 else

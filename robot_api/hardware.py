@@ -132,8 +132,11 @@ def read_temps(ids=range(1, 17)) -> dict:
 
 
 def ensure_cool(force: bool = False) -> None:
-    """Raise RobotError if any body servo is too hot (or temps are unreadable)."""
+    """Raise RobotError if any body servo is too hot (or temps are unreadable).
+    Does nothing unless config.TEMP_CHECK is on."""
     global _last_cool_check
+    if not config.TEMP_CHECK:
+        return
     if not force and time.monotonic() - _last_cool_check < config.TEMP_CHECK_TTL_S:
         return
     temps = read_temps()

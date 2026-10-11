@@ -44,6 +44,14 @@ def test_unreadable_temps_refuse_motion(fake_robot):
         api.call("actions/arm", side="left", position="up")
 
 
+def test_temp_check_off_lets_hot_servos_move(fake_robot, monkeypatch):
+    from robot_api import config
+
+    monkeypatch.setattr(config, "TEMP_CHECK", False)
+    fake_robot.temps[3] = 84
+    api.call("actions/arm", side="left", position="up")
+
+
 def test_coast_allowed_even_when_hot(fake_robot):
     fake_robot.temps[3] = 80
     api.call("servo/coast")

@@ -9,12 +9,28 @@ ACTION_DIR = "/home/pi/TonyPi/ActionGroups"
 AUDIO_DIR = "/home/pi/TonyPi/Functions/voice_interaction/audio"
 
 # Servo safety. Servos cut out at 85 C. They report whole degrees, so 82.5
-# refuses new motion from 83 C, leaving 2 C before the cutoff.
+# refuses new motion from 83 C, leaving 2 C before the cutoff. The refusal is off
+# unless BAYMAX_TEMP_CHECK=1; temperatures are still reported either way.
+TEMP_CHECK = os.environ.get("BAYMAX_TEMP_CHECK") == "1"
 MAX_SERVO_TEMP_C = float(os.environ.get("BAYMAX_MAX_TEMP", "82.5"))
 TEMP_CHECK_TTL_S = 5.0  # reuse a temperature check for this long
 MIN_MOVE_MS = 300
 MS_PER_PULSE = 1.0  # minimum move time grows with distance: 1000 pulses >= 1 s
 MAX_REPEATS = 5  # walking steps / action-group repeats per call
+
+# Camera controls (v4l2-ctl -c) applied while an MJPEG stream runs, restored after. Auto exposure
+# drops the head camera to ~6 fps indoors; a fixed 25 ms exposure (units of 100 us) runs at its
+# 640x480 maximum of ~23 fps, and brightness/gamma win back the light. Empty = leave the camera alone.
+CAMERA_DEVICE = "/dev/video0"
+STREAM_CAMERA_CONTROLS = os.environ.get(
+    "BAYMAX_STREAM_CAMERA", "auto_exposure=1,exposure_time_absolute=250,brightness=30,gamma=150")
+
+# H.264 over UDP (sensors/camera_udp.py), the format streaming/receiver.py on the GX10 reads.
+# While it runs, JPEG snapshots go to /dev/shm at UDP_SNAPSHOT_FPS for the API's other camera
+# users (camera.jpg, the MJPEG stream, agents); 15 keeps those usable without loading the Pi.
+UDP_VIDEO_WIDTH, UDP_VIDEO_HEIGHT, UDP_VIDEO_FPS = 640, 480, 30
+UDP_VIDEO_KEYFRAME = 15
+UDP_SNAPSHOT_FPS = int(os.environ.get("BAYMAX_UDP_SNAPSHOT_FPS", "15"))
 
 # Expansion sensors (Pi 5 header is gpiochip4).
 GPIO_CHIP = "gpiochip4"

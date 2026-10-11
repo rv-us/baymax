@@ -10,7 +10,7 @@ import inspect
 
 from .actions import arms, groups, locomotion, poses
 from .errors import RobotError
-from .sensors import buzzer, camera, climate, dot_matrix, health, light, microphone, sonar, voice_box
+from .sensors import buzzer, camera, camera_udp, climate, dot_matrix, health, light, microphone, sonar, voice_box
 from .servo import bus, head
 from .servo.joints import HEAD, JOINTS
 from .servo.limits import HEAD_LIMITS, LIMITS
@@ -31,6 +31,7 @@ ENDPOINTS = {
     "servo/joints": joint_map,
     "servo/status": bus.status,
     "servo/read": bus.read_servo,
+    "servo/positions": bus.positions,
     "servo/set": bus.set_servo,
     "servo/set_many": bus.set_servos,
     "servo/coast": bus.coast,
@@ -53,6 +54,9 @@ ENDPOINTS = {
     # sensors and peripherals
     "sensors/camera": camera.snapshot,
     "sensors/camera/close": camera.close,
+    # sensors/camera/udp (start) is a route in server.py: it streams to the caller's address.
+    "sensors/camera/udp/stop": camera_udp.stop,
+    "sensors/camera/udp/status": camera_udp.status,
     "sensors/distance": sonar.distance,
     "sensors/eyes": sonar.set_eyes,
     "sensors/climate": climate.read,

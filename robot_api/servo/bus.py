@@ -1,7 +1,8 @@
 """Granular bus-servo control: set/read individual servos, coast, hold.
 
-Every move is clamped to servo.limits, refused when a servo is too hot, and
-slowed so no servo travels faster than config.MS_PER_PULSE.
+Every move is clamped to servo.limits, its shoulder rolls kept off the body by
+servo.arm_limits, refused when a servo is too hot (if config.TEMP_CHECK is on),
+and slowed so no servo travels faster than config.MS_PER_PULSE.
 """
 from __future__ import annotations
 
@@ -10,17 +11,21 @@ import time
 from .. import config
 from ..hardware import ctl, ensure_cool, motion_lock, reader
 from ..errors import RobotError
+from . import arm_limits
 from .joints import BODY_IDS, HAND_IDS, joint_name, resolve
 from .limits import LIMITS, clamp
 
 
-def _move_ms(targets: dict, requested_ms: int | None) -> int:
+def _current(ids) -> dict:
     r = reader()
+    return {sid: r.read(sid, "position") if sid not in HAND_IDS else None for sid in ids}
+
+
+def _move_ms(targets: dict, current: dict, requested_ms: int | None) -> int:
     travel = 0
     for sid, pulse in targets.items():
-        current = r.read(sid, "position") if sid not in HAND_IDS else None
         # Unknown start (hands never answer): assume the full allowed range.
-        travel = max(travel, abs(pulse - current) if current is not None
+        travel = max(travel, abs(pulse - current[sid]) if current.get(sid) is not None
                      else LIMITS[sid][1] - LIMITS[sid][0])
     return max(config.MIN_MOVE_MS, int(requested_ms or 0), int(travel * config.MS_PER_PULSE))
 
@@ -29,7 +34,10 @@ def set_servos(targets: dict, ms: int | None = None, wait: bool = True) -> dict:
     """Move several bus servos together.
 
     targets: {servo id or joint name: pulse 0-1000}. Pulses outside the
-    servo's limits are clamped and reported under "clamped".
+    servo's limits are clamped and reported under "clamped". A shoulder roll
+    that would put the arm into the body (servo.arm_limits) is pulled out, added
+    to the move when only that arm's pitch or elbow was given, and reported under
+    "arm_limited".
     """
     if not targets:
         raise RobotError("no servos given")
@@ -40,15 +48,22 @@ def set_servos(targets: dict, ms: int | None = None, wait: bool = True) -> dict:
         if applied[sid] != int(pulse):
             clamped[joint_name(sid)] = {"requested": int(pulse), "applied": applied[sid],
                                         "limits": LIMITS[sid]}
+    arm_ids = {sid for ids in arm_limits.ARMS.values() if set(ids) & set(applied) for sid in ids}
     with motion_lock:
         ensure_cool()
-        move_ms = _move_ms(applied, ms)
+        current = _current(set(applied) | arm_ids)
+        applied, limited = arm_limits.limit(applied, current)
+        applied = {sid: clamp(sid, p) for sid, p in applied.items()}
+        move_ms = _move_ms(applied, current, ms)
         ctl().board.bus_servo_set_position(move_ms / 1000, [[i, p] for i, p in applied.items()])
         if wait:
             time.sleep(move_ms / 1000 + 0.05)
     result = {"moved": {joint_name(i): p for i, p in applied.items()}, "ms": move_ms}
     if clamped:
         result["clamped"] = clamped
+    if limited:
+        result["arm_limited"] = {joint_name(i): {"requested": w, "applied": applied[i]}
+                                 for i, (w, _) in limited.items()}
     return result
 
 
@@ -71,6 +86,14 @@ def read_servo(servo: int | str) -> dict:
                 vin_v=round(vin / 1000, 2) if vin else None,
                 torque_on=None if torque is None else bool(torque))
     return info
+
+
+def positions(servos: list | None = None) -> dict:
+    """Current pulse of each servo (default: body servos 1-16), position only, so it is quick
+    enough to poll. None for a servo that did not answer."""
+    ids = [resolve(s) for s in servos] if servos else list(BODY_IDS)
+    r = reader()
+    return {"positions": {str(sid): r.read(sid, "position") for sid in ids if sid not in HAND_IDS}}
 
 
 def status() -> dict:

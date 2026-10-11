@@ -293,18 +293,18 @@
       </geometry>
       <material name="servo_black"/>
     </visual>
-    <!-- Hand / Gripper End Effector -->
+    <!-- Hand / Gripper End Effector (faces inward, the way the elbow bends) -->
     <visual>
       <origin xyz="0 0.004 -0.075" rpy="0 0 0"/>
       <geometry>
-        <box size="0.016 0.030 0.015"/>
+        <box size="0.030 0.016 0.015"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
     <visual>
-      <origin xyz="0.008 0.004 -0.082" rpy="0 0 0"/>
+      <origin xyz="0 -0.004 -0.082" rpy="0 0 0"/>
       <geometry>
-        <box size="0.004 0.022 0.012"/>
+        <box size="0.022 0.004 0.012"/>
       </geometry>
       <material name="accent_blue"/>
     </visual>
@@ -431,18 +431,18 @@
       </geometry>
       <material name="servo_black"/>
     </visual>
-    <!-- Hand / Gripper End Effector -->
+    <!-- Hand / Gripper End Effector (faces inward, the way the elbow bends) -->
     <visual>
       <origin xyz="0 -0.004 -0.075" rpy="0 0 0"/>
       <geometry>
-        <box size="0.016 0.030 0.015"/>
+        <box size="0.030 0.016 0.015"/>
       </geometry>
       <material name="servo_black"/>
     </visual>
     <visual>
-      <origin xyz="0.008 -0.004 -0.082" rpy="0 0 0"/>
+      <origin xyz="0 0.004 -0.082" rpy="0 0 0"/>
       <geometry>
-        <box size="0.004 0.022 0.012"/>
+        <box size="0.022 0.004 0.012"/>
       </geometry>
       <material name="accent_blue"/>
     </visual>

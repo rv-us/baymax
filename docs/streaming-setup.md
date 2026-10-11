@@ -2,6 +2,8 @@
 
 How to stream the TonyPi's camera (Raspberry Pi 5) to the GX10 over Wi-Fi with low latency, including the network fixes needed on a crowded shared network.
 
+> **Day to day, you don't run the pipelines below by hand.** The robot API starts the same H.264 sender when the GX10 asks for it (`POST /sensors/camera/udp`, used by `streaming/robot_camera.py`), and `streaming/start_pi_sender.sh` starts the microphone. See [running-the-stream.md](running-the-stream.md). This page is for first-time setup, the network fixes (sections 3 and 4), and debugging the pipeline directly (section 5).
+
 **Result on the AIHackathon@UCSC network:** a steady ~22 fps (the camera's actual limit) after pinning the GX10 to the same access point as the Pi.
 
 ---
@@ -167,6 +169,8 @@ sudo nmcli con up "<connection-name>"
 ---
 
 ## 5. Run the stream
+
+By hand, for debugging the pipeline itself. Normally the robot API runs the sender (see the note at the top). Stop the API's stream first (`POST /sensors/camera/udp/stop`), since only one program can open the camera.
 
 Start the **receiver first**, then the sender.
 
