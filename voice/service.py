@@ -11,7 +11,7 @@ talking, the same way it gets the camera from the pose service:
                                         (never wakes the microphone)
     GET  /heard?after=SEQ&wait=S       {"seq": n, "items": [{"seq", "utt", "final", "text", "age", "duration"}]}:
                                         what was said after SEQ (waits up to S seconds for something). Words arrive
-                                        AS THEY ARE SPOKEN: every ~0.25 s the utterance so far (`final` false), then
+                                        AS THEY ARE SPOKEN: every --partial-every seconds (1 s) the utterance so far (`final` false), then
                                         the whole of it once the speaker pauses (`final` true); `utt` ties them together.
                                         `age` is seconds since the speech (so far) ended
     POST /speaking {"on": true|false}  the robot starts or stops talking: the microphone is ignored while it does,
@@ -32,6 +32,8 @@ import collections
 import contextlib
 import threading
 import time
+
+from voice.listener import PARTIAL_EVERY_S
 
 DEFAULT_PORT = 9200
 SERVICE = "baymax-voice"
@@ -210,6 +212,9 @@ def main() -> None:
     ap.add_argument("--idle", type=float, default=IDLE_S, metavar="SECONDS",
                     help="unload Whisper after nobody has asked to hear for this long (default 15); it loads "
                          "again on the next request")
+    ap.add_argument("--partial-every", type=float, default=PARTIAL_EVERY_S, metavar="SECONDS",
+                    help="while someone speaks, transcribe the words so far this often (default 1; each read "
+                         "costs GPU power, so a smaller number is quicker but draws more)")
     ap.add_argument("--end-silence", type=float, default=0.6, metavar="SECONDS",
                     help="a pause this long ends an utterance (default 0.6); answers don't wait for it, they are "
                          "taken from the partial words as soon as they are complete")
@@ -220,7 +225,8 @@ def main() -> None:
     def build():
         print("loading Silero VAD and Whisper...", flush=True)
         return Listener(model=args.model or MODEL, mute_after_s=args.mute_tail,
-                        end_silence_ms=args.end_silence * 1000).start()
+                        end_silence_ms=args.end_silence * 1000,
+                        partial_every_s=args.partial_every).start()
 
     print(f"Baymax voice service on http://{args.host}:{args.port} (listening starts when asked)", flush=True)
     uvicorn.run(make_app(VoiceHub(factory=build, idle_s=args.idle)), host=args.host, port=args.port,

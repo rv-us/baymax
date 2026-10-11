@@ -38,7 +38,7 @@ MODEL = "openai/whisper-small.en"
 PROMPT = "Stop. Yes. No. Not yet. I'm ready. That hurts. Ow."
 NO_SPEECH = 0.5      # drop audio Whisper thinks is more likely noise than speech
 MUTE_AFTER_S = 0.3   # keep ignoring the mic this long after the robot stops talking
-PARTIAL_EVERY_S = 0.25   # while someone is speaking, transcribe what has been said so far this often...
+PARTIAL_EVERY_S = 1.0    # while someone is speaking, transcribe what has been said so far this often...
 MIN_PARTIAL_S = 0.35     # ...once there is this much speech to read
 POLL_S = 0.05
 
