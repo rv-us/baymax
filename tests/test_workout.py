@@ -132,6 +132,12 @@ def test_pain_heard_mid_set_stops_the_set(tmp_path, fake_robot):
     assert servo_stops(fake_robot) >= 1
 
 
+def test_robot_stays_frozen_after_a_pain_stop(tmp_path, fake_robot):
+    make(["yes", FINE], tmp_path, tracker=FakeTracker(events={2: "pain"})).run()
+    last_stop = max(i for i, e in enumerate(fake_robot.log) if e[0] == "bus_servo_stop")
+    assert not [e for e in fake_robot.log[last_stop:] if e[0] == "bus_servo_set_position"]
+
+
 def test_pain_words_from_the_listener_thread(tmp_path, fake_robot):
     w = make(["yes"], tmp_path)
     w._heard("ow ow that really hurts")  # what ListenerEars.on_heard delivers

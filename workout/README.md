@@ -20,7 +20,7 @@ Add `--fast` to skip waits and the countdown. Each session is saved to `sessions
 
 ## Safety stops
 
-Pain words ("hurts," "ow," "stop," ...) are checked on everything the mic hears, from the listener's thread. A match freezes the servos right away (`actions/stop` and `servo/stop`), without waiting for the current step, then the engine moves to `SAFETY_STOP`: the robot says "Let's stop here," the session ends and is flagged for the therapist. Leaving the camera view mid-set pauses the set and resumes it at the same rep.
+Pain words ("hurts," "ow," "stop," ...) are checked on everything the mic hears, from the listener's thread. A match freezes the servos right away (`actions/stop` and `servo/stop`), without waiting for the current step, then the engine moves to `SAFETY_STOP`: the robot says "Let's stop here," the session ends and is flagged for the therapist. The robot then stays frozen where it stopped; it doesn't return to standing on its own. Leaving the camera view mid-set pauses the set and resumes it at the same rep.
 
 ## Stand-ins to replace
 

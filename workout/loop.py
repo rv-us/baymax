@@ -338,10 +338,13 @@ class Workout:
             self.robot.say("I haven't heard from you, so let's stop for today.")
         if s.status == "completed":
             self.robot.say("That's the whole workout, great job! " + self.summary())
-        try:
-            self.robot.stand()
-        except RobotError as e:
-            log.warning("final stand failed: %s", e)
+        # After a pain stop the robot stays frozen where it is: "stop" means no more
+        # moving until a person decides otherwise.
+        if s.status != "stopped_pain" and self.interrupts.empty():
+            try:
+                self.robot.stand()
+            except RobotError as e:
+                log.warning("final stand failed: %s", e)
         self.save()
 
     def summary(self) -> str:
