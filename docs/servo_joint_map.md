@@ -17,6 +17,11 @@ Robot's left = IDs 1–8, right = IDs 9–16, same order, foot to shoulder.
 | Shoulder roll | 7 | 15 |
 | Shoulder pitch | 8 | 16 |
 
+The digital twin models elbows 6/14 as mirrored inward-sweeping hinges (local +X/-X
+with x forward, y left, z up), based on observed hardware motion. They cannot curl
+forward independently of the shoulder. The API returns raw servo positions; it does
+not report joint axes. The stand pulses 575/425 are the straight-arm reference.
+
 Bus servo position range is 0–1000 (500 = middle); deviation (offset) range is -125 to 125.
 
 ## Head (PWM servos)

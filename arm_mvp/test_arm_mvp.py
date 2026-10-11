@@ -174,7 +174,7 @@ def landmarks_for(angles, distance=2.0, size=(640, 480), yaw_deg=0.0):
     torso = np.zeros((33, 3))
     for side, y in (("L", 0.5 * WIDTH), ("R", -0.5 * WIDTH)):
         sh, el, wr = ARM_IDX[side]
-        upper, fore = arm_fk(*np.radians(angles[side]))
+        upper, fore = arm_fk(*np.radians(angles[side]), side=side)
         torso[sh] = (0.0, y, 0.0)
         torso[el] = torso[sh] + UPPER * upper
         torso[wr] = torso[el] + FORE * fore

@@ -53,10 +53,10 @@ POSES = {
         {"L": (FWD, FWD), "R": (FWD, FWD)}, STAND),
     "t_pose": (
         {"L": ((0, 1, 0), (0, 1, 0)), "R": ((0, -1, 0), (0, -1, 0))}, STAND),
-    # Pitch at rest (arms hang at the sides), roll 45 deg out from down, elbow bent to 90 deg.
-    # With zero pitch the elbow flexes forward, so the forearms point straight ahead.
+    # Roll 45 degrees outward, elbow 60 degrees inward: forearms point toward the hips.
     "superhero": (
-        {"L": ((0, S45, -S45), FWD), "R": ((0, -S45, -S45), FWD)}, STAND),
+        {"L": ((0, S45, -S45), (0, -math.sin(math.radians(15)), -math.cos(math.radians(15)))),
+         "R": ((0, -S45, -S45), (0, math.sin(math.radians(15)), -math.cos(math.radians(15))))}, STAND),
     # Standing on the right leg, left thigh lifted forward with the shin hanging down.
     "flamingo": (
         ARMS_DOWN, {"L": ((math.sin(math.radians(70)), 0, -math.cos(math.radians(70))), DOWN),
@@ -104,7 +104,7 @@ def test_fk_matches_simulator():
         twin.update_arms(l_pitch_deg=pitch, l_roll_deg=roll, l_elbow_deg=180 - flex,
                          r_pitch_deg=pitch, r_roll_deg=-roll, r_elbow_deg=180 - flex)
         for side, sign in (("l", 1), ("r", -1)):
-            d, f = arm_fk(math.radians(pitch), math.radians(sign * roll), math.radians(flex))
+            d, f = arm_fk(math.radians(pitch), math.radians(sign * roll), math.radians(flex), side.upper())
             down = np.array([0.0, 0.0, -1.0])
             worst = max(worst, angle_between(np.array(twin.get_link_rotation(f"{side}_upper_arm")) @ down, d),
                         angle_between(np.array(twin.get_link_rotation(f"{side}_forearm")) @ down, f))
@@ -128,7 +128,7 @@ def test_poses_against_simulator():
                 assert e < 0.5, (name, yaw, limb, e)
             if name == "superhero":
                 for side, sign in (("L", 1), ("R", -1)):
-                    assert abs(arms[side][0]) < 0.5 and abs(arms[side][1] - sign * 45) < 0.5 and abs(arms[side][2] - 90) < 0.5, arms[side]
+                    assert abs(arms[side][0]) < 0.5 and abs(arms[side][1] - sign * 45) < 0.5 and abs(arms[side][2] - 120) < 0.5, arms[side]
     twin.close()
     print("[PASS] zombie / T / superhero / flamingo reproduced by the simulator")
 
@@ -227,7 +227,7 @@ def test_round_trip_simulator_to_estimator():
     n = 0
     for pitch in range(-170, 61, 23):
         for roll in range(-20, 161, 20):
-            for elbow in (180, 150, 120, 90):
+            for elbow in (180, 150, 120):
                 twin.update_arms(l_pitch_deg=pitch, l_roll_deg=roll, l_elbow_deg=elbow,
                                  r_pitch_deg=pitch, r_roll_deg=-roll, r_elbow_deg=elbow)
                 twin.update_legs(l_knee_deg=180 - abs(roll) * 0.3, l_hip_pitch_deg=roll * 0.2,
@@ -243,8 +243,8 @@ def test_round_trip_simulator_to_estimator():
                     # Seed with the neighbouring solution as live tracking does; tests IK + FK consistency.
                     for _ in range(25):
                         got = solvers[s].solve(*(pts[i] for i in ARM_IDX[s]), q_prev_deg=(pitch, sign * roll))
-                    d_got, f_got = arm_fk(*np.radians(got[:2]), math.radians(180 - got[2]))
-                    d_ref, f_ref = arm_fk(math.radians(pitch), math.radians(sign * roll), math.radians(180 - elbow))
+                    d_got, f_got = arm_fk(*np.radians(got[:2]), math.radians(180 - got[2]), s)
+                    d_ref, f_ref = arm_fk(math.radians(pitch), math.radians(sign * roll), math.radians(180 - elbow), s)
                     worst["pitch"] = max(worst["pitch"], angle_between(d_got, d_ref))
                     worst["roll"] = max(worst["roll"], angle_between(f_got, f_ref) if elbow < 175 else 0.0)
                     worst["elbow"] = max(worst["elbow"], abs(got[2] - elbow))

@@ -5,7 +5,7 @@ Input is the fused 3D landmark set (pose estimator XY + depth-fused Z). Everythi
 is first expressed in the robot's torso frame (x forward, y left, z up, origin at
 the torso centre), then turned into URDF joint angles:
 
-Arms (shoulder_pitch about Y -> shoulder_roll about X -> elbow about Y):
+Arms (shoulder_pitch about Y -> shoulder_roll about X -> mirrored elbow about X):
   - Elbow flexion is the exact interior angle between upper arm and forearm.
   - Shoulder pitch/roll come from a tiny damped least-squares IK that matches the
     robot's upper-arm AND forearm *directions* to the human's. Directions (not
@@ -42,7 +42,7 @@ LEG_IDX = {"L": (L_HIP, L_KNEE, L_ANKLE), "R": (R_HIP, R_KNEE, R_ANKLE)}
 # roll: left arm positive outward, right arm negative outward).
 PITCH_LIMITS = (-180.0, 80.0)
 ROLL_LIMITS = {"L": (-30.0, 180.0), "R": (-180.0, 30.0)}
-MAX_ELBOW_FLEX = 90.0  # servo 6/14 reach about 85-94 deg of flexion (pulse limits 930 / 33)
+MAX_ELBOW_FLEX = 72.0  # 575 -> 875 (L), 425 -> 125 (R), using robot_api limits
 
 
 def _unit(v: np.ndarray) -> Optional[np.ndarray]:
@@ -89,14 +89,15 @@ def shoulder_frame(l_shoulder, r_shoulder, up=(0.0, -1.0, 0.0)) -> Optional[Tupl
     return np.stack([np.cross(left, up), left, up]), 0.5 * (l_shoulder + r_shoulder)
 
 
-def arm_fk(pitch: float, roll: float, flex: float) -> Tuple[np.ndarray, np.ndarray]:
+def arm_fk(pitch: float, roll: float, flex: float, side: str = "L") -> Tuple[np.ndarray, np.ndarray]:
     """Unit upper-arm and forearm directions in the torso frame (angles in radians)."""
     cp, sp, cr, sr = math.cos(pitch), math.sin(pitch), math.cos(roll), math.sin(roll)
     rot = np.array([[cp, sp * sr, sp * cr],
                     [0.0, cr, -sr],
                     [-sp, cp * sr, cp * cr]])  # Ry(pitch) @ Rx(roll)
     upper = rot @ np.array([0.0, 0.0, -1.0])
-    fore = rot @ np.array([math.sin(flex), 0.0, -math.cos(flex)])  # elbow bends toward +x
+    inward = -1.0 if side == "L" else 1.0
+    fore = rot @ np.array([0.0, inward * math.sin(flex), -math.cos(flex)])
     return upper, fore
 
 
@@ -112,7 +113,7 @@ class ArmIK:
         self.q = np.zeros(2)  # [pitch, roll] in radians
 
     def _residual(self, q, d_h, f_h, flex, q_prev):
-        d, f = arm_fk(q[0], q[1], flex)
+        d, f = arm_fk(q[0], q[1], flex, self.side)
         return np.concatenate([d - d_h,
                                math.sqrt(self.fore_weight) * (f - f_h),
                                math.sqrt(self.damping) * (q - q_prev)])

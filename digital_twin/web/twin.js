@@ -10,7 +10,8 @@ import * as THREE from "./vendor/three.module.min.js";
 import { OrbitControls } from "./vendor/OrbitControls.js";
 
 const DEFAULT_BASE = new URL("../", import.meta.url).href.replace(/\/$/, "");
-const STAND_HEIGHT = 0.251; // torso height above the floor in the stand pose (metres)
+const STAND_HEIGHT = 0.253; // torso height above the floor in the stand pose (metres)
+const FLOOR_CLEARANCE = 0.001; // keep grounded soles above the floor/grid depth surfaces
 
 const CAMERAS = {
   iso:   [0.75, 0.42, 0.75],
@@ -45,7 +46,8 @@ class RobotView {
       const key = this.ghost ? "ghost" : name;
       if (!mats.has(key)) {
         mats.set(key, this.ghost
-          ? new THREE.MeshBasicMaterial({ color: tint, transparent: true, opacity: 0.28, depthWrite: false })
+          ? new THREE.MeshBasicMaterial({ color: tint, transparent: true, opacity: 0.28, depthWrite: false,
+                                          polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 })
           : new THREE.MeshStandardMaterial({ color: colorOf(model, name), roughness: 0.55, metalness: 0.12 }));
       }
       return mats.get(key);
@@ -92,7 +94,7 @@ class RobotView {
   setTarget(angles, base, ground) {
     for (const [n, a] of Object.entries(angles || {})) if (n in this.target) this.target[n] = a;
     if (ground && base) {
-      this.basePos.set(base.pos[0], base.pos[1], base.pos[2]);
+      this.basePos.set(base.pos[0], base.pos[1], base.pos[2] + FLOOR_CLEARANCE);
       this.baseQuat.set(base.quat[0], base.quat[1], base.quat[2], base.quat[3]);
     } else {
       this.basePos.set(0, 0, STAND_HEIGHT);
