@@ -223,19 +223,21 @@ The robot coaches but doesn't diagnose. All feedback stays about form and effort
 
 ## What each step uses
 
-| Need | Runs on | Existing piece | Gap |
+Status as of 2026-10-11. Issue numbers are on GitHub.
+
+| Need | Runs on | Built | Still missing |
 |---|---|---|---|
-| Run the loop / decide what's next | GX10 | `client.HttpBackend` for robot calls | The workout loop program itself |
+| Run the session | GX10 | `workout/` state table engine (`python -m workout`); the dashboard runs it for live sessions; `pt_agent/` is an LLM-agent alternative | — |
 | Speak | TonyPi | `say` (espeak-ng), called over HTTP from the GX10 | — |
-| Hear the patient | TonyPi mic → GX10 | Audio stream (`streaming/audio_receiver.py`) | VAD and Whisper `listen()`; see [Voice input](#voice-input) |
-| Understand answers | GX10 | Ollama with a JSON schema (`coach_test.py`) | The two classifier prompts and the pain keyword list |
-| Demonstrate | TonyPi | `run_action_group`, `set_servos` | Demonstration motions for each exercise in the plan |
+| Hear the patient | TonyPi mic → GX10 | Audio stream and `voice.Listener` (Silero VAD + Whisper on the GPU) | Telling the patient apart from bystanders |
+| Understand answers | GX10 | Keyword stand-ins in `workout/parts.py` | LLM classifier (#10) |
+| Demonstrate | TonyPi | `actions/arm`, safe action groups, and keyframe animations made in the dashboard (`workout/keyframes.py`) | — |
 | See the patient | TonyPi camera → GX10 | `RobotCamera` (`streaming/robot_camera.py`): H.264 over UDP from the robot API | — |
-| Pose estimation | GX10 | MediaPipe (used in `scripts/face_track.py`) | Run it on the GX10 over the stream |
-| Mirror arms | GX10 computes, TonyPi moves | `scripts/face_track.py --mode human` (runs fully on the Pi) | Move the angle mapping to the GX10 and send servo targets through the robot API |
-| Count reps / check form | GX10 | — | Per-exercise target angles and a rep counter |
-| Turn deviations into feedback | GX10 | `coach_test.py` (Ollama) | Wire into the loop |
-| Workout plan | GX10 | — | Format for exercises, reps, sets, target angles, demo motion |
+| Pose estimation | GX10 | `scripts/pose_server.py --stream` and `vision/`: MediaPipe, joint angles, body-in-view | A test on the robot's own camera; it tracks one person (#11) |
+| Mirror arms | GX10 computes, TonyPi moves | `arm_mvp/arm_mimic.py --api-url`; the dashboard's pace leading (`workout/pacing.py`) | Using it in the loop (#13), or replacing mirroring with an answer key (#17) |
+| Count reps / check form | GX10 | Simulated (`FakeTracker`, the dashboard's `SimTracker`); scores in `workout/session.py` | A rep counter on real pose angles (#12) |
+| Turn deviations into feedback | GX10 | `TemplateCoach` in the loop; the dashboard's Ollama session summary (`dashboard/coach.py`) | LLM form feedback after each set (#15) |
+| Workout plan | GX10 | `workout/plan.py`, `workout/plans/`, the dashboard's Plans screen | — |
 
 Latency: every robot action is an HTTP call over the Pi's Wi-Fi, and the API needs at least 300 ms per move. Mirroring should send at most a few servo updates per second and skip stale frames (`rx.latest()` already returns only the newest one).
 
@@ -268,6 +270,7 @@ exercises:
 ## Open questions
 
 - **Pain keywords:** which words stop the session right away. Too few and real pain gets missed; too many and Baymax stops for "this is hard."
-- **Pain policy:** after a pain report, should the session end, skip to the next exercise, or offer an easier version? The doc assumes it stops and flags the session for the therapist.
-- **Not-ready policy:** how many times to re-ask, and how long to wait between asks.
+- **Pain policy (decided for now):** a pain report stops the robot where it is, ends the session and flags it for the therapist. Skipping the exercise or offering an easier version could come later (#16).
+- **Not-ready policy (decided for now):** ask up to 3 times, 30 s apart (`Settings` in `workout/loop.py`).
+- **How to judge the patient's movement (#17):** convert their pose into robot joint angles and score the error (the current design, #12 and #13), or record a reference "answer key" for each exercise, play it on the robot alongside the patient, and score the patient's frames against the reference frames.
 - **Feedback during a set:** only at the end of the set (current design), or also a short live cue when the same mistake repeats several times?
