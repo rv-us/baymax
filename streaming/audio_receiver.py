@@ -31,6 +31,11 @@ import threading
 import time
 import wave
 
+try:  # from the repo root (streaming.receiver) or run inside streaming/ (python3 receiver.py)
+    from streaming.subproc import popen
+except ImportError:
+    from subproc import popen
+
 RATE = 16000
 CHUNK_MS = 20
 
@@ -72,7 +77,7 @@ class AudioReceiver:
         """Start receiving in the background. Returns without waiting for the Pi to start sending."""
         if not shutil.which("gst-launch-1.0"):
             raise RuntimeError("gst-launch-1.0 not found. Run ./install.sh")
-        self._proc = subprocess.Popen(self.command, stdout=subprocess.PIPE,
+        self._proc = popen(self.command, stdout=subprocess.PIPE,
                                       stderr=subprocess.PIPE, stdin=subprocess.DEVNULL)
         self._threads = [threading.Thread(target=self._read_audio, daemon=True),
                          threading.Thread(target=self._read_errors, daemon=True)]
