@@ -9,6 +9,7 @@ Then open http://127.0.0.1:8080. See dashboard/README.md.
 """
 import argparse
 import os
+import sys
 
 
 def main():
@@ -43,7 +44,18 @@ def main():
         print("warning: the dashboard has no login; anyone on this network can move the robot through it")
     print(f"Baymax dashboard: http://{'127.0.0.1' if args.host == '0.0.0.0' else args.host}:{args.port}"
           f"  ({'dry run' if args.dry_run else settings.robot_url})")
-    uvicorn.run(create_app(settings), host=args.host, port=args.port, workers=1, log_level="warning")
+    print("Press Ctrl+C to stop.")
+    try:
+        # The browser's live-update and camera streams never end by themselves, so a
+        # plain shutdown waits on them forever. Give them 2 s, then drop them.
+        uvicorn.run(create_app(settings), host=args.host, port=args.port, workers=1, log_level="warning",
+                    timeout_graceful_shutdown=2)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        # Background threads (a running session, the tunnel) must not keep the terminal stuck.
+        sys.stdout.flush()
+        os._exit(0)
 
 
 if __name__ == "__main__":

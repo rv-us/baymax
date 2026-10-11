@@ -50,10 +50,22 @@ function LiveTrace() {
       </svg>
       <figcaption>
         <span class="legend-item"><i class="swatch line-patient" />Patient</span>
-        <span class="legend-item"><i class="swatch line-ref" />Robot's demonstration</span>
+        <span class="legend-item"><i class="swatch line-ref" />Robot, a little ahead</span>
         <span class="legend-item">Target {bottom}° to {top}°</span>
       </figcaption>
     </figure>
+  );
+}
+
+const plain = ({ kind, source, ...ex }: any) => ex;
+
+function Stepper({ label, value, name, onChange }: { label: string; value: number; name: string; onChange: (v: number) => void }) {
+  return (
+    <div class="stepper" role="group" aria-label={`${label} for ${name}`}>
+      <button type="button" aria-label={`Fewer ${label.toLowerCase()}`} disabled={value <= 1} onClick={() => onChange(value - 1)}>−</button>
+      <output><b>{value}</b><span>{label}</span></output>
+      <button type="button" aria-label={`More ${label.toLowerCase()}`} disabled={value >= 50} onClick={() => onChange(value + 1)}>+</button>
+    </div>
   );
 }
 
@@ -64,7 +76,60 @@ function SessionRunner() {
   const [simulate, setSimulate] = useState(true);
   const [pace, setPace] = useState(1);
   const [answer, setAnswer] = useState("");
-  useEffect(() => { api("GET", "/api/plans").then((p) => { setPlans(p); setPlan((v) => v || p[0]?.id || ""); }).catch(() => setPlans([])); }, []);
+  // The session being put together: picking a plan copies its exercises here, then anything can change.
+  const [draft, setDraft] = useState<any[]>([]);
+  const [library, setLibrary] = useState<any[]>([]);
+  const [saveName, setSaveName] = useState("");
+  const pick = (id: string, list = plans) => {
+    setPlan(id);
+    setDraft(structuredClone(list?.find((p) => p.id === id)?.exercises ?? []));
+  };
+  useEffect(() => {
+    api("GET", "/api/plans").then((p) => { setPlans(p); setPlan((v) => v || p[0]?.id || ""); pick(p[0]?.id ?? "", p); }).catch(() => setPlans([]));
+    api("GET", "/api/exercises").then(setLibrary).catch(() => setLibrary([]));
+  }, []);
+  const edit = (i: number, patch: Record<string, number>) => setDraft((d) => d.map((e, j) => (j === i ? { ...e, ...patch } : e)));
+  const count = (v: string) => Math.max(1, Math.min(50, Math.round(+v) || 1));
+  const move = (i: number, by: number) => setDraft((d) => {
+    const n = [...d]; const j = i + by;
+    if (j < 0 || j >= n.length) return d;
+    [n[i], n[j]] = [n[j], n[i]]; return n;
+  });
+  const addable = library.filter((x) => !draft.some((e) => e.name === x.name));
+  const add = (name: string) => { const x = library.find((l) => l.name === name); if (x) setDraft((d) => [...d, structuredClone(x)]); };
+  const startDraft = () => {
+    const base = plans?.find((p) => p.id === plan);
+    const slug = saveName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 48);
+    attempt(() => api("POST", "/api/live/start", {
+      exercises: draft.map(plain), name: saveName.trim() || (base ? `${base.name} (edited)` : "Custom session"),
+      save_as: slug || undefined, simulate, pace,
+    }), slug ? "Saved the plan and started." : undefined);
+  };
+  // Until Start is pressed, the twin loops the session as built (twin only; the robot isn't touched).
+  const [loop, setLoop] = useState(true);
+  const [showing, setShowing] = useState<number | null>(null);
+  const draftNow = useRef(draft);
+  draftNow.current = draft;
+  const playing = playback.value.playing, hasDraft = draft.length > 0;
+  useEffect(() => {
+    setShowing(null);
+    if (l.running || !loop || !hasDraft || playing) return;
+    const t0 = performance.now();
+    let alive = true, busy = false;
+    const id = setInterval(async () => {
+      if (busy) return;
+      busy = true;
+      try {
+        const r = await api("POST", "/api/preview/session", { exercises: draftNow.current.map(plain), t_ms: performance.now() - t0 });
+        if (alive && !r.skipped) setShowing(r.index ?? null);
+      } catch { /* the loop just skips a beat */ }
+      busy = false;
+    }, 150);
+    return () => {
+      alive = false; clearInterval(id);
+      if (!live.value.running) api("POST", "/twin/api/pose", { name: "default_standing_pose" }).catch(() => {});
+    };
+  }, [l.running, loop, hasDraft, playing]);
   const stopped = safety.value.stop;
   const send = (text: string) => { if (text.trim()) attempt(() => api("POST", "/api/live/answer", { text })); setAnswer(""); };
 
@@ -81,20 +146,55 @@ function SessionRunner() {
           </p>
         )}
         {l.error && <p class="note bad"><Icon name="alert" size={16} />{l.error}</p>}
-        {plans?.length === 0 && <p>No workout plans found in workout/plans. Make one from an animation in Studio.</p>}
-        {!!plans?.length && (
+        {plans && (
           <>
-            <label>Workout plan
-              <select value={plan} onChange={(e) => setPlan(e.currentTarget.value)}>
+            <label>Start from
+              <select value={plan} onChange={(e) => pick(e.currentTarget.value)}>
+                <option value="">A blank session</option>
                 {plans.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </label>
             {chosen?.error && <p class="note bad"><Icon name="alert" size={16} />{chosen.error}</p>}
-            {chosen && !chosen.error && (
-              <ol class="plan-preview">
-                {chosen.exercises.map((e: any) => <li key={e.name}><b>{e.name}</b> <span>{e.sets} sets of {e.reps}</span></li>)}
-              </ol>
+            <ol class="draft" aria-label="Exercises in this session">
+              {draft.map((e, i) => (
+                <li key={e.name} class={showing === i ? "is-showing" : ""}>
+                  <span class="draft-num" aria-hidden="true">{i + 1}</span>
+                  <div class="draft-name">
+                    <b>{e.name}</b>
+                    <span>{showing === i ? "Showing on the twin" : e.cue}</span>
+                  </div>
+                  <div class="draft-steps">
+                    <Stepper label="Sets" name={e.name} value={e.sets} onChange={(v) => edit(i, { sets: count(String(v)) })} />
+                  <Stepper label="Reps" name={e.name} value={e.reps} onChange={(v) => edit(i, { reps: count(String(v)) })} />
+                  </div>
+                  <span class="draft-tools">
+                    <button class="btn icon-only quiet" disabled={i === 0} aria-label={`Move ${e.name} up`} onClick={() => move(i, -1)}><Icon name="up" size={16} /></button>
+                    <button class="btn icon-only quiet" disabled={i === draft.length - 1} aria-label={`Move ${e.name} down`} onClick={() => move(i, 1)}><Icon name="down" size={16} /></button>
+                    <button class="btn icon-only quiet" aria-label={`Remove ${e.name}`} onClick={() => setDraft((d) => d.filter((_, j) => j !== i))}><Icon name="trash" size={16} /></button>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            {!draft.length && <p class="draft-empty">Nothing in this session yet. Pick a plan above, or add exercises below.</p>}
+            {!!addable.length && (
+              <div class="adder">
+                <span class="adder-label" id="adder-label">Add to this session</span>
+                <div class="chips" role="group" aria-labelledby="adder-label">
+                  {addable.map((x) => (
+                    <button key={x.name} class="chip" onClick={() => add(x.name)}>
+                      <span aria-hidden="true">+</span>{x.name}{x.kind === "emote" && <i>emote</i>}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
+            <div class="draft-foot">
+              <button class="btn toggle" aria-pressed={loop} disabled={!hasDraft} onClick={() => setLoop(!loop)}>Loop on the twin</button>
+              <details class="save-as">
+                <summary>Keep this as a plan</summary>
+                <input type="text" value={saveName} maxLength={60} aria-label="Plan name" placeholder="Name it to save it when you start" onInput={(e) => setSaveName(e.currentTarget.value)} />
+              </details>
+            </div>
             <label class="check"><input type="checkbox" checked={simulate} onChange={(e) => setSimulate(e.currentTarget.checked)} />
               Simulate the patient's answers</label>
             <label>Pace
@@ -103,8 +203,7 @@ function SessionRunner() {
               </select>
             </label>
             <p class="note"><Icon name="alert" size={16} />Pose tracking isn't finished, so the patient's movement in a session is simulated. The log is marked synthetic.</p>
-            <button class="btn primary big" disabled={!!stopped || !chosen || !!chosen.error}
-              onClick={() => attempt(() => api("POST", "/api/live/start", { plan, simulate, pace }))}>
+            <button class="btn primary big" disabled={!!stopped || !draft.length} onClick={startDraft}>
               <Icon name="play" />Start session
             </button>
             {stopped && <p class="note bad">A safety stop is active. Clear it in the banner above first.</p>}
@@ -136,6 +235,11 @@ function SessionRunner() {
         </div>
         <div class="rep-meta">
           <span>Set {l.set ?? 1} of {l.sets ?? 1}</span>
+          {l.state === "MIRROR" && l.lead != null && (
+            <span class="lead" title="The robot keeps about a quarter of a rep ahead and waits if the patient slows down">
+              Robot {l.lead >= 0.05 ? `${Math.round(l.lead * 100)}% of a rep ahead` : "level with the patient"}
+            </span>
+          )}
           <div class="pips" aria-hidden="true">
             {Array.from({ length: l.target_reps ?? 0 }, (_, i) => <i key={i} class={i < (l.reps ?? 0) ? "on" : ""} />)}
           </div>

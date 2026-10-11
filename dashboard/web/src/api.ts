@@ -20,7 +20,7 @@ export interface Live {
   running: boolean; state?: string | null; plan?: string | null; simulate?: boolean; pace?: number;
   exercise?: { name: string; cue: string; index: number; count: number };
   set?: number; sets?: number; reps?: number; target_reps?: number;
-  angle?: number | null; reference?: number; target?: Target;
+  angle?: number | null; reference?: number; lead?: number; target?: Target;
   said?: string | null; waiting?: string | null; heard?: string | null; matrix?: string;
   frame: Frame; advice: { kind: string; text: string } | null;
   last?: { id: string | null; status: string; flagged: boolean } | null; error?: string | null;

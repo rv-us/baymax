@@ -15,10 +15,10 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 
 from robot_api.errors import RobotError
 from workout import keyframes
-from workout.plan import EASINGS, KEYFRAME_JOINTS, PlanError, check_keyframes
+from workout.plan import EASINGS, KEYFRAME_JOINTS, PlanError, check_keyframes, parse_plan
 from workout.session import calories
 
-from . import poses, store, synthetic
+from . import poses, preview, store, synthetic
 from .calibration import FACTORY, SPEED_CAP, MAX_OFFSET, MIN_SPEED, CalibrationError, Profiles
 from .chat import Chat, clean_messages
 from .coach import Coach
@@ -253,6 +253,18 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
         twin.state.set_command(pose["servos"], source="dashboard", label="preview", head=pose["head"])
         return pose
 
+    @app.post("/api/preview/session")
+    def preview_session(body: dict = Body(...)):
+        """Loop the session being built on the twin: the pose `t_ms` into all its exercises
+        played end to end. Twin only. Does nothing while a session or animation is running."""
+        if live.running or player.playing or not body.get("exercises"):
+            return {"skipped": True}
+        plan = parse_plan({"name": "preview", "exercises": body.get("exercises") or []}, source="preview")
+        out = preview.session_pose([vars(e) for e in plan.exercises], float(body.get("t_ms") or 0))
+        if out["pose"]:
+            twin.state.set_command(out["pose"]["servos"], source="dashboard", label="preview", head=out["pose"]["head"])
+        return {"index": out["index"], "total_ms": out["total_ms"]}
+
     def ready_to_move() -> None:
         """Refuse (409, in words) unless the robot may be moved right now."""
         if live.running:
@@ -483,6 +495,27 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     def plan_list():
         return plans.list()
 
+    @app.get("/api/exercises")
+    def exercise_library():
+        """Everything that can be dropped into a session: each saved animation as an
+        exercise, then any exercise only a plan has. Names are unique, animations win."""
+        out, seen = [], set()
+        for row in animations.list():
+            if row.get("unreadable"):
+                continue
+            try:
+                ex = store.as_exercise(animations.get(row["id"]))
+            except (PlanError, ValueError, KeyError, TypeError):
+                continue
+            seen.add(ex["name"])
+            out.append({**ex, "kind": row["kind"], "source": "animation"})
+        for p in plans.list():
+            for ex in p["exercises"]:
+                if ex["name"] not in seen:
+                    seen.add(ex["name"])
+                    out.append({**ex, "kind": "exercise", "source": "plan"})
+        return out
+
     @app.put("/api/plans/{name}")
     def plan_save(name: str, body: dict = Body(...)):
         return plans.save(name, body)
@@ -599,9 +632,15 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     def live_start(body: dict = Body(...)):
         if player.playing:
             raise Refused("An animation is playing on the robot. Stop it first.")
+        simulate, pace = bool(body.get("simulate", True)), float(body.get("pace") or 1.0)
+        if body.get("exercises") is not None:  # a plan built on the spot in Start a session
+            plan = parse_plan({"name": str(body.get("name") or "Custom session")[:80],
+                               "exercises": body["exercises"]}, source="session")
+            if body.get("save_as"):
+                plans.save(store.check_id(str(body["save_as"])), {"name": plan.name, "exercises": body["exercises"]})
+            return live.start(str(body.get("save_as") or "custom"), simulate, pace, body.get("seed"), plan=plan)
         try:
-            return live.start(store.check_id(str(body.get("plan") or "")), bool(body.get("simulate", True)),
-                              float(body.get("pace") or 1.0), body.get("seed"))
+            return live.start(store.check_id(str(body.get("plan") or "")), simulate, pace, body.get("seed"))
         except FileNotFoundError:
             raise store.NotFound(body.get("plan")) from None
 

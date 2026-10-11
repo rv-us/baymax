@@ -321,6 +321,38 @@ def test_a_simulated_live_session_saves_a_scored_log(tmp_path, fake_robot):
     assert client.post("/api/live/start", json={"plan": "missing"}).status_code == 404
 
 
+def test_a_session_can_be_built_on_the_spot_and_saved(tmp_path, fake_robot):
+    client, parts = make(tmp_path)
+    tiny_plan(tmp_path)
+    ex = client.get("/api/plans").json()[0]["exercises"][0]
+    assert any(x["name"] == "Quick raise" for x in client.get("/api/exercises").json())
+    bad = client.post("/api/live/start", json={"exercises": [{**ex, "reps": 99}]})
+    assert bad.status_code == 422 or bad.status_code == 400
+    r = client.post("/api/live/start", json={"exercises": [{**ex, "reps": 3}], "name": "My mix",
+                                             "save_as": "my_mix", "simulate": True, "pace": 8, "seed": 1})
+    assert r.status_code == 200 and r.json()["plan"] == "My mix"
+    saved = next(p for p in client.get("/api/plans").json() if p["id"] == "my_mix")
+    assert saved["exercises"][0]["reps"] == 3
+    assert wait_for(lambda: not parts["live"].running, 20)
+
+
+def test_the_robot_mirrors_every_rep_in_a_live_session(tmp_path, fake_robot):
+    """Regression: the robot used to stall part-way through the first rep."""
+    client, parts = make(tmp_path)
+    tiny_plan(tmp_path)
+    ex = client.get("/api/plans").json()[0]["exercises"][0]
+    r = client.post("/api/live/start", json={"exercises": [{**ex, "reps": 6}], "simulate": True, "pace": 8, "seed": 5})
+    assert r.status_code == 200
+    assert wait_for(lambda: not parts["live"].running, 40)
+    last = parts["live"].state["last"]
+    s = client.get(f"/api/sessions/{last['id']}").json()
+    ref = s["sets"][0]["trace"]["reference"]
+    mid = (max(ref) + min(ref)) / 2
+    peaks = sum(1 for a, b in zip(ref, ref[1:]) if a < mid <= b)
+    assert peaks == 6, peaks
+    assert abs(ref[-1] - min(ref)) < 5      # and it ends back at rest
+
+
 def test_pain_during_a_live_session_stops_flags_and_latches(tmp_path, fake_robot):
     client, parts = make(tmp_path)
     tiny_plan(tmp_path)

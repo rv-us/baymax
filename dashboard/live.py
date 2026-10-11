@@ -9,6 +9,7 @@ the one the loop saves. A real tracker replaces SimTracker and nothing else chan
 from __future__ import annotations
 
 import json
+import logging
 import queue
 import random
 import threading
@@ -17,12 +18,16 @@ import time
 from robot_api.errors import RobotError
 from workout.loop import Settings as LoopSettings
 from workout.loop import Workout
+from workout import pacing
+from workout.keyframes import duration_ms, pose_at
 from workout.parts import SetResult, TemplateCoach, is_pain
 from workout.plan import load_plan
 from workout.robot import Robot
 from workout.session import reps_from_trace, set_target
 
-from . import synthetic
+from . import preview, synthetic
+
+log = logging.getLogger(__name__)
 
 MAX_STEPS = 2  # steps per reposition request (the robot API allows 5)
 
@@ -108,11 +113,25 @@ class SimTracker:
         self.rng = random.Random(seed)
         self.profile = synthetic.profile(self.rng, progress=0.8)
         self.carry: list = []       # samples from before a pause, for the same set
+        self.carry_ref: list = []   # the robot's own motion over the same samples
         self.sets_run = 0
         self.set_started = self.paused_at = 0.0
 
     def patient_visible(self) -> bool:
         return self.live.frame["visible"]
+
+    def _move_robot(self, frames: list, t_ms: float, sent: dict) -> dict:
+        """Put the arms where the demonstration is `t_ms` into one rep. Only joints that
+        changed are sent; a refusal (a latched stop, a hot servo) just skips the move."""
+        servos = pose_at(frames, t_ms)["servos"] if frames else {}
+        changed = {j: p for j, p in servos.items() if sent.get(j) != p}
+        if changed:
+            try:
+                self.live.gateway.call("servo/set_many", targets=changed, ms=200, wait=False)
+                return {**sent, **changed}
+            except RobotError as e:
+                log.debug("mirror move skipped: %s", e)
+        return sent
 
     def run_set(self, exercise, post_event, cancelled, reps_done: int = 0) -> SetResult:
         live = self.live
@@ -120,13 +139,21 @@ class SimTracker:
         if reps_done and self.carry:  # back after a pause: the gap is frames with no pose
             gap = int(min(60.0, (time.time() - self.paused_at) * live.pace) * synthetic.HZ)
             self.carry += [None] * gap
+            self.carry_ref += [self.carry_ref[-1] if self.carry_ref else 0.0] * gap
         else:
-            self.carry, self.sets_run, self.set_started = [], self.sets_run + 1, time.time()
+            self.carry, self.carry_ref = [], []
+            self.sets_run, self.set_started = self.sets_run + 1, time.time()
         started = self.set_started
         todo = synthetic.patient_trace(self.rng, target, exercise.reps - reps_done, self.profile,
                                        rep_offset=reps_done + (self.sets_run - 1) * exercise.reps)
         done = list(self.carry)
-        ref_all = synthetic.with_reference(done + todo, target, exercise.reps)["reference"]
+        # The robot mirrors the exercise a quarter-rep ahead of the patient, never further.
+        est = pacing.ProgressEstimator(target, start=reps_done)
+        leader = pacing.PaceLeader(target["tempo_s"], exercise.reps, start=reps_done)
+        frames = preview.demo_frames(exercise.demo) if exercise.mirror == "arms" else []
+        cycle_ms = duration_ms(frames)
+        ref = list(self.carry_ref)
+        sent: dict = {}
         finished = True
         for i, angle in enumerate(todo):
             if not live.frame["visible"]:
@@ -135,12 +162,20 @@ class SimTracker:
                 finished = False
                 break
             done.append(angle)
+            patient = est.update(angle)
+            leader.step(patient, 1 / synthetic.HZ)
+            ref.append(leader.angle(target))
             if i % 2 == 0:
+                if frames:
+                    sent = self._move_robot(frames, leader.phase() * cycle_ms, sent)
                 reps = len(reps_from_trace({"hz": synthetic.HZ, "patient": done}, target))
-                live.update(reps=reps, angle=angle,
-                            reference=ref_all[len(done) - 1], target=target)
+                live.update(reps=reps, angle=angle, reference=ref[-1], target=target,
+                            lead=round(leader.ahead_of(patient), 2))
             live.sleep(1 / synthetic.HZ)
-        self.carry, self.paused_at = (done, time.time()) if not finished else ([], 0.0)
+        if finished:
+            self._move_robot(frames, 0, sent)  # back to the start pose
+        self.carry, self.carry_ref, self.paused_at = (done, ref, time.time()) if not finished else ([], [], 0.0)
+        ref_all = ref
         trace = {"hz": synthetic.HZ, "patient": done, "reference": ref_all[:len(done)],
                  "joints": synthetic.joint_traces(done, target)}
         reps = len(reps_from_trace(trace, target))
@@ -198,15 +233,19 @@ class Live:
     def running(self) -> bool:
         return bool(self._thread and self._thread.is_alive())
 
-    def start(self, plan_name: str, simulate: bool = True, pace: float = 1.0, seed: int | None = None) -> dict:
+    def start(self, plan_name: str, simulate: bool = True, pace: float = 1.0, seed: int | None = None,
+              plan=None) -> dict:
+        """Run `plan_name` from workout/plans, or `plan` (an already-checked Plan the
+        dashboard assembled on the spot; `plan_name` is then only its label)."""
         with self._lock:
             if self.running:
                 raise RobotError("A session is already running.")
             reason = self.safety.blocked()
             if reason:
                 raise RobotError(reason)
-            plan = load_plan(plan_name if plan_name.endswith((".yaml", ".yml")) else
-                             f"{self.settings.plans_dir}/{plan_name}.yaml")
+            if plan is None:
+                plan = load_plan(plan_name if plan_name.endswith((".yaml", ".yml")) else
+                                 f"{self.settings.plans_dir}/{plan_name}.yaml")
             self.simulate, self.pace = bool(simulate), max(0.25, min(8.0, float(pace)))
             self.ears = Ears(self)
             self.frame.update(visible=True, x=0.0, size=0.6)

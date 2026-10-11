@@ -419,6 +419,39 @@ main:focus { outline: none; }
 .plan-preview { display: grid; gap: 4px; padding-left: 0; counter-reset: ex; }
 .plan-preview li { display: flex; gap: 10px; justify-content: space-between; border-bottom: 1px dotted var(--rule); padding: 4px 0; }
 .plan-preview span { color: var(--ink-2); }
+/* The session being built: numbered rows on one sunk strip, the loop's current row lit. */
+.draft { display: grid; gap: 0; padding: 0; margin: 0; list-style: none; border: 1.5px solid var(--rule); border-radius: var(--radius); background: var(--paper); overflow: hidden; }
+.draft li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "num name tools" "num steps steps"; gap: 8px 12px; align-items: center; padding: 12px 12px 12px 14px; position: relative; transition: background 0.2s; }
+.draft li + li { border-top: 1px solid var(--rule); }
+.draft li.is-showing { background: var(--accent-wash); }
+.draft li.is-showing::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--accent); }
+.draft-num { grid-area: num; align-self: start; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--sunk); color: var(--ink-2); font-size: 0.875rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.is-showing .draft-num { background: var(--accent-fill); color: var(--on-accent); }
+.draft-name { grid-area: name; display: grid; min-width: 0; }
+.draft-name b { font-size: 1.0625rem; }
+.draft-name span { color: var(--ink-2); font-size: 0.875rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.is-showing .draft-name span { color: var(--accent-ink); font-weight: 600; }
+.draft-steps { grid-area: steps; display: flex; flex-wrap: wrap; gap: 8px; }
+.draft-tools { grid-area: tools; display: flex; }
+.stepper { display: inline-flex; align-items: stretch; border: 1.5px solid var(--rule); border-radius: 999px; background: var(--surface); height: 40px; overflow: hidden; }
+.stepper button { width: 40px; border: 0; background: none; font: inherit; font-size: 1.25rem; line-height: 1; color: var(--ink); cursor: pointer; }
+.stepper button:hover:not(:disabled) { background: var(--sunk); }
+.stepper button:disabled { opacity: 0.35; cursor: not-allowed; }
+.stepper output { display: flex; align-items: baseline; gap: 5px; padding: 0 6px; align-self: center; min-width: 5.5rem; justify-content: center; font-variant-numeric: tabular-nums; }
+.stepper output span { font-size: 0.8125rem; color: var(--ink-2); }
+.draft-empty { padding: 20px 16px; text-align: center; color: var(--ink-2); border: 1.5px dashed var(--rule); border-radius: var(--radius); }
+.adder { display: grid; gap: 8px; }
+.adder-label { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 14px 0 10px; border: 1.5px solid var(--rule); border-radius: 999px; background: var(--surface); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+.chip > span { color: var(--accent); font-size: 1.125rem; line-height: 1; }
+.chip i { font-style: normal; font-size: 0.75rem; font-weight: 600; color: var(--ink-2); border-left: 1px solid var(--rule); padding-left: 8px; }
+.chip:hover { border-color: var(--accent); background: var(--accent-wash); }
+.draft-foot { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
+.save-as summary { cursor: pointer; font-weight: 600; color: var(--ink-2); min-height: var(--tap); display: flex; align-items: center; }
+.save-as[open] { flex: 1 1 100%; }
+.save-as input { width: 100%; }
+.lead { margin-left: auto; font-size: 0.875rem; font-weight: 600; color: var(--accent-ink); background: var(--accent-wash); border-radius: 999px; padding: 2px 10px; }
 .runner-head { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
 .runner-head h2 { font-size: 1.5rem; margin-right: auto; }
 .steps { display: flex; flex-wrap: wrap; gap: 4px; }
