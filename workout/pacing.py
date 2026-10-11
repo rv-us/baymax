@@ -20,6 +20,10 @@ import math
 LEAD = 0.25        # reps the robot aims to be ahead of the patient
 CATCH_UP = 1.5     # fastest the robot moves, as a multiple of the exercise's tempo
 MAX_JUMP = 0.3     # a bigger single-sample leap in estimated progress looks like a tracking glitch
+TURN_MIN_DEG = 5.0  # the angle must retreat this far (or TURN_FRAC of the range) from its extreme to count as a turn
+TURN_FRAC = 0.12
+REAL_REP = 0.35     # a rise smaller than this share of the range is a wobble, not a rep
+MAX_GAP = 0.75     # the robot holds while the two graphs are further apart than this share of the range
 RESYNC_AFTER = 4   # ...unless it persists for this many samples in a row
 
 
@@ -37,7 +41,7 @@ class ProgressEstimator:
     on the way down against the peak they just made. A turn-around is the half-way mark.
     """
 
-    def __init__(self, target: dict, start: float = 0.0, smooth: int = 4):
+    def __init__(self, target: dict, start: float = 0.0, smooth: int = 2):
         self.bottom = target.get("bottom", 0.0)
         self.top = target.get("top", 90.0)
         self.progress = float(start)
@@ -48,25 +52,40 @@ class ProgressEstimator:
         self.recent: list = []
         self.smooth = smooth
         self.rejected = 0
+        self.extreme = None   # highest angle this way up, or lowest this way down
 
     def update(self, angle):
         if angle is None:  # no pose this frame: hold
             return self.progress
         self.recent = (self.recent + [angle])[-(self.smooth + 1):]
-        delta = self.recent[-1] - self.recent[0]
-        if abs(delta) > 1.0 and (delta > 0) != self.rising:
-            self.rising = delta > 0
-            if self.rising:
-                self.peak = angle                             # a new rep begins
-            else:
+        raw, angle = angle, sum(self.recent) / len(self.recent)   # turns are judged on the smoothed angle
+        span = max(10.0, self.top - self.bottom)
+        margin = max(TURN_MIN_DEG, TURN_FRAC * span)
+        if self.extreme is None:
+            self.extreme = angle
+        if self.rising:
+            self.extreme = max(self.extreme, angle)
+            # A turn-around only counts once the patient has really gone up, then come back by a margin.
+            if angle < self.extreme - margin and self.extreme - self.bottom >= REAL_REP * span:
+                self.rising, self.extreme = False, angle
                 self.expected = max(self.bottom + 10.0, self.peak)  # what this patient reaches
+        else:
+            self.extreme = min(self.extreme, angle)
+            if angle > self.extreme + margin:
+                self.rising, self.extreme = True, angle
+                self.peak = angle                             # a new rep begins
         if self.rising:
-            self.peak = max(self.peak, angle)
+            self.peak = max(self.peak, raw)
+        # Phase follows the first sign of a turn; only the committed turn above needs the margin.
         if self.rising:
-            u = (angle - self.bottom) / max(10.0, self.expected - self.bottom)
+            down = self.extreme - self.bottom >= REAL_REP * span and angle < self.extreme - 1.5
+        else:
+            down = angle <= self.extreme + 1.5
+        if not down:
+            u = (raw - self.bottom) / max(10.0, self.expected - self.bottom)
             phase = min(0.5, math.acos(1 - 2 * max(0.0, min(1.0, u))) / (2 * math.pi))
         else:
-            u = (angle - self.bottom) / max(10.0, self.peak - self.bottom)
+            u = (raw - self.bottom) / max(10.0, self.peak - self.bottom)
             phase = max(0.5, 1 - math.acos(1 - 2 * max(0.0, min(1.0, u))) / (2 * math.pi))
         if self.phase > 0.75 and phase < 0.25:
             self.cycle += 1
@@ -96,8 +115,16 @@ class PaceLeader:
     def goal(self, patient: float) -> float:
         return min(float(self.reps), patient + self.lead)
 
-    def step(self, patient: float, dt: float) -> float:
-        """Move toward `lead` ahead of the patient, at most CATCH_UP x the natural speed."""
+    def step(self, patient: float, dt: float, gap: float = 0.0) -> float:
+        """Move toward `lead` ahead of the patient, at most CATCH_UP x the natural speed.
+
+        `gap` is the direct error between the robot's and the patient's joint angles as a share
+        of the range (what the live graph shows). A quarter-rep lead never makes it above
+        MAX_GAP, so more than that means the progress estimate is wrong or the patient is not
+        following: the robot waits whatever the estimate says.
+        """
+        if gap > MAX_GAP:
+            return self.progress
         goal = self.goal(patient)
         if self.progress < goal:
             self.progress = min(goal, self.progress + CATCH_UP / self.tempo * dt)

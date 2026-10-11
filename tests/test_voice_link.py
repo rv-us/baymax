@@ -64,6 +64,7 @@ def mic():
 def dashboard_on(tmp_path, url):
     client, parts = make(tmp_path)
     parts["settings"].voice_url = url
+    parts["voice"].active = lambda: True      # (a real one listens only while a session runs)
     parts["voice"].start()
     assert wait_for(lambda: parts["voice"].state["state"] == "listening", 5)
     return client, parts
@@ -173,6 +174,7 @@ def test_the_robot_talking_reaches_the_microphone_before_the_sound(mic, tmp_path
 def test_it_keeps_trying_when_the_gx10_is_not_there_yet(tmp_path, fake_robot):
     client, parts = make(tmp_path)
     parts["settings"].voice_url = f"http://127.0.0.1:{free_port()}"
+    parts["voice"].active = lambda: True
     parts["voice"].start()
     assert wait_for(lambda: parts["voice"].state["state"] == "down", 5)
     assert "isn't answering" in parts["voice"].state["error"]
@@ -287,3 +289,25 @@ def test_a_pain_word_stops_the_robot_mid_sentence(tmp_path, fake_robot):
     assert parts["hear"]("Ow", 0.0, False, 3) == "pain"                               # no waiting for the sentence to end
     assert client.get("/api/safety").json()["stop"]["kind"] == "pain"
     assert parts["hear"]("Ow, that really hurts", 0.0, True, 3) == "already"          # and it isn't a second stop
+
+
+def test_the_listener_loads_when_asked_and_is_dropped_when_nobody_asks():
+    built, listener = [], FakeListener()
+    listener.stopped = False
+    listener.stop = lambda: setattr(listener, "stopped", True)
+    hub = voice_service.VoiceHub(factory=lambda: built.append(1) or listener, idle_s=0.4)
+    assert hub.health()["active"] is False and not built       # nothing loaded, and asking about health doesn't load it
+    hub.speaking(True)                                          # the robot talking doesn't wake it either
+    assert not built
+    hub.heard(-1, 0.0)                                          # someone wants to hear: it loads
+    assert wait_for(lambda: hub.health()["active"], 5) and built == [1]
+    assert listener.events == ["mute"]                          # and it starts muted: the robot is talking
+    assert wait_for(lambda: listener.stopped and not hub.health()["active"], 5)   # nobody asked: unloaded
+
+
+def test_the_dashboard_makes_no_request_while_no_session_runs(mic):
+    url, _, hub = mic
+    link = VoiceLink(type("S", (), {"voice_url": url, "pose_url": None})(), lambda *a: "x", active=lambda: False)
+    link.start()
+    assert wait_for(lambda: link.state["state"] == "idle", 5)
+    link.stop()

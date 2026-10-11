@@ -40,6 +40,8 @@ from .safety import LATCHING, Safety
 from .tunnel import Tunnel, TunnelError
 
 # The robot's own action groups worth offering as emotes: (group, label, what it does).
+LISTEN_GRACE_S = 5.0   # the microphone stays on this long after the robot stops talking or a question is answered
+
 BUILTIN_EMOTES = (
     ("wave", "Wave", "A friendly wave with one hand."),
     ("bow", "Bow", "A small bow from the waist."),
@@ -140,7 +142,20 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
                 return "answer"
         return "unprompted" if final else "hearing"
 
-    voice = VoiceLink(settings, hear, hub)
+    needed = {"until": 0.0}
+
+    def listening_needed() -> bool:
+        """The microphone is wanted while the robot talks (it is about to ask something) and while a
+        question waits for its answer, plus a few seconds either side so Whisper isn't loaded and dropped
+        between two sentences. During a set it is off, so the GX10 spends nothing on it (BAYMAX_VOICE_IN_SETS=1
+        keeps it on for the whole session, so "stop" is heard mid-exercise as well)."""
+        now = time.monotonic()
+        if live.running and (gateway.speaking() or live.state.get("waiting")
+                             or os.environ.get("BAYMAX_VOICE_IN_SETS") == "1"):
+            needed["until"] = now + LISTEN_GRACE_S
+        return live.running and now < needed["until"]
+
+    voice = VoiceLink(settings, hear, hub, active=listening_needed)
     gateway.on_speaking = voice.set_speaking
 
     mirror = Mirror(settings, gateway, hub, busy=lambda: (

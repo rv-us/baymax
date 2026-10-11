@@ -42,8 +42,10 @@ def voice_url(settings) -> str | None:
 
 
 class VoiceLink:
-    def __init__(self, settings, hear, hub=None):
-        self.settings, self.hear, self.hub = settings, hear, hub
+    def __init__(self, settings, hear, hub=None, active=lambda: True):
+        """`active()` says whether anyone needs to hear right now (the robot is asking something); while it is
+        false the link makes no request, so the GX10 can keep Whisper unloaded."""
+        self.settings, self.hear, self.hub, self.active = settings, hear, hub, active
         self._stop = threading.Event()
         self._cond = threading.Condition()
         self._wanted = False          # the robot is talking
@@ -121,6 +123,12 @@ class VoiceLink:
             if url is None:
                 self._set(state="off", url=None)
                 self._stop.wait(2.0)
+                continue
+            if not self.active():
+                if seq is not None or self.state["state"] != "idle":
+                    seq = None
+                    self._set(state="idle", url=url, error=None, muted=False)
+                self._stop.wait(0.5)
                 continue
             try:
                 if seq is None:

@@ -177,7 +177,9 @@ class SimTracker:
                 break
             done.append(angle)
             patient = est.update(angle)
-            leader.step(patient, 1 / synthetic.HZ)
+            span = max(10.0, target.get("top", 90.0) - target.get("bottom", 0.0))
+            gap = abs(leader.angle(target) - angle) / span if angle is not None else 0.0
+            leader.step(patient, 1 / synthetic.HZ, gap)
             ref.append(leader.angle(target))
             if i % 2 == 0:
                 if frames:
