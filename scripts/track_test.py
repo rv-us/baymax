@@ -77,6 +77,9 @@ def main():
     ap.add_argument("--no-head", action="store_true", help="detect only; log head commands, don't send")
     ap.add_argument("--pan-sign", type=int, choices=[-1, 1], help="override BAYMAX_PAN_SIGN")
     ap.add_argument("--tilt-sign", type=int, choices=[-1, 1], help="override BAYMAX_TILT_SIGN")
+    ap.add_argument("--pan-gain", type=float, help="head pulses per unit face offset (Perception.PAN_GAIN)")
+    ap.add_argument("--tilt-gain", type=float, help="Perception.TILT_GAIN")
+    ap.add_argument("--settle", type=float, help="seconds after a head move before correcting again (Perception.SETTLE_S)")
     ap.add_argument("--detector", choices=["yolo", "mediapipe"], default="yolo")
     ap.add_argument("--camera", choices=["auto", "udp", "mjpeg"], default="auto")
     ap.add_argument("--save-every", type=float, default=3.0, help="seconds between saved frames (0: never)")
@@ -93,8 +96,13 @@ def main():
     from robot_api.client import HttpBackend
     from streaming.robot_camera import RobotCamera
 
+    for attr, value in (("PAN_GAIN", args.pan_gain), ("TILT_GAIN", args.tilt_gain), ("SETTLE_S", args.settle)):
+        if value is not None:
+            setattr(perc.Perception, attr, value)
     backend = LoggingBackend(HttpBackend(args.url), send=not args.no_head)
     camera = RobotCamera(args.url, mode=args.camera)
+    P = perc.Perception
+    print(f"gains pan {P.PAN_GAIN} tilt {P.TILT_GAIN}, settle {P.SETTLE_S} s, max step {P.MAX_STEP}")
     print(f"robot {args.url}; pan sign {perc.PAN_SIGN}, tilt sign {perc.TILT_SIGN}; "
           f"head {'NOT sent (--no-head)' if args.no_head else 'follows'}; loading {args.detector}...")
     perception = perc.Perception(camera, perc.make_detector(args.detector), backend).start()
@@ -170,10 +178,12 @@ def main():
         y_total = sum(1 for a, _ in moves if abs(a[1]) > 0.06)
         if x_total:
             print(f"pan: face got closer to center after {x_better}/{x_total} moves"
-                  + ("  <- likely backwards, try --pan-sign %d" % -perc.PAN_SIGN if x_better < x_total / 2 else ""))
+                  + ("  <- likely backwards, try --pan-sign %d" % -perc.PAN_SIGN if x_better < x_total / 3 else ""))
         if y_total:
             print(f"tilt: face got closer to center after {y_better}/{y_total} moves"
-                  + ("  <- likely backwards, try --tilt-sign %d" % -perc.TILT_SIGN if y_better < y_total / 2 else ""))
+                  + ("  <- likely backwards, try --tilt-sign %d" % -perc.TILT_SIGN if y_better < y_total / 3 else ""))
+        swings = sum(1 for _, pan, _ in backend.head_calls if pan in (perc.PAN_LIMITS[0], perc.PAN_LIMITS[1]))
+        print(f"head at a pan limit in {swings}/{len(backend.head_calls)} commands (many = overshooting)")
     print(f"saved {stats['frames_saved']} annotated frames to {args.out}")
 
 

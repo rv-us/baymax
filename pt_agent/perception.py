@@ -323,6 +323,10 @@ class Perception:
     DEADBAND = 0.06
     MAX_STEP = 90
     HEAD_HZ = 4
+    # Only correct from a frame taken after the last head move had finished: the camera runs
+    # ~0.2 s behind, and correcting again from older frames stacks moves into big overshoots
+    # (seen on the robot: the head swung between its 1200 and 1800 limits).
+    SETTLE_S = 0.2
 
     def __init__(self, source: FrameSource | None, detector, backend):
         self.source, self.detector, self.backend = source, detector, backend
@@ -370,7 +374,7 @@ class Perception:
             if len(times) > 1:
                 self.fps = (len(times) - 1) / (times[-1] - times[0])
             if self.target_id is not None:
-                self._follow()
+                self._follow(t)
 
     def persons(self) -> list:
         with self._lock:
@@ -432,9 +436,11 @@ class Perception:
         self.head.scan_i = (self.head.scan_i + 1) % len(SCAN_PANS)
         self.point_head(SCAN_PANS[self.head.scan_i], SCAN_TILT, ms=400)
 
-    def _follow(self):
+    def _follow(self, frame_t: float | None = None):
         if self.head.paused or time.time() - self.head.last_move < 1 / self.HEAD_HZ:
             return
+        if frame_t is not None and frame_t < self.head.last_move + self.SETTLE_S:
+            return  # this frame may predate the last move: wait for one that shows its result
         p = self.person(self.target_id)
         if p is None or p.simulated:
             return

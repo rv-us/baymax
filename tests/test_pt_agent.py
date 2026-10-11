@@ -383,3 +383,17 @@ def test_help_is_heard_only_as_a_word():
 
     assert is_help("Help!") and is_help("I need help")
     assert not is_help("that really helps") and not is_help("helpful") and not is_help(None)
+
+
+def test_head_waits_for_a_frame_taken_after_the_last_move(fake_robot):
+    perception = Perception(None, None, LocalBackend()).start()
+    pid = perception.simulate_person()
+    perception.person(pid).simulated = False          # let _follow steer toward it
+    perception.person(pid).body = Body((0.9, 0.5), 0.25, {})
+    perception.track(pid)
+    perception.head.last_move = time.time() - 1
+    pan0 = perception.head.pan
+    perception._follow(frame_t=perception.head.last_move - 0.1)   # stale frame: no move
+    assert perception.head.pan == pan0
+    perception._follow(frame_t=time.time())                       # fresh frame: moves
+    assert perception.head.pan != pan0
