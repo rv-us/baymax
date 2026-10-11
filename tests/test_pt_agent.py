@@ -155,7 +155,7 @@ def test_detectors_find_people_in_a_photo(name, people):
 def test_tool_set():
     tools, _, _ = tools_for(LocalBackend())
     assert not LEFT_OUT & set(tools) - {"say", "camera_view", "look"}  # replaced ones come back
-    for name in ("wait_for_patient", "approach_patient", "take_temperature", "listen", "say",
+    for name in ("wait_for_patient", "approach_patient", "take_temperature", "listen", "say", "ask",
                  "people_in_view", "follow_person", "record", "end_session", "clear_alert", "move_arm"):
         assert name in tools
 
@@ -353,9 +353,29 @@ def test_help_stops_says_911_stands_and_ends_the_session(fake_robot, tmp_path):
     assert fake_robot.positions[16] == 275                     # back in the stand pose
     saved = json.load(open(session.path))
     assert saved["emergency"] == "help me please" and "EMERGENCY" in saved["summary"]
-    for name, args in (("say", {"text": "hi"}), ("listen", {}), ("record", {"item": "a", "value": "b"}),
+    for name, args in (("say", {"text": "hi"}), ("listen", {}), ("ask", {"question": "ok?"}),
+                       ("record", {"item": "a", "value": "b"}),
                        ("move_arm", {"side": "left", "position": "up"}), ("clear_alert", {})):
         assert "session is over" in tools[name].invoke(args)["error"]
+
+
+def test_ask_says_the_question_then_returns_the_answer(fake_robot, tmp_path):
+    backend = SpeechBackend(fake_robot)
+    tools, _, session = tools_for(backend, FakeEars(answers=["Maria", None]), tmp_path=tmp_path)
+    assert tools["ask"].invoke({"question": "What's your name?"}) == {"heard": "Maria"}
+    assert said_texts(backend) == ["What's your name?"]
+    assert tools["ask"].invoke({"question": "Are you still there?"}) == {"heard": None}
+    kinds = [(e["kind"], e.get("text")) for e in session.events][:4]
+    assert kinds == [("robot", "What's your name?"), ("patient", "Maria"),
+                     ("robot", "Are you still there?"), ("patient", None)]
+
+
+def test_ask_reports_a_pain_alert(fake_robot):
+    ears = FakeEars(answers=["it hurts a bit"])
+    tools, _, _ = tools_for(SpeechBackend(fake_robot), ears)
+    ears.hear("it hurts a bit")  # the listener's callback fires on everything heard
+    out = tools["ask"].invoke({"question": "How is your shoulder?"})
+    assert out["heard"] == "it hurts a bit" and "pain words" in out["alert"]
 
 
 def test_help_is_heard_only_as_a_word():
