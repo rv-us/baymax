@@ -7,7 +7,8 @@ if (params.get("embed")) document.body.classList.add("embed");
 
 let twin;
 try {
-  twin = new BaymaxTwin($("view"), { ghost: params.get("ghost") !== "0", ground: params.get("ground") !== "0" });
+  twin = new BaymaxTwin($("view"), { ghost: params.get("ghost") !== "0", ground: params.get("ground") !== "0",
+    skeleton: params.get("skeleton") !== "0" });
 } catch (e) {
   // typically "WebGL not available" (blocked GPU, remote desktop, headless browser)
   $("t-stream").textContent = "3D view unavailable: " + e.message;
@@ -55,10 +56,27 @@ function buildServoTable() {
   }
 }
 
+// [label, left index pair, right index pair] in MediaPipe numbering
+const BONE_ROWS = [["upper arm", [11, 13], [12, 14]], ["forearm", [13, 15], [14, 16]],
+                   ["thigh", [23, 25], [24, 26]], ["shin", [25, 27], [26, 28]]];
+function renderBones(lm) {
+  const tb = document.querySelector("#bones tbody");
+  const fresh = lm && lm.age_s < 1;
+  const len = ([a, b]) => Math.hypot(...[0, 1, 2].map((k) => lm.points[a][k] - lm.points[b][k])) * 100;
+  const legs = fresh && lm.legs !== false;
+  const rows = BONE_ROWS.map(([name, l, r]) => { const on = fresh && (legs || l[1] < 25); return [name, on ? len(l) : null, on ? len(r) : null]; });
+  if (fresh) rows.push(["shoulders", len([11, 12]), null]);
+  tb.innerHTML = rows.map(([n, l, r]) => {
+    const skew = l != null && r != null && Math.abs(l - r) / Math.max(l, r) > 0.15;
+    return `<tr><td>${n}</td><td class="n${skew ? " warm" : ""}">${l == null ? "–" : l.toFixed(1)}</td><td class="n${skew ? " warm" : ""}">${r == null ? "–" : r.toFixed(1)}</td></tr>`;
+  }).join("");
+}
+
 function renderPanel() {
   pending = false;
   if (!latest) return;
   const { state, picked } = latest;
+  renderBones(state.landmarks);
   const shown = state.channels[picked.main];
   const cmd = state.channels.command, act = state.channels.actual;
 
@@ -144,6 +162,10 @@ async function main() {
   if (params.get("view")) twin.post("/api/view", { view: params.get("view") }).catch(() => {});
   $("o-ghost").checked = twin.options.ghost;
   $("o-ground").checked = twin.options.ground;
+  $("o-skel").checked = twin.options.skeleton;
+  $("o-skel-scale").value = twin.options.skeletonScale;
+  $("o-skel").onchange = (e) => twin.setOptions({ skeleton: e.target.checked });
+  $("o-skel-scale").oninput = (e) => twin.setOptions({ skeletonScale: +e.target.value });
   $("o-ghost").onchange = (e) => twin.setOptions({ ghost: e.target.checked });
   $("o-ground").onchange = (e) => twin.setOptions({ ground: e.target.checked });
 

@@ -70,7 +70,7 @@
       <span class="pill" id="p-src">showing: –</span>
     </div>
     <div class="cams" id="cams" role="group" aria-label="Camera presets"></div>
-    <div class="legend"><span><i style="background:#e8eaef"></i>shown</span><span><i style="background:var(--ghost);opacity:.6"></i>ghost (other channel)</span></div>
+    <div class="legend"><span><i style="background:#4ade80"></i>estimator skeleton</span><span><i style="background:#e8eaef"></i>shown</span><span><i style="background:var(--ghost);opacity:.6"></i>ghost (other channel)</span></div>
   </div>
   <aside>
     <h1>Baymax digital twin</h1>
@@ -86,6 +86,15 @@
       <label class="chk"><input type="checkbox" id="o-ghost" checked> Ghost overlay</label>
       <label class="chk"><input type="checkbox" id="o-ground" checked> Floor contact</label>
     </div>
+
+    <h2>Pose estimator</h2>
+    <div class="row">
+      <label class="chk"><input type="checkbox" id="o-skel" checked> Show raw skeleton</label>
+      <label class="chk">size <input type="range" id="o-skel-scale" min="0.15" max="0.6" step="0.01" value="0.3"></label>
+    </div>
+    <div class="sub" style="margin-top:6px">Raw landmarks (torso frame) beside the robot. Joints: <span style="color:var(--good)">●</span> visible <span style="color:var(--warn)">●</span> shaky <span style="color:var(--bad)">●</span> guessed. Axes: red fwd, green left, blue up.</div>
+    <table id="bones" style="margin-top:8px"><thead><tr><th>Bone length</th><th style="text-align:right">L cm</th><th style="text-align:right">R cm</th></tr></thead><tbody></tbody></table>
+    <div class="sub" style="margin-top:4px">Real bones are rigid: lengths that wander or differ L/R show depth error.</div>
     <div class="sub" style="margin-top:6px"><b>Command</b> = estimator / pose / sliders. <b>Robot</b> = servo readback from robot_api. Auto follows the robot while it is reporting.</div>
 
     <h2>Recorded poses</h2>

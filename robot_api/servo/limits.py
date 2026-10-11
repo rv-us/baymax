@@ -22,6 +22,21 @@ LIMITS = {
     17: (300, 760), 18: (240, 500),
 }
 
+# Symmetrical boundaries based on 4.167 ticks/deg
+LIMITS.update({
+    # Elbows: +-90 deg around neutral (500 +- 375)
+    6: (125, 875),
+    14: (125, 875),
+
+    # Shoulder Roll: physical bracket protection (~ +-90 deg)
+    7: (125, 875),
+    15: (125, 875),
+
+    # Shoulder Pitch (running swing): maximum mechanical range (0-1000)
+    8: (0, 1000),
+    16: (0, 1000),
+})
+
 # Head PWM servos (pulse width in us). Range used by Functions/Head_Control.py,
 # with tilt extended down to the 984 the factory grab course looks at its feet with.
 HEAD_LIMITS = {1: (950, 1800), 2: (1200, 1800)}

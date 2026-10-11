@@ -50,6 +50,7 @@ class TwinState:
         self.command.label = "default_standing_pose"
         self.actual = Channel("actual")
         self.view = "auto"
+        self.landmarks: Optional[dict] = None
         self.robot_link: dict = {"enabled": False, "connected": False, "url": None,
                                  "error": None, "last_ok_age_s": None, "hz": 0.0}
         self._solve_cache: Dict[str, tuple] = {}
@@ -97,6 +98,20 @@ class TwinState:
             self.actual.updated = time.monotonic()
             self.actual.extra = {"temps": {int(k): v for k, v in (temps or {}).items()},
                                  "limp": list(limp or [])}
+            self._bump()
+
+    def set_landmarks(self, points, visibility=None, source: str = "estimator", legs: bool = True) -> None:
+        """Raw pose-estimator landmarks in the torso frame (x fwd, y left, z up, metres), for the
+        side-by-side skeleton view. ``None`` clears them (person lost)."""
+        with self._cond:
+            if points is None:
+                if self.landmarks is None:
+                    return
+                self.landmarks = None
+            else:
+                pts = [[round(float(c), 4) for c in p[:3]] for p in points]
+                vis = [round(float(v), 2) for v in visibility] if visibility is not None else [1.0] * len(pts)
+                self.landmarks = {"points": pts, "vis": vis, "source": source, "legs": bool(legs), "updated": time.monotonic()}
             self._bump()
 
     def set_view(self, view: str) -> None:
@@ -176,7 +191,12 @@ class TwinState:
             link = copy.deepcopy(self.robot_link)
             if self.actual.updated is not None:
                 link["last_ok_age_s"] = self._age(self.actual)
+            lm = None
+            if self.landmarks:
+                lm = {**{k: v for k, v in self.landmarks.items() if k != "updated"},
+                      "age_s": round(time.monotonic() - self.landmarks["updated"], 3)}
             return {
+                "landmarks": lm,
                 "version": self._version,
                 "t": time.time(),
                 "view": self.view,

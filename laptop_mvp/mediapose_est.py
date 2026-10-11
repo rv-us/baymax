@@ -1323,6 +1323,8 @@ def main():
                 raw_l_plane, _, _ = calculate_shoulder_plane_angle_3d(world_lms, "L")
                 raw_r_plane, _, _ = calculate_shoulder_plane_angle_3d(world_lms, "R")
                 torso_pts = to_torso_frame(world_lms)
+                if digital_twin is not None and torso_pts is not None:
+                    digital_twin.update_landmarks(torso_pts, [lm.visibility for lm in world_lms], legs=legs_visible)
 
                 hand_l_closed = manual_gripper_clamp or detect_hand_closed(world_lms, "L")
                 hand_r_closed = manual_gripper_clamp or detect_hand_closed(world_lms, "R")
@@ -1386,6 +1388,9 @@ def main():
 
                 # Draw 17-keypoint skeleton overlay (with hip cutoff if legs hidden)
                 draw_skeleton_overlay(frame, img_lms, frame.shape[1], frame.shape[0], legs_visible)
+
+            if digital_twin is not None and results.pose_world_landmarks is None:
+                digital_twin.update_landmarks(None)
 
             # 4. Map Angles to TonyPi Bus Servo Pulses
             pulse_l_elb = map_elbow_to_tonypi_pulse(filt_l_elbow, "L")

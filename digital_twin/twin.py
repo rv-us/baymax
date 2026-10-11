@@ -75,6 +75,11 @@ class TonyPiDigitalTwin:
         """Drive the model with raw servo pulses (ids 1-18 or joint names)."""
         self.state.set_command(servos, source=self.source, label=label, head=head)
 
+    def update_landmarks(self, points, visibility=None, legs: bool = True) -> None:
+        """Raw estimator landmarks (N x 3, torso frame: x fwd, y left, z up, metres) drawn as a
+        skeleton beside the robot, so estimator accuracy can be judged before it becomes servo pulses."""
+        self.state.set_landmarks(points, visibility, source=self.source, legs=legs)
+
     def apply_pose(self, name: str) -> None:
         self.state.apply_pose(name, source=self.source)
 

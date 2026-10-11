@@ -127,11 +127,83 @@ class RobotView {
   }
 }
 
+// Raw MediaPipe landmarks (already in the robot torso frame: x fwd, y left, z up) drawn as a
+// skeleton beside the robot. Shows what the estimator actually saw, before any retargeting.
+const BONES = [
+  [11, 12, "c"], [23, 24, "c"], [11, 23, "l"], [12, 24, "r"],
+  [11, 13, "l"], [13, 15, "l"], [12, 14, "r"], [14, 16, "r"],
+  [15, 17, "l"], [15, 19, "l"], [15, 21, "l"], [16, 18, "r"], [16, 20, "r"], [16, 22, "r"],
+  [23, 25, "l"], [25, 27, "l"], [27, 29, "l"], [27, 31, "l"], [24, 26, "r"], [26, 28, "r"], [28, 30, "r"], [28, 32, "r"],
+];
+const JOINTS = [0, ...Array.from({ length: 22 }, (_, i) => i + 11)];
+const SIDE_COLOR = { l: 0x4cc3ff, r: 0xffb454, c: 0xe6edf5 };
+
+class PoseSkeleton {
+  constructor({ scale = 0.3, offsetY = 0.32, height = 0.33 } = {}) {
+    this.scale = scale;
+    this.group = new THREE.Group();       // ROS -> three.js, like the robot
+    this.group.rotation.x = -Math.PI / 2;
+    this.group.position.set(0, 0, 0);
+    this.root = new THREE.Group();        // torso-centre origin
+    this.root.position.set(0, offsetY, height);
+    this.root.scale.setScalar(scale);
+    this.group.add(this.root);
+    this.group.visible = false;
+    this.joints = {};
+    this.bones = BONES.map(([a, b, side]) => {
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1, 8),
+        new THREE.MeshBasicMaterial({ color: SIDE_COLOR[side], transparent: true }));
+      m.userData = { a, b };
+      this.root.add(m);
+      return m;
+    });
+    const sph = new THREE.SphereGeometry(0.022, 12, 8);
+    for (const i of JOINTS) {
+      const m = new THREE.Mesh(sph, new THREE.MeshBasicMaterial({ color: 0x4ade80 }));
+      this.joints[i] = m;
+      this.root.add(m);
+    }
+    // torso-frame axes (x fwd red, y left green, z up blue) so frame/sign errors are obvious
+    this.root.add(new THREE.AxesHelper(0.25));
+  }
+
+  setScale(s) { this.scale = s; this.root.scale.setScalar(s); }
+
+  update(lm) {
+    const ok = !!lm && lm.age_s < 1.0;
+    this.group.visible = ok;
+    if (!ok) return;
+    const P = lm.points, V = lm.vis;
+    const legs = lm.legs !== false;   // legs out of frame: drop knees/ankles/feet (index >= 25)
+    for (const i of JOINTS) {
+      const m = this.joints[i];
+      m.visible = legs || i < 25;
+      if (!m.visible) continue;
+      m.position.set(P[i][0], P[i][1], P[i][2]);
+      m.material.color.setHex(V[i] >= 0.7 ? 0x4ade80 : V[i] >= 0.4 ? 0xffd166 : 0xff6b6b);
+    }
+    const a = new THREE.Vector3(), b = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+    for (const m of this.bones) {
+      const { a: ia, b: ib } = m.userData;
+      m.visible = legs || Math.max(ia, ib) < 25;
+      if (!m.visible) continue;
+      a.set(...P[ia]); b.set(...P[ib]);
+      const len = a.distanceTo(b);
+      m.position.copy(a).add(b).multiplyScalar(0.5);
+      m.scale.set(1, Math.max(len, 1e-4), 1);
+      m.quaternion.setFromUnitVectors(up, b.clone().sub(a).normalize());
+      const v = Math.min(V[ia], V[ib]);
+      m.material.opacity = v >= 0.5 ? 1 : 0.25;
+    }
+  }
+}
+
 export class BaymaxTwin {
   constructor(container, opts = {}) {
     this.container = container;
     this.baseUrl = (opts.baseUrl ?? DEFAULT_BASE).replace(/\/$/, "");
-    this.options = { ghost: opts.ghost ?? true, ground: opts.ground ?? true };
+    this.options = { ghost: opts.ghost ?? true, ground: opts.ground ?? true,
+                     skeleton: opts.skeleton ?? true, skeletonScale: opts.skeletonScale ?? 0.3 };
     this.onState = opts.onState || (() => {});
     this.onConnection = opts.onConnection || (() => {});
     this.model = null;
@@ -210,7 +282,8 @@ export class BaymaxTwin {
     this.model = await res.json();
     this.main = new RobotView(this.model);
     this.ghostView = new RobotView(this.model, { ghost: true });
-    this.scene.add(this.main.group, this.ghostView.group);
+    this.skeleton = new PoseSkeleton({ scale: this.options.skeletonScale });
+    this.scene.add(this.main.group, this.ghostView.group, this.skeleton.group);
     this.ghostView.group.visible = false;
     if (this.state) this.setState(this.state);
     this._last = performance.now();
@@ -229,14 +302,19 @@ export class BaymaxTwin {
 
   setOptions(o) {
     Object.assign(this.options, o);
+    if (this.skeleton) this.skeleton.setScale(this.options.skeletonScale);
     if (this.state) this.setState(this.state);
   }
+
+  // The skeleton stands beside the robot (ROS +y = three -z): centre the camera between them.
+  _centerZ() { return this.options.skeleton && this.skeleton?.group.visible ? -0.16 : 0; }
 
   setCameraPreset(name) {
     const p = CAMERAS[name];
     if (!p) return;
-    this.camera.position.set(...p);
-    this.controls.target.set(0, 0.12, 0);
+    const z = this._centerZ();
+    this.camera.position.set(p[0], p[1], p[2] + z);
+    this.controls.target.set(0, 0.12, z);
   }
 
   // Which channel is drawn as the robot, and which (if any) as the ghost.
@@ -256,6 +334,8 @@ export class BaymaxTwin {
     const g = ghost && this.options.ghost ? state.channels[ghost] : null;
     this.ghostView.group.visible = !!g;
     if (g) this.ghostView.setTarget(g.angles, g.base, this.options.ground);
+    this.skeleton.update(this.options.skeleton ? state.landmarks : null);
+    if (!this._framed && this.skeleton.group.visible) { this._framed = true; this.setCameraPreset("front"); } // frame both, once
     this.onState(state, { main, ghost });
   }
 
