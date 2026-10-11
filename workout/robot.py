@@ -14,15 +14,21 @@ class Robot:
     `muter` is anything with a robot_speaking() context manager (voice.Listener), so
     the robot never transcribes its own voice."""
 
-    def __init__(self, backend, muter=None):
+    def __init__(self, backend, muter=None, timings=None):
         self.backend = backend
         self.muter = muter
+        self.timings = timings  # workout.timing.Timings, to time every call (--timing)
+
+    def _call(self, path: str, **kwargs):
+        if self.timings is None:
+            return self.backend.call(path, **kwargs)
+        return self.timings.timed("call", path, self.backend.call, path, **kwargs)
 
     def say(self, text: str):
         log.info("ROBOT: %s", text)
         mute = self.muter.robot_speaking() if self.muter else contextlib.nullcontext()
         with mute:
-            self.backend.call("sensors/voice/say", text=text)
+            self._call("sensors/voice/say", text=text)
 
     def show(self, text: str):
         self._try("sensors/matrix/text", text=text)
@@ -34,7 +40,7 @@ class Robot:
         self._try("sensors/buzzer", ms=ms)
 
     def stand(self):
-        self.backend.call("actions/stand")
+        self._call("actions/stand")
 
     def demonstrate(self, demo: dict, cancelled=lambda: False):
         """Play an exercise's demo motion, narrating it. Stops early if cancelled()."""
@@ -43,25 +49,25 @@ class Robot:
                 return
             if "arm" in demo:
                 self.say("Up...")
-                self.backend.call("actions/arm", side="both", position=demo["arm"])
+                self._call("actions/arm", side="both", position=demo["arm"])
                 if cancelled():
                     return
                 self.say("and down.")
-                self.backend.call("actions/arm", side="both", position="down")
+                self._call("actions/arm", side="both", position="down")
             else:
-                self.backend.call("actions/run", name=demo["action_group"])
+                self._call("actions/run", name=demo["action_group"])
 
     def stop_now(self):
         """Freeze every servo and cancel any action group. Safe to call from any thread."""
         for path in ("actions/stop", "servo/stop"):
             try:
-                self.backend.call(path)
+                self._call(path)
             except RobotError as e:
                 log.warning("stop: %s failed: %s", path, e)
 
     def _try(self, path: str, **kwargs):
         """Lights, matrix and buzzer are nice to have; a failure shouldn't end a workout."""
         try:
-            self.backend.call(path, **kwargs)
+            self._call(path, **kwargs)
         except RobotError as e:
             log.warning("%s failed: %s", path, e)

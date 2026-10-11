@@ -21,6 +21,8 @@ def main():
     parser.add_argument("--keyboard", action="store_true", help="type answers instead of the mic")
     parser.add_argument("--rep-seconds", type=float, default=1.0, help="simulated time per rep")
     parser.add_argument("--fast", action="store_true", help="no waits or countdown (testing)")
+    parser.add_argument("--timing", action="store_true",
+                        help="time every step and print where the session's time went")
     args = parser.parse_args()
 
     if args.dry_run:
@@ -31,6 +33,7 @@ def main():
     from workout.parts import FakeTracker, KeyboardEars, ListenerEars, TemplateCoach
     from workout.plan import load_plan
     from workout.robot import Robot
+    from workout.timing import Timings
 
     plan = load_plan(args.plan)
     if args.dry_run:
@@ -49,14 +52,18 @@ def main():
         listener = Listener().start()
         ears = ListenerEars(listener)
 
+    timings = Timings() if args.timing else None
+    if timings and listener:
+        listener.on_transcript(lambda t: timings.speech_latency.append(t.latency))
+
     notes = [[f"keep your elbows straight at the top of {ex.name.lower()}"] if i == 0 else []
              for ex in plan.exercises for i in range(ex.sets)]
     settings = Settings()
     if args.fast:
         settings.ready_wait_s, settings.countdown = 0, False
-    workout = Workout(plan, Robot(backend, muter=listener), ears,
+    workout = Workout(plan, Robot(backend, muter=listener, timings=timings), ears,
                       FakeTracker(notes, rep_seconds=0 if args.fast else args.rep_seconds),
-                      TemplateCoach(), settings)
+                      TemplateCoach(), settings, timings=timings)
     try:
         session = workout.run()
     finally:
@@ -64,6 +71,8 @@ def main():
             listener.stop()
     print(f"\nSession {session.status}{' (flagged for the therapist)' if session.flagged else ''}; "
           f"log saved to {workout.saved_path}")
+    if timings:
+        print(timings.report())
 
 
 if __name__ == "__main__":

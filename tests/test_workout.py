@@ -11,6 +11,7 @@ from workout.parts import FakeTracker, ScriptedEars, TemplateCoach, classify_rea
     classify_trouble, is_pain
 from workout.plan import PlanError, load_plan, parse_plan
 from workout.robot import Robot
+from workout.timing import Timings
 
 FINE = "no, it was fine"
 
@@ -24,12 +25,12 @@ def instant_servo_moves(monkeypatch):
         sleep=lambda s: None, time=time.time, monotonic=time.monotonic))
 
 
-def make(answers, tmp_path, tracker=None, deviations=None):
+def make(answers, tmp_path, tracker=None, deviations=None, timings=None):
     plan = load_plan("arms_basic")
-    w = Workout(plan, Robot(LocalBackend()), ScriptedEars(answers),
+    w = Workout(plan, Robot(LocalBackend(), timings=timings), ScriptedEars(answers),
                 tracker or FakeTracker(deviations), TemplateCoach(),
                 Settings(ready_wait_s=0, countdown=False, sessions_dir=str(tmp_path)),
-                sleep=lambda s: None)
+                sleep=lambda s: None, timings=timings)
     return w
 
 
@@ -160,6 +161,17 @@ def test_leaving_the_frame_outside_a_set_is_ignored(tmp_path):
     w.post("left_frame")  # arrives during READY_CHECK
     s = w.run()
     assert s.status == "completed" and "PAUSED" not in states(s)
+
+
+def test_timing_report_accounts_for_every_state(tmp_path):
+    timings = Timings()
+    s = make(["yes", FINE, FINE, FINE, FINE], tmp_path, timings=timings).run()
+    assert s.status == "completed"
+    assert [v[0] for v in timings.visits] == [t["from"] for t in s.transitions] + ["END"]
+    assert all("seconds" in t for t in s.transitions)
+    report = timings.report()
+    assert "sensors/voice/say" in report and "actions/arm" in report
+    assert "unexplained" not in report  # the loop itself adds no hidden waits
 
 
 def test_every_state_can_reach_end():

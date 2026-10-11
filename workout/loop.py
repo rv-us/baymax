@@ -87,11 +87,15 @@ class Session:
 
 class Workout:
     def __init__(self, plan, robot, ears, tracker, coach, settings: Settings = None,
-                 sleep=time.sleep):
+                 sleep=time.sleep, timings=None):
         self.plan, self.robot, self.ears = plan, robot, ears
         self.tracker, self.coach = tracker, coach
         self.settings = settings or Settings()
-        self.sleep = sleep
+        self._sleep = sleep
+        self.timings = timings  # workout.timing.Timings (--timing), or None
+        if timings:
+            timings.current_state = lambda: self.state
+        self._entered = time.time()
         self.session = Session(plan.name)
         self.interrupts = queue.Queue()
         self._cancel = threading.Event()  # set when an interrupt arrives; long steps check it
@@ -156,15 +160,30 @@ class Workout:
     def _go(self, event: str, nxt: str):
         if nxt == PAUSED:
             self.session.resume_state = self.state
+        now = time.time()
+        if self.timings:
+            self.timings.visit(self.state, self._entered)
         self.session.transitions.append(
-            {"t": round(time.time() - self.session.started, 2), "from": self.state,
-             "event": event, "to": nxt})
+            {"t": round(now - self.session.started, 2), "from": self.state,
+             "event": event, "to": nxt, "seconds": round(now - self._entered, 2)})
+        self._entered = now
         log.info("%s --%s--> %s", self.state, event, nxt)
         self.state = nxt
         self._cancel.clear()
 
     def cancelled(self) -> bool:
         return self._cancel.is_set()
+
+    def sleep(self, seconds: float):
+        if self.timings is None:
+            return self._sleep(seconds)
+        return self.timings.timed("sleep", f"pause {seconds:g} s", self._sleep, seconds)
+
+    def listen(self, what: str):
+        timeout = self.settings.answer_timeout_s
+        if self.timings is None:
+            return self.ears.listen(timeout)
+        return self.timings.timed("listen", what, self.ears.listen, timeout)
 
     # ---- talking -------------------------------------------------------------
 
@@ -180,7 +199,7 @@ class Workout:
             if self.cancelled():
                 return None
             self.robot.say(prompt)
-            answer = self.ears.listen(self.settings.answer_timeout_s)
+            answer = self.listen(f"answer to {question[:20]!r}")
             if answer:
                 log.info("PATIENT: %s", answer)
                 if is_pain(answer):
@@ -203,7 +222,7 @@ class Workout:
         s.ready_tries += 1
         self.robot.say("Hi! Are you ready to start your workout?" if s.ready_tries == 1
                        else "Are you ready now?")
-        answer = self.ears.listen(self.settings.answer_timeout_s)
+        answer = self.listen("answer to 'ready?'")
         if answer:
             log.info("PATIENT: %s", answer)
             if is_pain(answer):
@@ -254,8 +273,11 @@ class Workout:
         return "started"
 
     def mirror(self) -> str:
-        result = self.tracker.run_set(self.exercise, self.post, self.cancelled,
-                                      reps_done=self.session.reps_done)
+        run_set = self.tracker.run_set
+        args = (self.exercise, self.post, self.cancelled)
+        result = (run_set(*args, reps_done=self.session.reps_done) if self.timings is None else
+                  self.timings.timed("sleep", "set (simulated reps)", run_set, *args,
+                                     reps_done=self.session.reps_done))
         self.session.reps_done = result.reps
         self._result = result
         return "set_done"
@@ -308,6 +330,8 @@ class Workout:
 
     def finish(self):
         s = self.session
+        if self.timings:
+            self.timings.visit(END, self._entered)
         if s.status == "running":
             s.status = "no_response"
             s.flagged = True
