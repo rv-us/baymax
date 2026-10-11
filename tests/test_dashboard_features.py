@@ -303,6 +303,22 @@ def test_model_degrees_become_safe_keyframes():
             gen_mod.from_model(bad)
 
 
+def test_model_replies_that_drift_from_the_schema_are_still_read():
+    flat = {"name": "Wings", "keyframes": [{"forward": 0, "side": 90, "elbow": 0, "seconds": 2},
+                                           {"forward": 0, "side": 0, "elbow": 0, "seconds": 2}]}
+    draft = gen_mod.from_model(flat)
+    assert draft["keyframes"][0]["servos"] == poses.frame(2000, dict(side=90))["servos"]
+    named = {"keyframes": [{"seconds": 1, "left_arm": {"forward": 0, "side": 0, "elbow": 0},
+                            "right_arm": {"forward": 150, "side": 0, "elbow": 20}},
+                           {"seconds": 1, "left_arm": {}, "right_arm": {}}]}
+    servos = gen_mod.from_model(named)["keyframes"][0]["servos"]
+    assert servos["right_shoulder_pitch"] == poses.arm("right", forward=150)["right_shoulder_pitch"]
+    assert servos["left_shoulder_pitch"] == poses.arm("left")["left_shoulder_pitch"]
+    still = {"keyframes": [{"seconds": 1, "wings": 90}, {"seconds": 1}]}
+    with pytest.raises(ValueError, match="never moved"):
+        gen_mod.from_model(still)
+
+
 def test_generator_uses_the_model_and_falls_back(tmp_path, monkeypatch):
     client, parts = make(tmp_path, stub_llm=False, ollama_url="http://gx10.invalid:11434")
     reply = {"name": "Slow reach", "cue": "Reach up.", "kind": "exercise", "keyframes": [

@@ -111,7 +111,7 @@ Squats and single-leg balance are not offered: `workout/plan.py` refuses leg key
 ## Tests
 
 ```bash
-BAYMAX_DRY_RUN=1 python -m pytest tests            # 195 pass
+BAYMAX_DRY_RUN=1 python -m pytest tests            # 196 pass
 ```
 
 `tests/test_dashboard_features.py` covers calibration limits in the command path, library play and its validation, the recorder, the generator and its fallbacks, the chat stream and its fallbacks, the analytics and session delete, replay and trends. Two older tests fail before and after this work: `test_agent.py::test_api_key_from_env_file` and `test_digital_twin.py::test_tables_match_robot_api`.
@@ -121,12 +121,14 @@ Browser click-through (needs Chrome and `npm i playwright-core` somewhere on the
 ```bash
 python -m dashboard --dry-run --port 8090
 BASE=http://127.0.0.1:8090 node dashboard/web/e2e/flows.mjs       # 15 flows, PASS or FAIL each
+BASE=http://127.0.0.1:8090 node dashboard/web/e2e/touch.mjs       # 5 phone and touch checks
 node dashboard/web/e2e/shots.mjs 390 home library sessions        # full-page screenshots, checks for sideways overflow
 ```
 
 ## Known gaps
 
-- **Not run against the real robot, camera, or GX10.** Everything was checked in dry run only.
+- **Not run against the real robot or camera.** They were not reachable while this was built, so robot motion was checked in dry run only.
+- **The GX10 was reachable.** The generator and the coach chat were run against `qwen3.6:35b` on it (a motion in about 12 s, a streamed answer in about 4 s). The model drifts from the keyframe schema, so `generator.from_model` accepts its common variants and rejects a motion that never moves.
 - **Pose tracking is simulated.** Live sessions use `SimTracker`, so their logs are marked synthetic.
 - **Servo load is not reported** by this robot's bus API. The debug table says so; the gap between told and doing is the stall signal.
 - **Built-in moves have no preview** and cannot be limited by a calibration profile, only refused.

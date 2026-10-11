@@ -44,3 +44,16 @@ Made without asking, as instructed. Newest at the bottom.
     `PLAN.md`, this file and the latest `reviews/review-N.md`.
 17. **`credentials.txt` is never read or touched** (the earlier brief forbids it), and
     `dashboard/prompt.md`, the owner's untracked brief, is read but left uncommitted.
+18. **Touch and mouse behave differently in the Library, on purpose.** A mouse hovers to preview and
+    clicks to play. A finger cannot hover, so a tap previews and reveals a separate "Play on robot"
+    button. Both end at the same confirm unless one-click play is on. (From review 1.)
+19. **The AGY reviewer runs read only**: `agy -p "<prompt>" --mode plan --print-timeout 27m`, with
+    the prompt in `reviews/PROMPT.md`, the app running in dry run on port 8090, and fresh screenshots
+    in `reviews/shots/` (not committed). It was not given `--dangerously-skip-permissions`.
+20. **The generator tolerates schema drift.** Run against the real `qwen3.6:35b` on the GX10, the
+    model sometimes named arms `left_arm`, or gave one set of angles for both arms. Those shapes
+    are accepted, the motion is still clamped in code, and a reply that never moves the arms is
+    rejected in favour of the labelled mock.
+21. **Stale failure screenshots were left in `reviews/shots/`.** A safety check refused the bulk
+    delete, so the reviewer was told to ignore files named `flow-1280-fail-*`. The folder is
+    git-ignored.

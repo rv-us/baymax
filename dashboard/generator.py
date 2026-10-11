@@ -55,7 +55,10 @@ SYSTEM_PROMPT = (
     "Rules: 2 to 16 keyframes. The robot starts with both arms down, and the last keyframe must "
     "return both arms to forward 0, side 0, elbow 0. The legs never move. Keep it calm: no "
     "movement faster than 0.4 seconds. name is a short title, cue is one sentence the robot "
-    "says to explain the move, kind is exercise or emote."
+    "says to explain the move, kind is exercise or emote.\n"
+    "Every keyframe has exactly this shape, with both arms given every time:\n"
+    '{"seconds": 2, "hold_seconds": 1, "left": {"forward": 0, "side": 90, "elbow": 0}, '
+    '"right": {"forward": 0, "side": 90, "elbow": 0}, "head_turn": 0, "head_nod": 0}'
 )
 
 _SLOW = re.compile(r"\b(slow|slowly|gentle|gently|calm|relaxed|careful)\b")
@@ -120,6 +123,19 @@ def mock(prompt: str) -> dict:
     return {"name": title, "cue": cue, "kind": kind, "keyframes": frames[:MAX_KEYFRAMES], "matched": matched}
 
 
+ARM_KEYS = ("forward", "side", "elbow")
+
+
+def _arm_of(kf: dict, side: str) -> dict:
+    """One arm's angles from a keyframe. Models drift from the schema, so the common
+    variants are accepted: "left", "left_arm", "both", or the three angles given flat
+    on the keyframe (meaning both arms)."""
+    for key in (side, f"{side}_arm", "both", "both_arms", "arms"):
+        if isinstance(kf.get(key), dict):
+            return kf[key]
+    return {k: kf[k] for k in ARM_KEYS if k in kf}
+
+
 def from_model(reply: dict) -> dict:
     """The model's degrees as keyframes. Raises PlanError if the reply isn't usable."""
     if not isinstance(reply, dict) or not isinstance(reply.get("keyframes"), list) or len(reply["keyframes"]) < 2:
@@ -134,10 +150,12 @@ def from_model(reply: dict) -> dict:
             turn, nod = float(kf.get("head_turn") or 0), float(kf.get("head_nod") or 0)
         except (TypeError, ValueError) as e:
             raise PlanError(f"keyframe {i} from the model has a value that isn't a number") from e
-        left = kf.get("left") if isinstance(kf.get("left"), dict) else {}
-        right = kf.get("right") if isinstance(kf.get("right"), dict) else {}
+        left, right = _arm_of(kf, "left"), _arm_of(kf, "right")
         frames.append(poses.frame(max(0.4, min(6.0, seconds)) * 1000, left=left, right=right,
                                   hold_ms=max(0.0, min(5.0, hold)) * 1000, turn=turn, nod=nod))
+    rest = poses.frame(300, poses.REST)["servos"]
+    if all(f["servos"] == rest for f in frames):
+        raise PlanError("the model's motion never moved the arms")
     frames.append(poses.frame(1500, poses.REST))  # always end at rest, whatever the model did
     if frames[-2]["servos"] == frames[-1]["servos"] and "head" not in frames[-2]:
         frames.pop()
