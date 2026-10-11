@@ -20,6 +20,22 @@ _cap = None
 _flip = None  # cv2.flip code, or None for no flip
 STALE_FRAMES = 4  # the driver buffers a few frames; drop them for a fresh image
 SHARED_FRAME = "/dev/shm/baymax_cam.jpg"
+# Dry-run frame: a valid 64x48 JPEG (grey with a red block), so models accept it.
+FAKE_JPEG_B64 = (
+    "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywt"
+    "QFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09P"
+    "T09PT09PT09PT09PT09PT09PT0//wAARCAAwAEADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcI"
+    "CQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRol"
+    "JicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ip"
+    "qrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAA"
+    "AAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLR"
+    "ChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaX"
+    "mJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEA"
+    "PwDrKKKKACiis7+3NN/5+f8Axxv8KTaRcKc5/CrmjRWd/bmm/wDPz/443+FX45FljWSM5RwGU+oNCaYSpzh8SaHUUUUy"
+    "AooooAK88r0OvPKyqdD1sr+38v1Cu707/kG2v/XFP5CuEru9O/5Btr/1xT+QpU9y8z+CJYooorY8YKKKKACvPK9Dqv8A"
+    "YLL/AJ87f/v0v+FRKPMduExSoXur3OEru9O/5Btr/wBcU/kKPsFl/wA+dv8A9+l/wqdVVFCqAqgYAAwAKIx5R4vFxrxS"
+    "StYWiiirOE//2Q=="
+)
 SHARED_MAX_AGE_S = 2.0
 
 
@@ -87,7 +103,7 @@ def snapshot_jpeg(width: int = 640, quality: int = 80) -> bytes:
         from ..fake import STATE
 
         STATE.log.append(("camera_snapshot", width))
-        return b"\xff\xd8\xff\xd9"  # minimal JPEG markers
+        return base64.b64decode(FAKE_JPEG_B64)
     import cv2
 
     global _flip

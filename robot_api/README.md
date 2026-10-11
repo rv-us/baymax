@@ -20,7 +20,7 @@ let a Claude agent use it.
 - **Clamping:** pulses are clamped to each servo's range. That range is what the 127 factory action
   groups use (`servo/limits.py`).
 - **Speed limit:** at most 1 pulse/ms, and every move takes at least 300 ms.
-- **Temperature:** motion is refused while any body servo is at 70 °C or hotter
+- **Temperature:** motion is refused while any body servo is above 82.5 °C (reads 83 °C or more; cutoff 85 °C)
   (`BAYMAX_MAX_TEMP`), or when temperatures can't be read.
 - **One move at a time:** a lock serializes motion. Walking, turning and repeat counts are capped at
   5 steps per call.
@@ -54,6 +54,36 @@ ANTHROPIC_API_KEY=... BAYMAX_API_TOKEN=secret python -m robot_api.agent --backen
 BAYMAX_DRY_RUN=1 python -m pytest tests
 python -m robot_api.agent --dry-run -p "how far is the wall?"
 ```
+
+## Agent CLI
+Type a task, and Claude drives the robot with the tools until the task is done. It narrates through
+the speaker and shows its state on the dot matrix.
+```bash
+cd ~/baymax && .venv/bin/python -m robot_api          # on the robot (stop robot_api.server first)
+python -m robot_api --backend http --url http://169.233.72.93:8000   # from a laptop via the server
+python -m robot_api --dry-run -p "how far is the wall?"              # fake hardware, one task
+```
+- **API key:** read from `robot_api/.env` (`claude_key = sk-ant-...`), a repo-root `.env`, or
+  `ANTHROPIC_API_KEY`. `.env` is gitignored.
+- **Defaults:** `--model claude-haiku-5-5` and `--thinking low` (1024-token budget; also
+  `off`, `medium`, `high`).
+- **Other flags:**
+  - `--max-steps 40`: caps the agent loop for one task.
+  - `--show-thinking`: prints the model's reasoning.
+- **Commands inside the CLI:**
+
+  | Command | What it does |
+  |---|---|
+  | `/stop` | Freeze all servos |
+  | `/rest` | Go limp; hold the robot first |
+  | `/status` | Battery, hottest servo and distance |
+  | `/clear` | Forget the conversation |
+  | `/help` | List these commands |
+  | `/quit` | Exit |
+
+- **Ctrl+C:** during a task, it stops the robot and returns to the prompt.
+- **Pi venv dependencies:** `langchain`, `langchain-anthropic`, `python-dotenv`, and `brotli>=1.1`.
+  The system's brotli 1.0.9 breaks the Anthropic client with "Connection error".
 
 ## Configuration
 Wiring and limits are in `config.py`:
