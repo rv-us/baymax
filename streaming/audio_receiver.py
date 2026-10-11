@@ -110,12 +110,18 @@ class AudioReceiver:
     def _duration(self, data: bytes) -> float:
         return len(data) / 2 / self.rate
 
+    def chunks_since(self, t: float) -> list:
+        """Return [(arrival_time, pcm), ...] for the chunks that arrived after time t,
+        oldest first. Pass the last arrival_time back in to read the stream without
+        gaps or repeats."""
+        with self._lock:
+            return [(end, d) for end, d in self._chunks if end > t]
+
     def since(self, t: float):
         """Return (pcm, start_time): the audio that arrived after time t, and when its
         first sample was heard (None if nothing arrived). Accurate to a chunk (20 ms)
         plus network jitter."""
-        with self._lock:
-            chunks = [(end, d) for end, d in self._chunks if end > t]
+        chunks = self.chunks_since(t)
         if not chunks:
             return b"", None
         end, first = chunks[0]
