@@ -15,7 +15,7 @@ def test_tool_schemas_have_descriptions():
 
 
 def test_tool_returns_error_instead_of_raising(fake_robot):
-    fake_robot.temps[11] = 79
+    fake_robot.temps[11] = 84
     out = tools_by_name()["walk"].invoke({"direction": "forward", "steps": 1})
     assert "error" in out and "servo 11" in out["error"]
 

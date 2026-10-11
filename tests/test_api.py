@@ -27,10 +27,15 @@ def test_move_time_scales_with_distance(fake_robot):
 
 
 def test_hot_servo_refuses_motion(fake_robot):
-    fake_robot.temps[3] = 75
+    fake_robot.temps[3] = 83
     with pytest.raises(RobotError, match="servo 3"):
         api.call("actions/walk", direction="forward", steps=1)
     assert not any(e[0] == "runActionGroup" for e in fake_robot.log)
+
+
+def test_82_c_still_allowed(fake_robot):
+    fake_robot.temps[3] = 82
+    api.call("actions/arm", side="left", position="up")
 
 
 def test_unreadable_temps_refuse_motion(fake_robot):

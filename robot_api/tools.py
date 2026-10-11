@@ -24,6 +24,8 @@ def make_tools(backend) -> list:
             return backend.call(path, **{k: v for k, v in kwargs.items() if v is not None})
         except RobotError as e:
             return {"error": str(e)}
+        except Exception as e:  # noqa: BLE001  hardware hiccups shouldn't abort the task
+            return {"error": f"{type(e).__name__}: {e}"}
 
     # ---- servo: most granular ------------------------------------------------
 
@@ -67,7 +69,8 @@ def make_tools(backend) -> list:
     @tool
     def coast_servos(servos: Optional[list[str]] = None) -> dict:
         """Turn servo torque off (limp) so they cool down. Default: all body
-        servos. THE ROBOT WILL FALL unless a human is holding it; ask first."""
+        servos. THE ROBOT WILL FALL unless a human is holding it; ask first.
+        Motion is refused once any servo reaches 83 C (cutoff 85 C)."""
         return call("servo/coast", servos=servos)
 
     @tool
@@ -132,9 +135,10 @@ def make_tools(backend) -> list:
 
     @tool
     def camera_view(width: int = 640):
-        """Take a photo with the head camera and look at it. Use this to find
-        objects, check the path ahead, or see the result of a move. Point the
-        head first with look() to see elsewhere."""
+        """Take a photo with the camera on top of the head and look at it. Use
+        this to find objects, check the path ahead, or see the result of a move.
+        It sees where the head points: aim it first with look() (tilt ~1000
+        sees the feet)."""
         out = call("sensors/camera", width=width)
         if "error" in out:
             return out
@@ -142,22 +146,28 @@ def make_tools(backend) -> list:
 
     @tool
     def read_distance() -> dict:
-        """Distance in mm to the nearest object in front (ultrasonic, max 5000)."""
+        """Distance in mm to the nearest object (ultrasonic, max 5000). The
+        sensor is on the LEFT SHOULDER pointing forward, so it measures ahead
+        of the left side of the body; keep the left arm down for a forward
+        reading. Things only in front of the right side may be missed."""
         return call("sensors/distance")
 
     @tool
     def set_eye_color(r: int, g: int, b: int) -> dict:
-        """Set the ultrasonic sensor's 'eye' LEDs to an RGB colour (0-255)."""
+        """Set the RGB 'eye' LEDs on the left-shoulder ultrasonic sensor (0-255)."""
         return call("sensors/eyes", r=r, g=g, b=b)
 
     @tool
     def read_climate() -> dict:
-        """Ambient temperature (C) and humidity (%) from the AHT10 sensor."""
+        """Air temperature (C) from the sensor on top of the RIGHT CLAW. To
+        sense how warm something is, bring the right hand close to it first.
+        Humidity is broken on this robot (reads unavailable)."""
         return call("sensors/climate")
 
     @tool
     def robot_health() -> dict:
-        """Battery voltage/charge, every servo's temperature, Pi CPU temperature."""
+        """Battery voltage/charge, every servo's temperature, Pi CPU temperature.
+        Rest the robot if any servo is at 80 C or more (motion stops at 83 C)."""
         return call("sensors/health")
 
     @tool
@@ -167,7 +177,8 @@ def make_tools(backend) -> list:
 
     @tool
     def show_on_matrix(text: Optional[str] = None,
-                       icon: Optional[Literal["heart", "smile", "sad", "check", "cross", "up"]] = None,
+                       icon: Optional[Literal["heart", "smile", "sad", "check", "cross", "up", "down",
+                                             "left", "right", "dots", "question"]] = None,
                        rows: Optional[list[str]] = None) -> dict:
         """Show something on the 16x8 LED matrix. Give exactly one of: text
         (2 chars fit, longer scrolls), icon, or rows (up to 8 strings of '0'/'1',

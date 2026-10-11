@@ -9,6 +9,7 @@ handle means that never interrupts movement commands.
 """
 from __future__ import annotations
 
+import os
 import queue
 import struct
 import subprocess
@@ -156,15 +157,18 @@ def other_servo_users() -> list:
     """Running programs that also drive the servo bus (they would fight us)."""
     if config.DRY_RUN:
         return []
-    out = subprocess.run(["pgrep", "-af", "TonyPi.py|Joystick.py"],
+    out = subprocess.run(["pgrep", "-af", "TonyPi.py|Joystick.py|robot_api.server"],
                          capture_output=True, text=True).stdout
-    return [line for line in out.splitlines() if "pgrep" not in line]
+    me = str(os.getpid())
+    return [line for line in out.splitlines()
+            if "pgrep" not in line and line.split()[0] != me]
 
 
 def check_exclusive() -> None:
     users = other_servo_users()
     if users:
         raise RobotError(
-            "other programs are using the servos; stop them first "
-            "(sudo systemctl stop tonypi joystick):\n  " + "\n  ".join(users)
+            "other programs are using the servos; stop them first (sudo systemctl stop "
+            "tonypi joystick; pkill -f robot_api.server), or drive the robot through the "
+            "API server with --backend http:\n  " + "\n  ".join(users)
         )

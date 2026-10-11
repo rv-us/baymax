@@ -8,9 +8,9 @@ DRY_RUN = os.environ.get("BAYMAX_DRY_RUN") == "1"
 ACTION_DIR = "/home/pi/TonyPi/ActionGroups"
 AUDIO_DIR = "/home/pi/TonyPi/Functions/voice_interaction/audio"
 
-# Servo safety. Servos cut out at 85 C; holding the stand pose for a long time
-# drove leg servos past 80 C, so refuse new motion well below that.
-MAX_SERVO_TEMP_C = int(os.environ.get("BAYMAX_MAX_TEMP", "70"))
+# Servo safety. Servos cut out at 85 C. They report whole degrees, so 82.5
+# refuses new motion from 83 C, leaving 2 C before the cutoff.
+MAX_SERVO_TEMP_C = float(os.environ.get("BAYMAX_MAX_TEMP", "82.5"))
 TEMP_CHECK_TTL_S = 5.0  # reuse a temperature check for this long
 MIN_MOVE_MS = 300
 MS_PER_PULSE = 1.0  # minimum move time grows with distance: 1000 pulses >= 1 s
@@ -29,6 +29,9 @@ WONDERECHO_PORT = "/dev/ttyUSB0"
 # USB audio card (speaker + microphone); ALSA card name "Device".
 AUDIO_CARD = "Device"
 AUDIO_PCM = f"plughw:CARD={AUDIO_CARD},DEV=0"
+# Recording device. Set BAYMAX_MIC_PCM=mic_shared (made by streaming/setup_pi_audio.sh)
+# so mic_level can share the mic with the audio stream to the GX10.
+MIC_PCM = os.environ.get("BAYMAX_MIC_PCM", AUDIO_PCM)
 
 # HTTP server / client.
 API_HOST = os.environ.get("BAYMAX_API_HOST", "0.0.0.0")

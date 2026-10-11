@@ -1,4 +1,4 @@
-# Running the TonyPi → GX10 Video Stream
+# Running the TonyPi → GX10 Video and Audio Stream
 
 Everything runs from the **GX10**. The scripts control the Pi over SSH (host alias `tonypi`), so you never need to log into the Pi. For first-time network setup and troubleshooting, see [streaming-setup.md](streaming-setup.md).
 
@@ -16,7 +16,8 @@ Use `~/baymax/streaming`. Older copies (such as `~/robot-stream` or files from a
 
 ```bash
 cd ~/baymax/streaming
-./install.sh       # installs packages (asks for your sudo password) and checks GStreamer, OpenCV, and SSH to the Pi
+./install.sh          # installs packages (asks for your sudo password) and checks GStreamer, numpy, and SSH to the Pi
+./setup_pi_audio.sh   # makes a shared mic device on the Pi so the audio stream and the robot API can both record
 ```
 
 ## Every session
@@ -24,8 +25,9 @@ cd ~/baymax/streaming
 ```bash
 cd ~/baymax/streaming
 ./network_setup.sh      # only at a new venue, or after the Wi-Fi reconnects
-./start_pi_sender.sh    # starts the camera stream on the Pi, aimed at the GX10's current IP
+./start_pi_sender.sh    # starts the camera and mic streams on the Pi, aimed at the GX10's current IP
 python3 receiver.py     # prints fps; add --show if a monitor is plugged into the GX10
+python3 audio_receiver.py   # prints mic loudness; talk to the robot and it should jump from about -60 dBFS
 ```
 
 - `network_setup.sh` turns off Wi-Fi power saving and pins the GX10 to the Pi's access point. Once it's applied at a venue, it stays applied until you run `network_reset.sh`.
@@ -42,7 +44,23 @@ rx = FrameReceiver().start()
 frame, ts = rx.latest()        # newest 640x480 BGR frame (None until the first one arrives)
 ```
 
-Only one program can receive the stream at a time, so stop `receiver.py` before running your own code.
+The receiver decodes with `gst-launch-1.0` in a subprocess and only needs numpy, so it works in a venv with NumPy 2 and alongside pip's `opencv-python` (which ultralytics installs). OpenCV is only needed for `--show`.
+
+Only one program can receive the stream at a time, so stop `receiver.py` before running your own code. If it prints `0.0 fps (no frames yet)` while the sender is running, look for a leftover receiver holding the port: `ss -ulpn | grep 5000`.
+
+## Using the audio in your own code
+
+```python
+from streaming.audio_receiver import AudioReceiver
+
+rx = AudioReceiver().start()
+pcm = rx.latest(2.0)           # the last 2 s as 16 kHz mono 16-bit PCM (bytes)
+pcm, t0 = rx.since(t)          # everything that arrived after time.time() value t
+```
+
+To hear what the robot hears: `python3 audio_receiver.py --wav test.wav --seconds 5`, then play `test.wav`.
+
+Like the video, only one program can receive the audio at a time. If the robot API's `mic_level` says "Device or resource busy," start the API with `BAYMAX_MIC_PCM=mic_shared`.
 
 ## When you're done
 

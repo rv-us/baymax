@@ -23,7 +23,7 @@ def level(seconds: float = 2.0) -> dict:
         return {"avg_dbfs": -55.0, "loudest_dbfs": -40.0, "peak": 400, "clipped": False,
                 "seconds": seconds}
     out = subprocess.run(
-        ["arecord", "-D", config.AUDIO_PCM, "-f", "S16_LE", "-r", str(RATE),
+        ["arecord", "-D", config.MIC_PCM, "-f", "S16_LE", "-r", str(RATE),
          "-c", str(CHANNELS), "-d", str(math.ceil(seconds)), "-t", "raw", "-q"],
         capture_output=True, timeout=seconds + 10)
     samples = array.array("h", out.stdout)

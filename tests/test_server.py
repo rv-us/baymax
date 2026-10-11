@@ -25,6 +25,6 @@ def test_http_backend_roundtrip(fake_robot, monkeypatch):
     hb = HttpBackend("http://testserver")
     hb._http = client
     assert hb.call("sensors/climate")["humidity_pct"] == 45
-    fake_robot.temps[5] = 71
+    fake_robot.temps[5] = 85
     with pytest.raises(RobotError, match="HTTP 409"):
         hb.call("actions/turn", direction="right")
