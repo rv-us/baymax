@@ -98,4 +98,5 @@ Wiring and limits are in `config.py`:
 | Audio | ALSA card `Device` |
 
 Environment variables: `BAYMAX_DRY_RUN`, `BAYMAX_MAX_TEMP`, `BAYMAX_API_TOKEN`, `BAYMAX_API_URL`,
-`BAYMAX_MODEL` (default `claude-opus-5-5`).
+`BAYMAX_MODEL` (default `claude-opus-5-5`), `BAYMAX_MIC_PCM` (recording device; set it to `mic_shared`
+while the microphone streams to the GX10, see [streaming/README.md](../streaming/README.md)).

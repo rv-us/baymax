@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run on the GX10. Starts the camera sender on the Pi over SSH, pointed at this GX10.
+# Run on the GX10. Starts the camera and microphone senders on the Pi over SSH, pointed at this GX10.
 # The GX10's IP is detected automatically, so nothing needs editing when it changes.
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -12,8 +12,8 @@ if [[ -z "$GX10_IP" ]]; then
 fi
 echo "GX10 address on $GX10_IFACE: $GX10_IP"
 
-# Stop any sender that's already running so we don't fight over the camera.
-ssh "$PI_HOST" "pkill -f '[g]st-launch-1.0.* v4l2src' || true"
+# Stop any senders that are already running so we don't fight over the camera or mic.
+ssh "$PI_HOST" "pkill -f '[g]st-launch-1.0.* v4l2src'; pkill -f '[g]st-launch-1.0.* alsasrc'; true"
 sleep 1
 
 # The camera feed is split (tee): one branch is the H.264 stream to the GX10,
@@ -30,12 +30,37 @@ ssh "$PI_HOST" "nohup gst-launch-1.0 v4l2src device=$VIDEO_DEVICE \
   ! udpsink host=$GX10_IP port=$VIDEO_PORT sync=false \
   < /dev/null > /tmp/tonypi-sender.log 2>&1 &"
 
-sleep 2
-if ssh "$PI_HOST" "pgrep -f '[g]st-launch-1.0.* v4l2src' >/dev/null"; then
-  echo "Sender running on the Pi, streaming to $GX10_IP:$VIDEO_PORT"
-  echo "Pi log: ssh $PI_HOST 'tail -f /tmp/tonypi-sender.log'"
-else
-  echo "Sender failed to start. Last lines of the Pi log:" >&2
-  ssh "$PI_HOST" "tail -20 /tmp/tonypi-sender.log" >&2
-  exit 1
+# The microphone (WonderEcho Pro) as Opus over RTP. It records from the shared
+# dsnoop device made by setup_pi_audio.sh, so the robot API can still use the mic.
+# In-band FEC lets the GX10 rebuild a lost packet from the next one.
+if [[ "${AUDIO_ENABLED:-1}" == 1 ]]; then
+  ssh "$PI_HOST" "nohup gst-launch-1.0 alsasrc device=$PI_MIC_PCM buffer-time=100000 latency-time=10000 \
+    ! audioconvert ! audioresample ! audio/x-raw,rate=$AUDIO_RATE,channels=1 \
+    ! opusenc audio-type=voice frame-size=$AUDIO_FRAME_MS bitrate=$AUDIO_BITRATE \
+      inband-fec=true packet-loss-percentage=10 \
+    ! rtpopuspay pt=97 ! udpsink host=$GX10_IP port=$AUDIO_PORT sync=false \
+    < /dev/null > /tmp/tonypi-audio.log 2>&1 &"
 fi
+
+sleep 2
+failed=0
+if ssh "$PI_HOST" "pgrep -f '[g]st-launch-1.0.* v4l2src' >/dev/null"; then
+  echo "Video sender running on the Pi, streaming to $GX10_IP:$VIDEO_PORT"
+  echo "  Pi log: ssh $PI_HOST 'tail -f /tmp/tonypi-sender.log'"
+else
+  echo "Video sender failed to start. Last lines of the Pi log:" >&2
+  ssh "$PI_HOST" "tail -20 /tmp/tonypi-sender.log" >&2
+  failed=1
+fi
+if [[ "${AUDIO_ENABLED:-1}" == 1 ]]; then
+  if ssh "$PI_HOST" "pgrep -f '[g]st-launch-1.0.* alsasrc' >/dev/null"; then
+    echo "Audio sender running on the Pi, streaming to $GX10_IP:$AUDIO_PORT"
+    echo "  Pi log: ssh $PI_HOST 'tail -f /tmp/tonypi-audio.log'"
+  else
+    echo "Audio sender failed to start. Last lines of the Pi log:" >&2
+    ssh "$PI_HOST" "tail -20 /tmp/tonypi-audio.log" >&2
+    echo "If it says '$PI_MIC_PCM' is unknown, run ./setup_pi_audio.sh once." >&2
+    failed=1
+  fi
+fi
+exit $failed
