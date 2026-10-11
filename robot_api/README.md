@@ -133,5 +133,5 @@ Environment variables: `BAYMAX_DRY_RUN`, `BAYMAX_TEMP_CHECK` (`1` turns the temp
 while the microphone streams to the GX10, see [streaming/README.md](../streaming/README.md)),
 `BAYMAX_SPEAKER_PCM` (playback device; set it to `pulse` when PipeWire runs on the Pi, or `say` stalls
 about 30 s on every other call while PipeWire holds the sound card), `BAYMAX_STREAM_CAMERA` (camera
-controls while a stream runs; default fixed exposure for ~23 fps), `BAYMAX_UDP_SNAPSHOT_FPS` (snapshot
+controls while a stream runs; default a fixed 12 ms exposure for a normally lit room, see `config.py` for a dim-room setting), `BAYMAX_UDP_SNAPSHOT_FPS` (snapshot
 rate for the API's own camera users while the UDP stream runs; default 15).
