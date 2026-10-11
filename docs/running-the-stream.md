@@ -35,6 +35,29 @@ python3 audio_receiver.py   # prints mic loudness; talk to the robot and it shou
 - The sender also writes 5 fps JPEG snapshots to `/dev/shm/baymax_cam.jpg` on the Pi for the robot API's camera endpoint (`/sensors/camera.jpg`). Only one program can open the camera, so start the stream with this script, not a hand-typed `gst-launch` command, or the robot API loses its camera.
 - You can start the sender and the receiver in either order.
 
+## Video from the robot API instead (no sender script)
+
+The robot API can stream the camera itself: the GX10 asks for it, and the Pi sends H.264 over UDP back to the GX10's address, the same format as above. The request is a lease: repeat it every few seconds, or the Pi stops streaming within `lease_s` (10 s), so a crashed program never leaves the camera running.
+
+```bash
+cd ~/baymax/streaming && VIDEO_ENABLED=0 ./start_pi_sender.sh   # microphone only; leaves the camera to the API
+cd ~/baymax && BAYMAX_API_URL=http://<robot>:8000 python scripts/pose_server.py --stream   # asks for the video itself
+```
+
+In your own code, `UdpVideoLease` (in `streaming/robot_camera.py`) starts and renews it:
+
+```python
+from streaming.receiver import FrameReceiver
+from streaming.robot_camera import UdpVideoLease
+
+lease = UdpVideoLease("http://<robot>:8000").start()   # token from BAYMAX_API_TOKEN
+rx = FrameReceiver(port=lease.port).start()
+```
+
+- Only one program at a time gets the UDP video; the API refuses a second target with a 409 until the first stops (`POST /sensors/camera/udp/stop`) or its lease runs out. Status: `GET /sensors/camera/udp/status`.
+- While it runs, `/sensors/camera.jpg` and the MJPEG stream (`/sensors/camera.mjpg`) still work, from 15 fps snapshots.
+- Don't run `start_pi_sender.sh` without `VIDEO_ENABLED=0` at the same time: it stops every camera pipeline on the Pi.
+
 ## Using the frames in your own code
 
 ```python
@@ -68,6 +91,7 @@ Like the video, only one program can receive the audio at a time. If the robot A
 
 ```bash
 cd ~/baymax && python scripts/pose_server.py --stream --port 9000   # needs mediapipe in the venv
+# add --robot-url http://<robot>:8000 to have it ask the robot API for the video itself
 curl localhost:9000/latest     # newest pose: landmarks, joint angles, whether the body is in view
 curl localhost:9000/stats      # fps, model time, latency
 ```
