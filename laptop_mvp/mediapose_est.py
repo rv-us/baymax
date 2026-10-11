@@ -45,6 +45,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
+from retarget import ARM_IDX, ArmIK, elbow_pulse, leg_angles, shoulder_pulses, to_torso_frame
 
 # Ensure repository root is on sys.path for robot_api imports
 _CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -522,6 +523,38 @@ def calculate_shoulder_plane_angle_3d(world_lms, side: str = "L") -> Tuple[float
     return plane_deg, pitch_deg, roll_deg
 
 
+class JointFilter:
+    """
+    Per-DoF smoother: confidence-weighted EMA (damping) followed by a hard slew limit.
+    - confidence < 1 shrinks the EMA gain, so near a pole the joint holds its last value
+      instead of chasing a garbage measurement.
+    - the slew limit (max_step_deg per frame at 30 fps, scaled by real dt) guarantees no
+      single frame can command a large jump, whatever the estimator outputs.
+    """
+
+    def __init__(self, init: float, alpha: float = 0.35, max_step_deg: float = 12.0):
+        self.value = float(init)
+        self.alpha = alpha
+        self.max_step_deg = max_step_deg
+
+    def update(self, raw: float, dt: float = 1.0 / 30.0, confidence: float = 1.0) -> float:
+        gain = self.alpha * float(np.clip(confidence, 0.0, 1.0))
+        step = gain * (raw - self.value)
+        if self.max_step_deg and self.max_step_deg > 0:
+            limit = self.max_step_deg * float(np.clip(dt, 1.0 / 120.0, 0.2)) * 30.0
+            step = float(np.clip(step, -limit, limit))
+        self.value += step
+        return self.value
+
+
+def human_pitch_to_sim_pitch(pitch_deg: float) -> float:
+    """
+    Converts the estimator pitch (-90 = arm down, 0 = forward horizontal, +90 = up)
+    into the URDF shoulder_pitch convention (0 = arm down, -90 = forward, -180 = up).
+    """
+    return -(float(pitch_deg) + 90.0)
+
+
 def check_legs_visible(landmarks: Optional[LandmarkListWrapper]) -> bool:
     """
     Checks if both legs (knees and ankles) are sufficiently visible and inside frame.
@@ -663,15 +696,8 @@ def clamp_servo(sid: int, pulse: int) -> int:
 
 
 def map_elbow_to_tonypi_pulse(elbow_deg: float, side: str = "L") -> int:
-    """Interior elbow angle (180° straight, 45° flexed) to bus servo pulse."""
-    clamped_deg = np.clip(elbow_deg, 45.0, 180.0)
-    norm_flex = (180.0 - clamped_deg) / (180.0 - 45.0)
-    if side == "L":
-        target = int(575 + norm_flex * (860 - 575))
-        return clamp_servo(6, target)
-    else:
-        target = int(425 - norm_flex * (425 - 177))
-        return clamp_servo(14, target)
+    """Interior elbow angle (180 straight) to bus servo pulse (240 deg per 1000 pulses)."""
+    return clamp_servo(6 if side == "L" else 14, elbow_pulse(float(elbow_deg), side))
 
 
 def map_shoulder_pitch_to_tonypi_pulse(pitch_deg: float, side: str = "L") -> int:
@@ -1098,7 +1124,12 @@ def parse_args():
     parser.add_argument("--sync-sim", action="store_true", help="Run 3D digital twin synchronously")
     parser.add_argument("--no-hw-sim", action="store_true", help="Disable TonyPi GC0308 hardware emulation")
     parser.add_argument("--alpha", type=float, default=0.35, help="EMA smoothing factor (0.0 to 1.0)")
+    parser.add_argument("--max-step-deg", type=float, default=12.0,
+                        help="Max shoulder pitch/roll change per frame at 30fps (0 disables slew limit)")
     parser.add_argument("--api-url", type=str, default=None, help="Baymax HTTP API base URL")
+    parser.add_argument("--no-depth", action="store_true", help="Disable monocular depth fusion (Depth Anything V2)")
+    parser.add_argument("--depth-weight", type=float, default=0.6, help="Max blend weight of depth vs MediaPipe z (0..1)")
+    parser.add_argument("--focal-px", type=float, default=None, help="Camera focal length in pixels (default 0.9*width)")
     parser.add_argument("--headless-test", action="store_true", help="Run 10 frames headlessly and exit (test mode)")
     return parser.parse_args()
 
@@ -1123,6 +1154,18 @@ def main():
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5,
     )
+
+    # 2b. Monocular depth estimator (fused into MediaPipe world landmarks)
+    depth_async = None
+    if not args.no_depth:
+        from depth_fusion import AsyncDepth, DepthEstimator
+
+        depth_est = DepthEstimator()
+        if depth_est.available:
+            depth_async = AsyncDepth(depth_est)
+            print(f"[INFO] Depth fusion enabled (Depth Anything V2 Small on {depth_est.device})")
+        else:
+            print(f"[WARN] Depth model unavailable, using MediaPipe z only: {depth_est.error}")
 
     # 3. Initialize TonyPi 3D Digital Twin Visualizer
     digital_twin = None
@@ -1177,6 +1220,13 @@ def main():
     filt_l_plane, filt_r_plane = 0.0, 0.0
     filt_l_pitch, filt_r_pitch = -90.0, -90.0
     filt_l_roll, filt_r_roll = 0.0, 0.0
+    # Shoulder angles in URDF convention (pitch: 0 down, -90 forward; roll: + left-out, - right-out)
+    sim_l_pitch, sim_r_pitch, sim_l_roll, sim_r_roll = 0.0, 0.0, 0.0, 0.0
+    arm_ik = {"L": ArmIK("L"), "R": ArmIK("R")}
+    jf_l_pitch = JointFilter(0.0, alpha, args.max_step_deg)
+    jf_r_pitch = JointFilter(0.0, alpha, args.max_step_deg)
+    jf_l_roll = JointFilter(0.0, alpha, args.max_step_deg)
+    jf_r_roll = JointFilter(0.0, alpha, args.max_step_deg)
     filt_l_knee, filt_r_knee = 180.0, 180.0
     filt_l_hip_pitch, filt_r_hip_pitch = 0.0, 0.0
     filt_l_ankle_pitch, filt_r_ankle_pitch = 0.0, 0.0
@@ -1230,6 +1280,18 @@ def main():
             # 2. Extract 3D Pose Landmarks
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             results = pose_detector.process(rgb_frame)
+            depth_info = {"active": 0.0}
+            if depth_async is not None:
+                depth_async.submit(frame)
+                if results.pose_world_landmarks is not None and results.pose_landmarks is not None:
+                    from depth_fusion import fuse_world_landmarks
+
+                    fused_world, depth_info = fuse_world_landmarks(
+                        results.pose_world_landmarks, results.pose_landmarks, depth_async.latest(),
+                        frame_size=(frame.shape[1], frame.shape[0]),
+                        focal_px=args.focal_px, weight=args.depth_weight,
+                    )
+                    results = PoseResultWrapper(results.pose_landmarks, fused_world)
 
             hand_l_closed = manual_gripper_clamp
             hand_r_closed = manual_gripper_clamp
@@ -1251,8 +1313,9 @@ def main():
                     world_lms[R_SHOULDER], world_lms[R_ELBOW], world_lms[R_WRIST]
                 )
 
-                raw_l_plane, raw_l_pitch, raw_l_roll = calculate_shoulder_plane_angle_3d(world_lms, "L")
-                raw_r_plane, raw_r_pitch, raw_r_roll = calculate_shoulder_plane_angle_3d(world_lms, "R")
+                raw_l_plane, _, _ = calculate_shoulder_plane_angle_3d(world_lms, "L")
+                raw_r_plane, _, _ = calculate_shoulder_plane_angle_3d(world_lms, "R")
+                torso_pts = to_torso_frame(world_lms)
 
                 hand_l_closed = manual_gripper_clamp or detect_hand_closed(world_lms, "L")
                 hand_r_closed = manual_gripper_clamp or detect_hand_closed(world_lms, "R")
@@ -1262,14 +1325,26 @@ def main():
                 filt_r_elbow = alpha * raw_r_elbow + (1.0 - alpha) * filt_r_elbow
                 filt_l_plane = alpha * raw_l_plane + (1.0 - alpha) * filt_l_plane
                 filt_r_plane = alpha * raw_r_plane + (1.0 - alpha) * filt_r_plane
-                filt_l_pitch = alpha * raw_l_pitch + (1.0 - alpha) * filt_l_pitch
-                filt_r_pitch = alpha * raw_r_pitch + (1.0 - alpha) * filt_r_pitch
-                filt_l_roll = alpha * raw_l_roll + (1.0 - alpha) * filt_l_roll
-                filt_r_roll = alpha * raw_r_roll + (1.0 - alpha) * filt_r_roll
+                # Shoulder pitch/roll: IK on the robot's joint chain, then damping + slew limit.
+                # Low landmark visibility shrinks the gain so an occluded arm holds its pose.
+                step_dt = min(max(dt, 1.0 / 120.0), 0.2)
+                if torso_pts is not None:
+                    for side, jf_p, jf_r in (("L", jf_l_pitch, jf_l_roll), ("R", jf_r_pitch, jf_r_roll)):
+                        idx = ARM_IDX[side]
+                        sol = arm_ik[side].solve(*(torso_pts[i] for i in idx), q_prev_deg=(jf_p.value, jf_r.value))
+                        if sol is not None:
+                            conf = (min(world_lms[i].visibility for i in idx) - 0.3) / 0.4
+                            jf_p.update(sol[0], step_dt, conf)
+                            jf_r.update(sol[1], step_dt, conf)
+                sim_l_pitch, sim_l_roll = jf_l_pitch.value, jf_l_roll.value
+                sim_r_pitch, sim_r_roll = jf_r_pitch.value, jf_r_roll.value
+                # HUD convention: -90 ground, 0 forward, +90 sky
+                filt_l_pitch, filt_r_pitch = -sim_l_pitch - 90.0, -sim_r_pitch - 90.0
+                filt_l_roll, filt_r_roll = sim_l_roll, sim_r_roll
 
                 # Lower body calculations (if legs visible)
-                if legs_visible:
-                    raw_l_leg, raw_r_leg = calculate_leg_kinematics_3d(world_lms)
+                if legs_visible and torso_pts is not None:
+                    raw_l_leg, raw_r_leg = leg_angles(torso_pts, "L"), leg_angles(torso_pts, "R")
                     filt_l_knee = alpha * raw_l_leg["knee"] + (1.0 - alpha) * filt_l_knee
                     filt_r_knee = alpha * raw_r_leg["knee"] + (1.0 - alpha) * filt_r_knee
                     filt_l_hip_pitch = alpha * raw_l_leg["hip_pitch"] + (1.0 - alpha) * filt_l_hip_pitch
@@ -1307,13 +1382,11 @@ def main():
 
             # 4. Map Angles to TonyPi Bus Servo Pulses
             pulse_l_elb = map_elbow_to_tonypi_pulse(filt_l_elbow, "L")
-            pulse_l_roll = map_shoulder_roll_to_tonypi_pulse(filt_l_roll, "L")
-            pulse_l_pitch = map_shoulder_pitch_to_tonypi_pulse(filt_l_pitch, "L")
+            pulse_l_pitch, pulse_l_roll = (clamp_servo(sid, v) for sid, v in zip((8, 7), shoulder_pulses(sim_l_pitch, sim_l_roll, "L")))
             pulse_l_hand = map_hand_to_tonypi_pulse(hand_l_closed, "L")
 
             pulse_r_elb = map_elbow_to_tonypi_pulse(filt_r_elbow, "R")
-            pulse_r_roll = map_shoulder_roll_to_tonypi_pulse(filt_r_roll, "R")
-            pulse_r_pitch = map_shoulder_pitch_to_tonypi_pulse(filt_r_pitch, "R")
+            pulse_r_pitch, pulse_r_roll = (clamp_servo(sid, v) for sid, v in zip((16, 15), shoulder_pulses(sim_r_pitch, sim_r_roll, "R")))
             pulse_r_hand = map_hand_to_tonypi_pulse(hand_r_closed, "R")
 
             l_leg_filtered = {
@@ -1332,11 +1405,11 @@ def main():
                 else:
                     sim_status = "Connected"
                 digital_twin.update_arms(
-                    l_pitch_deg=filt_l_pitch,
-                    l_roll_deg=filt_l_roll,
+                    l_pitch_deg=sim_l_pitch,
+                    l_roll_deg=sim_l_roll,
                     l_elbow_deg=filt_l_elbow,
-                    r_pitch_deg=filt_r_pitch,
-                    r_roll_deg=filt_r_roll,
+                    r_pitch_deg=sim_r_pitch,
+                    r_roll_deg=sim_r_roll,
                     r_elbow_deg=filt_r_elbow,
                 )
                 if legs_visible and hasattr(digital_twin, "update_legs"):
@@ -1391,6 +1464,18 @@ def main():
                 except Exception:
                     pass
 
+            # Depth inset (top-right of the camera frame) + fusion status
+            if depth_async is not None:
+                dmap = depth_async.latest()
+                if dmap is not None:
+                    from depth_fusion import colorize_depth
+
+                    inset = colorize_depth(dmap, (160, 120))
+                    frame[4:124, frame.shape[1] - 164:frame.shape[1] - 4] = inset
+                tag = "DEPTH FUSED" if depth_info.get("active") else "DEPTH WARMING UP"
+                cv2.putText(frame, tag, (frame.shape[1] - 164, 140), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.4, (0, 255, 255), 1, cv2.LINE_AA)
+
             # 6. Render HUD Dashboard
             dashboard = draw_hud_panel(
                 frame,
@@ -1423,6 +1508,8 @@ def main():
             cap.release()
         cv2.destroyAllWindows()
         pose_detector.close()
+        if depth_async is not None:
+            depth_async.close()
         if digital_twin is not None:
             digital_twin.close()
 

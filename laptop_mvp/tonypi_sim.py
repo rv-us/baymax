@@ -306,22 +306,20 @@ class PyBulletShim:
         except Exception:
             pass
 
-    def _update_kinematics(self, robot_id):
+    def get_link_transforms(self, robot_id):
+        """Returns {link_name: 4x4 world transform} from forward kinematics."""
         robot = self.robots[robot_id]
-        
-        # Link transforms relative to world
-        link_transforms = {}
-        link_transforms["torso"] = self._make_translation(robot["base_position"])
-
-        # Forward kinematics along joint tree
+        link_transforms = {"torso": self._make_translation(robot["base_position"])}
         for j in robot["joints"]:
-            parent = j["parent"]
-            child = j["child"]
-            if parent in link_transforms:
-                T_p = link_transforms[parent]
+            if j["parent"] in link_transforms:
                 T_origin = self._make_translation(j["origin_xyz"]) @ self._make_rotation_rpy(j["origin_rpy"])
                 T_motion = self._make_rotation_axis_angle(j["axis"], j["position"])
-                link_transforms[child] = T_p @ T_origin @ T_motion
+                link_transforms[j["child"]] = link_transforms[j["parent"]] @ T_origin @ T_motion
+        return link_transforms
+
+    def _update_kinematics(self, robot_id):
+        robot = self.robots[robot_id]
+        link_transforms = self.get_link_transforms(robot_id)
 
         # Update Open3D mesh vertices
         if self.visualizer is not None and OPEN3D_AVAILABLE and not getattr(self, "window_closed", False):
@@ -734,7 +732,7 @@ class TonyPiDigitalTwin:
             l_p_deg = math.degrees(l_pitch_rad)
             l_r_deg = math.degrees(l_roll_rad)
 
-        l_interior = max(30.0, min(180.0, float(l_elbow_deg)))
+        l_interior = max(90.0, min(180.0, float(l_elbow_deg)))
         l_elbow_rad = -math.radians(180.0 - l_interior)
 
         # --- RIGHT ARM ---
@@ -751,7 +749,7 @@ class TonyPiDigitalTwin:
             r_p_deg = math.degrees(r_pitch_rad)
             r_r_deg = math.degrees(r_roll_rad)
 
-        r_interior = max(30.0, min(180.0, float(r_elbow_deg)))
+        r_interior = max(90.0, min(180.0, float(r_elbow_deg)))
         r_elbow_rad = -math.radians(180.0 - r_interior)
 
         # Apply motor controls locally
@@ -799,11 +797,14 @@ class TonyPiDigitalTwin:
         r_ankle_deg: float = 0.0,
     ):
         """Updates humanoid leg joints when full body is visible."""
+        # All leg pitch joints share the URDF Y axis (+rotation swings the distal
+        # link backward), so both legs use identical signs: hips flex forward
+        # (negative), knees bend backward (positive), ankles dorsiflex (negative).
         l_k_rad = math.radians(max(0.0, 180.0 - float(l_knee_deg)))
-        r_k_rad = -math.radians(max(0.0, 180.0 - float(r_knee_deg)))
+        r_k_rad = math.radians(max(0.0, 180.0 - float(r_knee_deg)))
         l_hp_rad = -math.radians(float(l_hip_pitch_deg))
-        r_hp_rad = math.radians(float(r_hip_pitch_deg))
-        l_a_rad = math.radians(float(l_ankle_deg))
+        r_hp_rad = -math.radians(float(r_hip_pitch_deg))
+        l_a_rad = -math.radians(float(l_ankle_deg))
         r_a_rad = -math.radians(float(r_ankle_deg))
 
         self._set_joint("l_hip_pitch", l_hp_rad)
@@ -841,6 +842,18 @@ class TonyPiDigitalTwin:
             state = p.getJointState(self.robot_id, idx)
             return state[0], state[1]
         return 0.0, 0.0
+
+    def get_link_rotation(self, link_name):
+        """Returns the 3x3 world rotation of a link (limbs point along its local -Z)."""
+        if PYBULLET_AVAILABLE:
+            for name, idx in self.joint_indices.items():
+                info = p.getJointInfo(self.robot_id, idx)
+                child = info[12].decode("utf-8") if isinstance(info[12], bytes) else info[12]
+                if child == link_name:
+                    quat = p.getLinkState(self.robot_id, idx, computeForwardKinematics=True)[5]
+                    return np.array(p.getMatrixFromQuaternion(quat)).reshape(3, 3)
+            return np.eye(3)
+        return p.get_link_transforms(self.robot_id)[link_name][:3, :3]
 
     def is_window_open(self):
         """Returns True if the 3D window is currently open and active."""

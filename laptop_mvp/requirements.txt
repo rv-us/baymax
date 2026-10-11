@@ -6,3 +6,4 @@ torchvision>=0.15.0
 open3d>=0.20.0
 requests>=2.31.0
 mediapipe>=0.10.0
+transformers>=4.50.0
