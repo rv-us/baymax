@@ -23,6 +23,9 @@ from robot_api.servo.limits import LIMITS as ROBOT_LIMITS  # noqa: E402
 
 ARM_SERVOS = {"L": (8, 7, 6), "R": (16, 15, 14)}  # shoulder pitch, shoulder roll, elbow
 REST = (0.0, 0.0, 180.0)  # pitch, roll, interior elbow: the stand pose
+HANG_FULL_DEG, HANG_NONE_DEG = 20.0, 40.0  # upper arm this far from straight down: surely at the side / not
+REST_OUT_DEG = 4.0                         # at the side the elbows point out, ever so slightly
+ELBOW_SOFT_DEG = 25.0                      # elbow bends smaller than this are eased toward straight (see soften_elbow)
 # Same per-servo ranges robot_api clamps to; arm_limits keeps the rolls off the body on top of that.
 ARM_LIMITS = {sid: ROBOT_LIMITS[sid] for side in "LR" for sid in ARM_SERVOS[side]}
 
@@ -31,6 +34,51 @@ def body_safe(pulses):
     """robot_api's coupled arm limits applied locally (the robot applies them too), so the twin
     and HUD show what the robot will do. pulses: {servo id: pulse} for both arms."""
     return arm_limits.limit(pulses, {})[0]
+
+
+def hang_prior(side, sol, pts):
+    """
+    A person's arm at their side points down with the elbow a little out, so there its shoulder pitch
+    is 0, not a half turn away. Straight down, the arm's direction is the same whether the shoulder is
+    at pitch 0 or at pitch 180 with the roll flipped, and the IK can land on either (and flip between
+    them as the camera noise nudges it), which swings the robot's arm round. Within HANG_FULL_DEG of
+    straight down this returns pitch 0 and an outward roll of at least REST_OUT_DEG; between that and
+    HANG_NONE_DEG it fades into the arm's own forward and sideways lift (read from the upper arm alone,
+    on the branch where pitch is small); beyond, the IK's answer is returned untouched.
+
+    side: "L" or "R"; sol: (pitch, roll, interior elbow) from ArmIK.solve; pts: shoulder, elbow, wrist
+    in the torso frame (forward, left, up). Roll is outward-positive for the left arm, negative for the right.
+    """
+    pitch, roll, elbow = sol
+    d = np.asarray(pts[1], dtype=np.float64) - np.asarray(pts[0], dtype=np.float64)
+    n = float(np.linalg.norm(d))
+    if n < 1e-6 or not np.isfinite(n):
+        return sol
+    elevation = math.degrees(math.acos(float(np.clip(-d[2] / n, -1.0, 1.0))))
+    if elevation >= HANG_NONE_DEG:
+        return sol
+    pitch_geo = math.degrees(math.atan2(-d[0], -d[2])) if math.hypot(d[0], d[2]) > 1e-3 else 0.0
+    roll_geo = math.degrees(math.asin(float(np.clip(d[1] / n, -1.0, 1.0))))
+    sign = 1.0 if side == "L" else -1.0
+    hang = float(np.clip((HANG_NONE_DEG - elevation) / (HANG_NONE_DEG - HANG_FULL_DEG), 0.0, 1.0))
+    at_side_roll = sign * max(sign * roll_geo, REST_OUT_DEG)
+    return ((1.0 - hang) * pitch_geo, (1.0 - hang) * roll_geo + hang * at_side_roll, elbow)
+
+
+def soften_elbow(interior):
+    """
+    Keep a straight arm from twitching. The elbow bend is the angle between two noisy directions, so
+    when the arm is nearly straight the noise cannot go negative: it piles up as a few degrees of bend
+    that flicker from frame to frame (measured: 6 to 17 degrees of wander on a perfectly still, straight
+    arm). Bends under ELBOW_SOFT_DEG are scaled down by a smoothstep (3t^2 - 2t^3), so 5 degrees reads as
+    about 0.5 and 10 as 3.5, while the curve meets the real angle smoothly at ELBOW_SOFT_DEG (no kink)
+    and everything beyond it is untouched. `interior` is the interior elbow angle (180 = straight).
+    """
+    flex = 180.0 - float(interior)
+    if flex >= ELBOW_SOFT_DEG:
+        return float(interior)
+    t = max(flex, 0.0) / ELBOW_SOFT_DEG
+    return 180.0 - flex * (3.0 * t * t - 2.0 * t ** 3)
 
 
 def ray(px, focal, center):

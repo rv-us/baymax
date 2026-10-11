@@ -1,5 +1,7 @@
-"""Signal filters for the arm mimic pipeline: One Euro (on 3D points) and a slew limit (on angles)."""
+"""Signal filters for the arm mimic pipeline: One Euro (on 3D points), a slew limit (on angles) and a
+damper on the servo pulses that go to the robot."""
 import math
+from collections import deque
 
 import numpy as np
 
@@ -41,3 +43,44 @@ def slew(value, target, max_step_deg, dt=1.0 / 30.0):
     Same limit as mediapose_est.JointFilter, without its EMA."""
     limit = max_step_deg * min(max(dt, 1.0 / 120.0), 0.2) * 30.0
     return value + min(max(target - value, -limit), limit)
+
+
+class PulseDamper:
+    """
+    The last filter before the robot: servo pulses that follow the camera without passing its noise on.
+
+    Camera noise shows up as the arms trembling and the odd frame where a joint jumps. Three things
+    keep the robot calm:
+      - a median of the last `window` targets (five), so a burst of wild frames up to two long (the camera's
+        depth guesses flip for a few frames at a time) never moves the robot at all, for about two frames
+        of delay;
+      - a dead band, so a target within `deadband` pulses of where the servo already is does nothing
+        (a few pulses is about a degree: invisible, but it is what makes a servo buzz);
+      - a gain that is low for small differences (heavy smoothing) and rises toward `fast` for big
+        ones, so a real, deliberate move is followed without lag while jitter is damped.
+    `start` is {servo id: pulse}, where the arms are now (the stand pose).
+    """
+
+    def __init__(self, start, deadband=8, slow=0.2, fast=0.7, knee=120, max_step=33, window=5):
+        self.window = window
+        self.value = dict(start)
+        self.recent = {sid: deque(maxlen=window) for sid in self.value}
+        self.deadband, self.slow, self.fast, self.knee, self.max_step = deadband, slow, fast, knee, max_step
+
+    def reset(self, start):
+        self.value = dict(start)
+        self.recent = {sid: deque(maxlen=self.window) for sid in self.value}
+
+    def __call__(self, target):
+        out = {}
+        for sid, goal in target.items():
+            self.recent[sid].append(goal)
+            goal = sorted(self.recent[sid])[len(self.recent[sid]) // 2]   # median of what we have so far
+            x = self.value[sid]
+            err = goal - x
+            if abs(err) > self.deadband:
+                gain = self.slow + (self.fast - self.slow) * min(1.0, (abs(err) - self.deadband) / self.knee)
+                x += max(-self.max_step, min(self.max_step, gain * err))
+                self.value[sid] = int(round(x))
+            out[sid] = self.value[sid]
+        return out

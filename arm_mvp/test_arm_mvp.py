@@ -162,8 +162,9 @@ def test_calibration_file_roundtrip(tmp_path):
     calibration.save(cal, str(tmp_path / "c.json"))
     assert calibration.load(str(tmp_path / "c.json")) == cal
     assert calibration.new_state(cal)["locked"] is True
-    assert calibration.matrix_rows(0) == ["0" * 16] * 8 and calibration.matrix_rows(45) == ["1" * 16] * 8
-    assert calibration.matrix_rows(23)[0] == "1" * 8 + "0" * 8
+    assert calibration.matrix_rows(0) == ["0" * 16] * 8
+    assert calibration.matrix_rows(calibration.LOCK_SAMPLES) == ["1" * 16] * 8
+    assert calibration.matrix_rows(calibration.LOCK_SAMPLES // 2)[0] == "1" * 8 + "0" * 8
 
 
 def landmarks_for(angles, distance=2.0, size=(640, 480), yaw_deg=0.0):
@@ -205,7 +206,11 @@ def test_tracking_end_to_end_copy_mode():
         for side in "LR":
             pitch, roll, interior = arms[side]["angles"]
             assert arms[side]["state"] == "TRACKING"
-            assert abs(pitch - want[side][0]) < 3 and abs(roll - want[side][1]) < 3, (side, want[side], arms[side]["angles"])
+            if want[side] == (0, 0, 0):  # hanging at the side: pitch 0, elbow a hair out (solver.hang_prior)
+                outward = roll if side == "L" else -roll
+                assert abs(pitch) < 3 and solver.REST_OUT_DEG - 0.5 <= outward <= solver.REST_OUT_DEG + 2, (side, arms[side]["angles"])
+            else:
+                assert abs(pitch - want[side][0]) < 3 and abs(roll - want[side][1]) < 3, (side, want[side], arms[side]["angles"])
             assert abs(180 - interior - want[side][2]) < 3, (side, want[side], interior)
     # Left arm forward lowers S8 toward 350 and leaves the right arm servos at stand.
     arms = {side: arm_mimic.new_arm(side, args) for side in "LR"}
@@ -270,8 +275,8 @@ def test_auto_calibration_collects_only_good_frames():
     t, added = feed(state, HANG, t, 30, yaw_deg=30)  # shoulders turned away
     assert added == {"L": 0, "R": 0}
     low = np.ones(33)
-    low[[13, 16]] = 0.55
-    t, added = feed(state, HANG, t, 30, vis=low)     # visibility under 0.6 on both chains
+    low[[13, 16]] = 0.45
+    t, added = feed(state, HANG, t, 30, vis=low)     # visibility under 0.5 on both chains
     assert added == {"L": 0, "R": 0}
     t, added = feed(state, HANG, t, 30, jitter=lambda i: (12.0 * (i + 1), 0.0))  # walking sideways
     assert added == {"L": 0, "R": 0}
@@ -282,15 +287,49 @@ def test_auto_calibration_collects_only_good_frames():
     assert added["R"] == 0 and 15 <= added["L"] <= 21  # 30 frames minus the 0.3 s stillness wait
     assert not state["locked"]
 
-    # Good frames: hanging arms, then a T-pose. Locks at 45 per side.
+    # Good frames: hanging arms, then a T-pose. Locks at LOCK_SAMPLES per side.
+    t, added = feed(state, HANG, t, 20)
+    assert 5 <= added["R"] <= 12 and not state["locked"] and calibration.progress(state) == added["R"]
     t, added = feed(state, HANG, t, 40)
-    assert 25 <= added["R"] <= 31 and not state["locked"] and calibration.progress(state) == added["R"]
-    t, added = feed(state, T_POSE, t, 40)
-    assert added["L"] > 25 and state["locked"]
+    assert state["locked"]                              # hanging arms alone are enough
+    t, added = feed(state, T_POSE, t, 40)               # a T-pose passes too, and the result stays right
+    assert added["L"] > 15 and state["locked"]
     cal = state["cal"]
     assert cal["calibrated"] and abs(cal["shoulder_m"] - WIDTH) < 0.02
     for side in "LR":
         assert abs(cal["upper"][side] - UPPER) < 0.02 and abs(cal["fore"][side] - FORE) < 0.02, cal
+
+
+def test_auto_calibration_forgives_a_noisy_imperfect_standing_pose():
+    """Someone standing with their arms at their sides is rarely perfect: 2 px landmark noise, shoulders a
+    little turned, elbows not quite straight, one landmark a little uncertain. That has to calibrate."""
+    rng = np.random.default_rng(3)
+    state, t = calibration.new_state(), 0.0
+    pose = {"L": (0, 0, 14), "R": (0, 0, 14)}                  # elbows 14 degrees bent
+    vis = np.ones(33)
+    vis[[13, 14]] = 0.55                                        # elbows only just visible
+    locked_at = None
+    for i in range(150):
+        img, world, v = landmarks_for(pose, yaw_deg=14)         # shoulders turned 14 degrees
+        px = img[:, :2] * (640, 480) + rng.normal(0, 1.0, (33, 2))
+        if calibration.update(state, px, world, vis, t):
+            locked_at = i
+        t += 1 / 30.0
+    assert locked_at is not None and locked_at < 120, locked_at
+    cal = state["cal"]
+    assert abs(cal["shoulder_m"] - WIDTH) < 0.04
+    for side in "LR":
+        assert abs(cal["upper"][side] - UPPER) < 0.05 and abs(cal["fore"][side] - FORE) < 0.05, cal
+
+
+def test_auto_calibration_still_refuses_poses_that_cannot_be_measured():
+    """Forgiving is not blind: arms toward the camera, a real elbow bend, turned shoulders, walking."""
+    for pose, kw in (({"L": (-90, 0, 0), "R": (-90, 0, 0)}, {}),
+                     ({"L": (0, 0, 60), "R": (0, 0, 60)}, {}),
+                     (HANG, {"yaw_deg": 35})):
+        state, t = calibration.new_state(), 0.0
+        t, added = feed(state, pose, t, 90, **kw)
+        assert added == {"L": 0, "R": 0}, (pose, kw)
 
 
 def test_auto_calibration_median_rejects_outliers_and_refines_slowly():

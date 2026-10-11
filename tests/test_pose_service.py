@@ -39,18 +39,22 @@ def jpeg():
 
 
 def free_port() -> int:
-    """A port that is free for both TCP (the HTTP side) and UDP (the frames)."""
-    for _ in range(50):
-        t = socket.socket(); t.bind(("127.0.0.1", 0)); port = t.getsockname()[1]
+    """A port that is free for both UDP (the frames) and TCP (the HTTP side)."""
+    last = None
+    for _ in range(200):
         u = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        t = socket.socket()
         try:
-            u.bind(("127.0.0.1", port))
+            u.bind(("127.0.0.1", 0))
+            port = u.getsockname()[1]
+            t.bind(("127.0.0.1", port))
             return port
-        except OSError:
-            continue
+        except OSError as e:
+            last = e
         finally:
-            t.close(); u.close()
-    raise RuntimeError("no free port")
+            u.close()
+            t.close()
+    raise RuntimeError(f"no port free for both UDP and TCP: {last!r}")
 
 
 @pytest.fixture

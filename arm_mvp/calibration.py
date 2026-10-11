@@ -20,14 +20,18 @@ CHAIN = {"L": (11, 13, 15), "R": (12, 14, 16)}
 # The depth recovery only depends on these ratios, the absolute shoulder width cancels out.
 DEFAULT_SHOULDER_M, UPPER_RATIO, FORE_RATIO = 0.36, 0.80, 0.70
 
-LOCK_SAMPLES = 45        # valid samples per side before the calibration locks
+# The gates decide whether a frame shows someone standing square to the camera with their arms at their
+# sides (or in a T), well enough to measure bones from. They are forgiving on purpose: landmark noise
+# bends a straight arm by 10 to 25 degrees, tilts the shoulder line and makes a still person look like
+# they are moving, and a gate that is too strict never lets the calibration lock.
+LOCK_SAMPLES = 30        # valid samples per side before the calibration locks (the median shrugs off the odd bad one)
 BUFFER = 150             # rolling buffer per side
 MAX_STEP = 0.03          # after locking, one sample moves a length by at most 3 percent
-MIN_ELBOW_DEG = 160.0    # gate a: arm nearly straight
-MAX_BONE_DZ = 0.25       # gate b: |dz| of each bone under 25 percent of its length
-MAX_SHOULDER_DZ = 0.20   # gate c: shoulder line within about 11 degrees of the image plane
-MIN_VIS = 0.6            # gate d: every landmark of the arm chain
-STILL_S, STILL_FRAC = 0.3, 0.05  # gate e: moved under 5 percent of the shoulder width in 0.3 s
+MIN_ELBOW_DEG = 150.0    # gate a: arm nearly straight (within 30 degrees)
+MAX_BONE_DZ = 0.35       # gate b: |dz| of each bone under 35 percent of its length
+MAX_SHOULDER_DZ = 0.30   # gate c: shoulder line within about 17 degrees of the image plane
+MIN_VIS = 0.5            # gate d: every landmark of the arm chain (the same floor the tracker uses)
+STILL_S, STILL_FRAC = 0.3, 0.08  # gate e: moved under 8 percent of the shoulder width in 0.3 s
 
 
 def default_calibration(shoulder_m=DEFAULT_SHOULDER_M):

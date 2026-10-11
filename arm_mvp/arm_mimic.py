@@ -8,6 +8,10 @@ Arms-only mimic: one RGB camera -> TonyPi digital twin arms (servos 6, 7, 8, 14,
 Keys: c = recalibrate from scratch, x = emergency stand and pause (press again to resume), q = quit.
 Calibration is automatic: face the camera with straight arms (hanging or T-pose) and hold still.
 Copy mode: your right arm drives the robot's right arm. The frame is mirrored for display only.
+With several people in view, the one closest to the centre of the frame is tracked (people.py).
+Only joints drawn green (TRACKING) are ever sent to the robot; holding and lost arms are left alone. The
+pulses are damped (filters.PulseDamper), a straight elbow doesn't twitch (solver.soften_elbow) and an arm at
+the side reads shoulder pitch 0 with the elbow a hair out (solver.hang_prior).
 """
 import argparse
 import os
@@ -18,8 +22,9 @@ import cv2
 import numpy as np
 
 import calibration
+import people
 import solver
-from filters import OneEuro, slew
+from filters import OneEuro, PulseDamper, slew
 from mediapose_est import STAND_PULSES, GC0308HardwareSimulator
 from retarget import ARM_IDX, ArmIK, shoulder_frame
 
@@ -145,26 +150,35 @@ def frames(source, realtime, api_url=None):
     cap.release()
 
 
-def make_landmarker():
+def make_landmarker(max_people=people.MAX_PEOPLE):
+    """`detect(bgr, t_ms)` for the person closest to the centre of the frame (see people.py). After
+    each call `detect.people` is how many were in view and `detect.switched` says the tracked person
+    is a different one from last frame, so the caller can reset its arm filters (reset_arms)."""
     import mediapipe as mp
     from mediapipe.tasks.python import BaseOptions, vision
 
     with open(MODEL, "rb") as f:
         options = vision.PoseLandmarkerOptions(base_options=BaseOptions(model_asset_buffer=f.read()),
-                                               running_mode=vision.RunningMode.VIDEO, num_poses=1)
+                                               running_mode=vision.RunningMode.VIDEO, num_poses=max_people)
     landmarker = vision.PoseLandmarker.create_from_options(options)
+    selector = people.Selector()
 
     def detect(bgr, t_ms):
         """(image (33, 3) normalized, world (33, 3) metres, visibility (33,)) or None."""
         image = mp.Image(image_format=mp.ImageFormat.SRGB, data=cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB))
         res = landmarker.detect_for_video(image, t_ms)
-        if not res.pose_landmarks or not res.pose_world_landmarks:
+        found = min(len(res.pose_landmarks or []), len(res.pose_world_landmarks or []))
+        imgs = [np.array([[l.x, l.y, l.z] for l in res.pose_landmarks[i]]) for i in range(found)]
+        viss = [np.array([l.visibility if l.visibility is not None else 1.0 for l in res.pose_landmarks[i]])
+                for i in range(found)]
+        who = selector.pick(imgs, viss)
+        detect.people, detect.switched = selector.people, selector.switched
+        if who is None:
             return None
-        img = np.array([[l.x, l.y, l.z] for l in res.pose_landmarks[0]])
-        world = np.array([[l.x, l.y, l.z] for l in res.pose_world_landmarks[0]])
-        vis = np.array([l.visibility if l.visibility is not None else 1.0 for l in res.pose_landmarks[0]])
-        return img, world, vis
+        world = np.array([[l.x, l.y, l.z] for l in res.pose_world_landmarks[who]])
+        return imgs[who], world, viss[who]
 
+    detect.people, detect.switched = 0, False
     return detect, landmarker.close
 
 
@@ -172,6 +186,12 @@ def new_arm(side, args):
     return {"ik": ArmIK(side), "euro": OneEuro(args.min_cutoff, args.beta), "signs": (1.0, 1.0),
             "state": "LOST", "t_ok": -1e9, "wrist": None, "pts": None,
             "target": list(solver.REST), "angles": list(solver.REST)}
+
+
+def reset_arms(arms, args):
+    """Forget the smoothing and left/right history: used when the tracked person changes."""
+    for side in arms:
+        arms[side].update(new_arm(side, args))
 
 
 def track_arms(arms, lm, cal, t, dt, size, args):
@@ -196,6 +216,9 @@ def track_arms(arms, lm, cal, t, dt, size, args):
                 arm["wrist"] = pts[2]
                 arm["pts"] = arm["euro"](pts, t)
                 sol = arm["ik"].solve(*arm["pts"], q_prev_deg=arm["angles"][:2])
+                if sol is not None:
+                    sol = solver.hang_prior(side, sol, arm["pts"])   # arms at the sides: pitch 0, elbows a hair out
+                    sol = (sol[0], sol[1], solver.soften_elbow(sol[2]))  # a straight arm doesn't twitch
         if sol is not None:
             arm["state"], arm["target"], arm["t_ok"] = "TRACKING", list(sol), t
         elif t - arm["t_ok"] < args.hold_s:
@@ -205,6 +228,22 @@ def track_arms(arms, lm, cal, t, dt, size, args):
             arm["euro"].reset()
         step = args.max_step_deg * (LOST_STEP_SCALE if arm["state"] == "LOST" else 1.0)
         arm["angles"] = [slew(a, g, step, dt) for a, g in zip(arm["angles"], arm["target"])]
+
+
+def step_pulses(damper, pulses, arms, args):
+    """The arms' servo pulses for this frame: the tracked angles as pulses, damped (median of three, dead
+    band, smoothing: PulseDamper), rate limited, then held inside robot_api's coupled arm limits."""
+    target = {}
+    for side, arm in arms.items():
+        target.update(solver.arm_pulses(side, *arm["angles"]))
+    return solver.body_safe(solver.rate_limit(pulses, damper(target), args.max_pulse_step))
+
+
+def green_pulses(arms, pulses):
+    """Only the arms drawn green (TRACKING) may drive the robot: an arm that is holding or lost is
+    left alone, so nothing a bad frame produced is ever sent."""
+    return {sid: p for side, arm in arms.items() if arm["state"] == "TRACKING"
+            for sid, p in pulses.items() if sid in solver.ARM_SERVOS[side]}
 
 
 def twin_landmarks(arms):
@@ -291,6 +330,7 @@ def main():
 
     arms = {side: new_arm(side, args) for side in "LR"}
     pulses = solver.stand_arm_pulses()
+    damper = PulseDamper(pulses)
     paused, bar = False, None
     record = {"image": [], "world": [], "vis": [], "t": []}
     stats = {s: {"min": [np.inf] * 3, "max": [-np.inf] * 3, "TRACKING": 0, "HOLD": 0, "LOST": 0} for s in "LR"}
@@ -304,6 +344,8 @@ def main():
             dt = 1.0 / 30.0 if t_prev is None else max(t - t_prev, 1e-3)
             ts_prev = max(ts_prev + 1, int(t * 1000))  # VIDEO mode needs strictly increasing timestamps
             lm = detect(frame, ts_prev)
+            if detect.switched:
+                reset_arms(arms, args)  # someone else is nearest the centre now: don't smooth across people
             t_prev, n = t, n + 1
             if args.record_landmarks:
                 blank = np.full((33, 3), np.nan)
@@ -323,17 +365,16 @@ def main():
 
             if paused:
                 pulses = solver.stand_arm_pulses()
+                damper.reset(pulses)
             else:
                 track_arms(arms, lm, cal, t, dt, (w, h), args)
-                target = {}
-                for side, arm in arms.items():
-                    target.update(solver.arm_pulses(side, *arm["angles"]))
-                pulses = solver.body_safe(solver.rate_limit(pulses, target, args.max_pulse_step))
+                pulses = step_pulses(damper, pulses, arms, args)
             if twin is not None:
                 twin.update_servos({**STAND_PULSES, **pulses}, label="arm_mimic")
                 twin.update_landmarks(*(twin_landmarks(arms) if not paused else (None, None)), legs=False)
             if api is not None:
-                api["targets"] = {str(sid): p for sid, p in pulses.items()}
+                # Paused (emergency stand) sends both arms to rest; otherwise only the green arms are sent.
+                api["targets"] = {str(sid): p for sid, p in (pulses if paused else green_pulses(arms, pulses)).items()}
 
             for side, arm in arms.items():
                 st = stats[side]
@@ -351,6 +392,7 @@ def main():
             if cal.get("shoulder_px") and lm is not None:
                 now_px = np.linalg.norm((lm[0][11, :2] - lm[0][12, :2]) * (w, h))
                 status += f"  dist x{cal['shoulder_px'] / max(now_px, 1.0):.2f}"
+            status += f"  {detect.people} people, tracking the one nearest the centre" if detect.people > 1 else ""
             status += "  PAUSED (x resumes)" if paused else ""
             status += f"  API {api['error'] or 'on'}" if api is not None else ""
             cv2.imshow("arm mimic", draw_hud(frame, lm, arms, pulses, status))
