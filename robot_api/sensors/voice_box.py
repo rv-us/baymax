@@ -26,7 +26,7 @@ COMMANDS = {
 
 
 def _play_wav_stream(cmd: list, timeout: float) -> None:
-    aplay = ["aplay", "-q", "-D", config.AUDIO_PCM]
+    aplay = ["aplay", "-q", "-D", config.SPEAKER_PCM]
     with _speak_lock:
         src = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         try:
