@@ -1,9 +1,8 @@
-# PT robot brain — runs on the ASUS Ascent GX10 (ARM64, CUDA)
-# Setup:
-#   python3 -m venv ~/ptrobot && source ~/ptrobot/bin/activate
-#   pip install -r requirements.txt
-# Then check the GPU build:
-#   python -c "import torch; print(torch.cuda.is_available())"   # should print True
+# Everything that runs on the ASUS Ascent GX10 (ARM64, CUDA): workout loop, pt_agent, dashboard,
+# pose server, speech-to-text, robot API client.
+# Setup (builds ~/venvs/baymax with uv; seconds when uv's cache has the packages):
+#   scripts/setup_gx10_venv.sh
+# Keep the venv OUTSIDE the repo checkout: re-cloning ~/baymax deletes anything inside it.
 
 # GPU builds of PyTorch for the GX10 come from PyTorch's own package index
 --extra-index-url https://download.pytorch.org/whl/cu130
@@ -17,8 +16,23 @@ ultralytics          # YOLO pose models (yolo11n-pose.pt, yolo11m-pose.pt)
 opencv-python
 numpy
 
-# Local LLM coach (talks to the Ollama service on the GX10)
-ollama
+# Robot API client and LLM agents (robot_api.agent, pt_agent)
+httpx
+python-dotenv
+langchain
+langchain-anthropic
+langchain-ollama
+ollama               # coach_test.py
+
+# Speech-to-text (voice.Listener): Silero VAD + Whisper through transformers
+silero-vad
+transformers
+
+# Dashboard server, and MediaPipe for the pose server and dashboard webcam
+-r dashboard/requirements.txt
 
 # Optional: spoken feedback
 piper-tts
+
+# Tests
+pytest

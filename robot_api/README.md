@@ -43,8 +43,9 @@ let a Claude agent use it.
 ## Setup (robot)
 ```bash
 sudo apt install espeak-ng
-cd ~/baymax && python3 -m venv --system-site-packages .venv   # keeps hiwonder/gpiod/smbus visible
-.venv/bin/pip install langchain langchain-anthropic fastapi uvicorn httpx
+# Outside the repo, so re-cloning ~/baymax doesn't delete it. --system-site-packages keeps hiwonder/gpiod/smbus visible.
+python3 -m venv --system-site-packages ~/venvs/baymax
+~/venvs/baymax/bin/pip install langchain langchain-anthropic fastapi uvicorn httpx
 ```
 The laptop only needs `pip install langchain langchain-anthropic httpx` for the HTTP backend.
 
@@ -54,13 +55,13 @@ The laptop only needs `pip install langchain langchain-anthropic httpx` for the 
 # pulse: PipeWire holds the sound card; mic_shared: share the mic with the GX10 stream
 # (streaming/setup_pi_audio.sh); TEMP_CHECK: refuse motion when a servo is too hot.
 BAYMAX_API_TOKEN=secret BAYMAX_SPEAKER_PCM=pulse BAYMAX_MIC_PCM=mic_shared BAYMAX_TEMP_CHECK=1 \
-  .venv/bin/python -m robot_api.server
+  ~/venvs/baymax/bin/python -m robot_api.server
 curl -H 'Authorization: Bearer secret' :8000/sensors/distance
 curl -H 'Authorization: Bearer secret' -X POST :8000/actions/walk -H 'content-type: application/json' -d '{"steps":2}'
 curl :8000/endpoints        # every path and its arguments
 
 # Agent on the robot, or on the laptop against the server
-ANTHROPIC_API_KEY=... .venv/bin/python -m robot_api.agent --backend local
+ANTHROPIC_API_KEY=... ~/venvs/baymax/bin/python -m robot_api.agent --backend local
 ANTHROPIC_API_KEY=... BAYMAX_API_TOKEN=secret python -m robot_api.agent --backend http --url http://169.233.72.93:8000
 
 # Everything with fake hardware (no robot needed)
@@ -84,14 +85,15 @@ While the UDP stream runs, the other two read 15 fps snapshots from its pipeline
 Type a task, and Claude drives the robot with the tools until the task is done. It narrates through
 the speaker and shows its state on the dot matrix.
 ```bash
-cd ~/baymax && .venv/bin/python -m robot_api          # on the robot (stop robot_api.server first)
+cd ~/baymax && ~/venvs/baymax/bin/python -m robot_api   # on the robot (stop robot_api.server first)
 python -m robot_api --backend http --url http://169.233.72.93:8000   # from a laptop via the server
 python -m robot_api --dry-run -p "how far is the wall?"              # fake hardware, one task
 ```
 - **API key:** read from `robot_api/.env` (`claude_key = sk-ant-...`), a repo-root `.env`, or
   `ANTHROPIC_API_KEY`. `.env` is gitignored.
 - **Defaults:** `--model claude-haiku-5-5` and `--thinking low` (1024-token budget; also
-  `off`, `medium`, `high`).
+  `off`, `medium`, `high`). Ollama models default to `--thinking off`: with it on, Qwen took
+  3 to 24 s per step on the GX10.
 - **Local model:** any `--model` not starting with `claude-` runs on Ollama, no API key needed:
   `python -m robot_api --model qwen3.6:35b --ollama-url http://<gx10-ip>:11434` (or set
   `OLLAMA_HOST`). Ollama on the GX10 listens on localhost only, so from a laptop tunnel it first:

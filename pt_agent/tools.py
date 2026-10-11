@@ -40,8 +40,12 @@ HELP_WORDS = ("help",)
 # espeak reads "911" as "nine hundred eleven", so spell it out.
 EMERGENCY_MESSAGE = ("Okay, I am stopping our session now. If you need help, please call nine one one, "
                      "or ask someone nearby to call for you.")
+SAFETY_INTRO = "Before we start, let me show you what to do if something goes wrong."
 SAFETY_WARNING = "I am going to fall down on purpose now, so please don't worry. Three, two, one."
 SAFETY_HELP = "If at any time you get hurt or fall, please say help, or call your handler."
+SAFETY_DONE = "I'm okay, that was just practice. Remember, if you ever need me, just say help."
+APPROACH_WALK = "I'm going to walk over to you now."
+APPROACH_TURN = "I'm going to turn to face you."
 
 SWITCH_PERSON_S = 4.0     # while waiting, look at each visible person in turn this long
 SCAN_EVERY_S = 1.5        # with nobody in view, move the head to the next search spot
@@ -193,10 +197,7 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         """Speak out loud to the patient. One or two short, warm sentences."""
         return speak(text)
 
-    @tool
-    def listen(timeout_s: float = 10) -> dict:
-        """Wait for the patient to say something and return it ({"heard": null} if they
-        stayed silent). say() your question first; ask one question at a time."""
+    def hear(timeout_s: float) -> dict:
         text = ears.listen(timeout_s)
         session.event("patient", text)
         if text:
@@ -205,6 +206,20 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         if alert.text:
             out["alert"] = f"pain words heard ({alert.text!r}); motors stopped"
         return out
+
+    @tool
+    def ask(question: str, timeout_s: float = 10) -> dict:
+        """Ask the patient one question out loud and wait for the answer, in one step: use it
+        for every question. Returns {"heard": their words} ({"heard": null} if they stayed
+        silent). Put the question itself in `question`, not in your text, so it isn't said twice."""
+        speak(question)
+        return hear(timeout_s)
+
+    @tool
+    def listen(timeout_s: float = 10) -> dict:
+        """Wait for the patient to say something and return it ({"heard": null} if they
+        stayed silent). To ask something, use ask() instead, which speaks and listens."""
+        return hear(timeout_s)
 
     # ---- seeing ------------------------------------------------------------------
 
@@ -317,9 +332,9 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
 
     @tool
     def approach_patient(stop_distance_cm: int = 50, max_moves: int = 6) -> dict:
-        """Walk up to the patient you're following: turn to face them, then walk forward
-        a couple of steps at a time until they're about stop_distance_cm away (ultrasonic)
-        or fill the camera view. Tell the patient before you start."""
+        """Walk up to the patient you're following: tells them you're coming over, turns to
+        face them, then walks forward a couple of steps at a time until they're about
+        stop_distance_cm away (ultrasonic) or fill the camera view."""
         if blocked():
             return blocked()
         pid = perception.target_id
@@ -328,6 +343,7 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         stand = call("actions/stand")
         if "error" in stand:
             return stand
+        speak(APPROACH_TURN if settings.stationary else APPROACH_WALK)
         turns = walks = 0
         reason = "max_moves"
         for _ in range(max_moves):
@@ -392,6 +408,7 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         out = {"temperature_c": temp_c, "temperature_f": round(temp_c * 9 / 5 + 32, 1),
                "contact_likely": True}
         session.temperature_simulated = True
+        session.record["temperature_c"] = temp_c
         session.event("temperature", json.dumps({**out, "simulated": True}))
         return out
 
@@ -402,7 +419,7 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         """Check the patient's temperature with the sensor on top of your right hand.
         Reaches the right arm forward, says the instructions, reads the sensor every second
         for up to hold_s seconds (stops early once the reading settles), then lowers the
-        arm. Ask permission and explain first."""
+        arm, and records the reading in the notes. Ask permission and explain first."""
         if blocked():
             return blocked()
         if not settings.real_temperature:
@@ -437,18 +454,22 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
                "note": "The sensor measures air temperature at your hand; with the patient's hand on it "
                        "this approaches skin temperature (usually 30-35 C), not core body temperature. "
                        "It is a wellness check, not a medical measurement."}
+        if out["contact_likely"]:
+            session.record["temperature_c"] = peak
         session.event("temperature", json.dumps(out))
         return out
 
     @tool
     def safety_demo() -> dict:
-        """Show the patient what to do if they get hurt: warns them, falls on your back on
-        purpose, tells them from the floor to say help or call their handler, gets back up
-        and stands. About 20 seconds. Run it once, after greeting and before approaching."""
+        """Show the patient what to do if they get hurt. Says everything itself: introduces
+        the demo, warns them, falls on your back on purpose, tells them from the floor to say
+        help or call their handler, gets back up, and reassures them. About 25 seconds. Run it
+        once, after greeting and before approaching; don't repeat its lines."""
         following = perception.target_id
         perception.track(None)
         perception.head.paused = True
         try:
+            speak(SAFETY_INTRO)
             speak(SAFETY_WARNING)
             fall = call("actions/run", name="lie_down", allow_risky=True)
             if "error" in fall:
@@ -460,12 +481,13 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
                 return {"error": f"fell but couldn't get up: {up['error']}. Ask the patient or "
                                  "their handler to stand you up."}
             call("actions/stand")
+            speak(SAFETY_DONE)
         finally:
             perception.track(following)  # back on the patient
             perception.head.paused = False
         session.record["safety_demo"] = "completed"
         session.event("safety_demo", "completed")
-        return {"completed": True, "said": SAFETY_HELP}
+        return {"completed": True, "said": [SAFETY_INTRO, SAFETY_WARNING, SAFETY_HELP, SAFETY_DONE]}
 
     @tool
     def clear_alert() -> dict:
@@ -495,6 +517,6 @@ def make_pt_tools(backend, perception, ears, session: SessionLog, settings: Sett
         call("sensors/matrix/icon", name="heart")
         return {"saved": path}
 
-    own = [say, listen, people_in_view, camera_view, follow_person, look, wait_for_patient,
+    own = [say, ask, listen, people_in_view, camera_view, follow_person, look, wait_for_patient,
            approach_patient, take_temperature, safety_demo, clear_alert, record, end_session]
     return [gate(t) for t in base + own]

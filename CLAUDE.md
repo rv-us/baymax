@@ -13,6 +13,7 @@ Start with [README.md](README.md): what runs on which machine, and a map of ever
 ## Machines
 
 - The robot (TonyPi, a Raspberry Pi 5) runs `python -m robot_api.server`. The GX10 runs everything else and reaches the Pi over SSH as `tonypi`. Addresses change per venue; they're in `streaming/config.env` and `BAYMAX_API_URL`.
+- **Python environments live in `~/venvs/baymax`, never inside a checkout.** `~/baymax` gets deleted and re-cloned (that lost the GX10's venv once). On the GX10, `scripts/setup_gx10_venv.sh` rebuilds it with uv in seconds from `~/.cache/uv`; don't clear that cache. `requirements.txt` lists everything the GX10 needs; add new dependencies there.
 - Teammates work directly on both machines. Don't reset, pull into, or edit their checkouts (`~/baymax` on either machine may hold unpushed work). Test from a separate `git worktree` and remove it afterwards.
 - One program at a time can open the robot's camera, receive a UDP stream on a port, or drive the servo bus. Check for leftovers (`ss -ulpn`, `pgrep -af gst-launch`) before assuming something is broken.
 

@@ -155,7 +155,7 @@ def test_detectors_find_people_in_a_photo(name, people):
 def test_tool_set():
     tools, _, _ = tools_for(LocalBackend())
     assert not LEFT_OUT & set(tools) - {"say", "camera_view", "look"}  # replaced ones come back
-    for name in ("wait_for_patient", "approach_patient", "take_temperature", "listen", "say",
+    for name in ("wait_for_patient", "approach_patient", "take_temperature", "listen", "say", "ask",
                  "people_in_view", "follow_person", "record", "end_session", "clear_alert", "move_arm"):
         assert name in tools
 
@@ -219,14 +219,16 @@ def test_simulated_temperature_reaches_out_and_reports_a_normal_reading(fake_rob
     assert right_shoulder[-2:] == [650, 275]              # reached forward, then back down
     saved = json.load(open(tools["end_session"].invoke({"summary": "x"})["saved"]))
     assert saved["temperature_simulated"] is True         # the notes say it wasn't measured
+    assert saved["record"]["temperature_c"] == out["temperature_c"]
 
 
 def test_take_temperature_reaches_out_reads_and_lowers_arm(fake_robot):
     backend = Backend(fake_robot, temps=[22.5, 24.0, 27.0, 30.0, 31.5, 32.0, 32.1, 32.1, 32.1])
-    tools, _, _ = tools_for(backend, real_temperature=True)
+    tools, _, session = tools_for(backend, real_temperature=True)
     out = tools["take_temperature"].invoke({"hold_s": 5})
     assert out["baseline_c"] == 22.5 and out["peak_c"] == 32.1
     assert out["rise_c"] == pytest.approx(9.6) and out["contact_likely"] and out["settled"]
+    assert session.record["temperature_c"] == 32.1
     assert fake_robot.positions[16] == 275          # right shoulder back down
     arm_moves = [e for e in fake_robot.log if e[0] == "bus_servo_set_position"
                  and any(sid == 16 for sid, _ in e[2])]
@@ -234,9 +236,10 @@ def test_take_temperature_reaches_out_reads_and_lowers_arm(fake_robot):
 
 
 def test_take_temperature_without_contact(fake_robot):
-    tools, _, _ = tools_for(Backend(fake_robot, temps=[22.5]), real_temperature=True)
+    tools, _, session = tools_for(Backend(fake_robot, temps=[22.5]), real_temperature=True)
     out = tools["take_temperature"].invoke({"hold_s": 0.2})
     assert out["rise_c"] == 0 and not out["contact_likely"]
+    assert "temperature_c" not in session.record   # room air isn't the patient's temperature
 
 
 def test_approach_walks_until_close(fake_robot):
@@ -318,11 +321,13 @@ def test_safety_demo_warns_falls_says_help_and_gets_up(fake_robot):
     assert groups[:2] == ["lie_down", "stand_up_back"]
     order = [p if p != "actions/run" else "run" for p in backend.calls
              if p in ("sensors/voice/say", "actions/run", "actions/stand")]
-    # warn, fall, say help (from the floor), get up, stand
-    assert order == ["sensors/voice/say", "run", "sensors/voice/say", "run", "actions/stand"]
-    warning, help_line = said_texts(backend)
+    # intro, warn, fall, say help (from the floor), get up, stand, reassure
+    say = "sensors/voice/say"
+    assert order == [say, say, "run", say, "run", "actions/stand", say]
+    intro, warning, help_line, done = said_texts(backend)
     assert "on purpose" in warning
     assert "say help" in help_line and "call your handler" in help_line
+    assert "just practice" in done
     assert session.record["safety_demo"] == "completed"
 
 
@@ -348,9 +353,29 @@ def test_help_stops_says_911_stands_and_ends_the_session(fake_robot, tmp_path):
     assert fake_robot.positions[16] == 275                     # back in the stand pose
     saved = json.load(open(session.path))
     assert saved["emergency"] == "help me please" and "EMERGENCY" in saved["summary"]
-    for name, args in (("say", {"text": "hi"}), ("listen", {}), ("record", {"item": "a", "value": "b"}),
+    for name, args in (("say", {"text": "hi"}), ("listen", {}), ("ask", {"question": "ok?"}),
+                       ("record", {"item": "a", "value": "b"}),
                        ("move_arm", {"side": "left", "position": "up"}), ("clear_alert", {})):
         assert "session is over" in tools[name].invoke(args)["error"]
+
+
+def test_ask_says_the_question_then_returns_the_answer(fake_robot, tmp_path):
+    backend = SpeechBackend(fake_robot)
+    tools, _, session = tools_for(backend, FakeEars(answers=["Maria", None]), tmp_path=tmp_path)
+    assert tools["ask"].invoke({"question": "What's your name?"}) == {"heard": "Maria"}
+    assert said_texts(backend) == ["What's your name?"]
+    assert tools["ask"].invoke({"question": "Are you still there?"}) == {"heard": None}
+    kinds = [(e["kind"], e.get("text")) for e in session.events][:4]
+    assert kinds == [("robot", "What's your name?"), ("patient", "Maria"),
+                     ("robot", "Are you still there?"), ("patient", None)]
+
+
+def test_ask_reports_a_pain_alert(fake_robot):
+    ears = FakeEars(answers=["it hurts a bit"])
+    tools, _, _ = tools_for(SpeechBackend(fake_robot), ears)
+    ears.hear("it hurts a bit")  # the listener's callback fires on everything heard
+    out = tools["ask"].invoke({"question": "How is your shoulder?"})
+    assert out["heard"] == "it hurts a bit" and "pain words" in out["alert"]
 
 
 def test_help_is_heard_only_as_a_word():

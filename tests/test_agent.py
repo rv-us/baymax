@@ -37,3 +37,32 @@ def test_thinking_kwargs_per_model_family():
     old = agent.thinking_kwargs("claude-haiku-4-5-20251001", "low")
     assert old["thinking"] == {"type": "enabled", "budget_tokens": 1024}
     assert "thinking" not in agent.thinking_kwargs("claude-haiku-4-5-20251001", "off")
+
+
+def test_ollama_models_default_to_no_thinking():
+    assert agent.default_thinking("qwen3.6:35b") == "off"
+    assert agent.default_thinking("gemma4:26b") == "off"
+    assert agent.default_thinking("claude-haiku-5-5") == "low"
+
+
+def test_ollama_agent_built_without_reasoning(monkeypatch):
+    import pytest
+
+    pytest.importorskip("langchain_ollama")
+    import langchain_ollama
+
+    seen = {}
+
+    class FakeChat:
+        def __init__(self, **kwargs):
+            seen.update(kwargs)
+
+        def bind_tools(self, tools):
+            return self
+
+    monkeypatch.setattr(langchain_ollama, "ChatOllama", FakeChat)
+    try:
+        agent.build_agent(None, "qwen3.6:35b", agent.default_thinking("qwen3.6:35b"), None, None)
+    except Exception:  # building the rest of the agent needs more than the fake model
+        pass
+    assert seen.get("reasoning") is False

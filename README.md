@@ -9,7 +9,7 @@ A physical therapy robot: a Hiwonder TonyPi Pro (Raspberry Pi 5) demonstrates ex
 | **TonyPi** (the robot) | `robot_api` server: servos, speaker, sensors, camera | HTTP API on port 8000 (token in `BAYMAX_API_TOKEN`) |
 | **GX10** | Everything else: workout loop, agents, pose estimation, speech-to-text, Ollama models, dashboard | Calls the robot API; receives the camera (H.264 over UDP, on request) and microphone (Opus over UDP) |
 
-Most GX10 tools need `BAYMAX_API_URL=http://<robot>:8000` and `BAYMAX_API_TOKEN` set. Almost everything has a dry run (`--dry-run` or `BAYMAX_DRY_RUN=1`) that fakes the robot.
+Most GX10 tools need `BAYMAX_API_URL=http://<robot>:8000` and `BAYMAX_API_TOKEN` set, and the Python environment in `~/venvs/baymax` (`scripts/setup_gx10_venv.sh` builds it; keep it outside the repo). Almost everything has a dry run (`--dry-run` or `BAYMAX_DRY_RUN=1`) that fakes the robot.
 
 ## What's where
 
@@ -21,6 +21,7 @@ Most GX10 tools need `BAYMAX_API_URL=http://<robot>:8000` and `BAYMAX_API_TOKEN`
 | `vision/` | Pose estimation on the robot's camera: joint angles, body-in-view (`scripts/pose_server.py --stream`) | [docs/running-the-stream.md](docs/running-the-stream.md#pose-estimation-on-the-stream) |
 | `workout/` | A workout session as a state machine: plans, demos, sets, safety stops, session logs | [workout/README.md](workout/README.md), design: [docs/workout-agent-loop.md](docs/workout-agent-loop.md) |
 | `pt_agent/` | A PT check-in run by an LLM agent: finds the patient, safety demo, temperature, notes | [pt_agent/README.md](pt_agent/README.md) |
+| `demo/` | A fixed, scripted run of the whole story for presentations: same steps every time, no camera, mic or model | [demo/README.md](demo/README.md) |
 | `dashboard/` | Web app for whoever runs a session: animations, live sessions, analytics, coach | [dashboard/README.md](dashboard/README.md) |
 | `digital_twin/` | 3D model of the robot in the browser, next to the real robot's servo readings | [digital_twin/README.md](digital_twin/README.md) |
 | `arm_mvp/` | Arm mimic: one camera to the robot's (or twin's) arms, with calibration | docstring of `arm_mvp/arm_mimic.py` |
