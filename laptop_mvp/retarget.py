@@ -71,6 +71,24 @@ def to_torso_frame(world_lms) -> Optional[np.ndarray]:
     return (pts - 0.5 * (mid_sh + mid_hip)) @ rot.T
 
 
+def shoulder_frame(l_shoulder, r_shoulder, up=(0.0, -1.0, 0.0)) -> Optional[Tuple[np.ndarray, np.ndarray]]:
+    """
+    Hip-free torso frame: (rot, origin) with rot rows = (forward, left, up) in camera coords and
+    origin at the shoulder midpoint, so torso_pts = (pts - origin) @ rot.T. Left comes from the
+    shoulder line, `up` is assumed (upright subject, camera convention y down), forward is their
+    cross product. Left is re-orthogonalized against up, so a shrugged shoulder does not tilt the frame.
+    """
+    l_shoulder, r_shoulder = np.asarray(l_shoulder, dtype=np.float64), np.asarray(r_shoulder, dtype=np.float64)
+    up = _unit(np.asarray(up, dtype=np.float64))
+    if up is None or not (np.all(np.isfinite(l_shoulder)) and np.all(np.isfinite(r_shoulder))):
+        return None
+    left = l_shoulder - r_shoulder
+    left = _unit(left - np.dot(left, up) * up)
+    if left is None:
+        return None
+    return np.stack([np.cross(left, up), left, up]), 0.5 * (l_shoulder + r_shoulder)
+
+
 def arm_fk(pitch: float, roll: float, flex: float) -> Tuple[np.ndarray, np.ndarray]:
     """Unit upper-arm and forearm directions in the torso frame (angles in radians)."""
     cp, sp, cr, sr = math.cos(pitch), math.sin(pitch), math.cos(roll), math.sin(roll)
