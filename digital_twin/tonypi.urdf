@@ -3,9 +3,10 @@
 <!-- Hiwonder TonyPi Humanoid Robot URDF Model                                           -->
 <!-- Proportions: Height ~373mm, Torso Width ~186mm across shoulders                     -->
 <!-- Arm Links: Upper arm ~80mm, Forearm ~80mm                                           -->
-<!-- Head: Neck pan (Servo 2), Neck pitch (Servo 1)                                      -->
-<!-- Left Arm: Shoulder Pitch (Servo 7), Shoulder Roll (Servo 8), Elbow (Servo 6)        -->
-<!-- Right Arm: Shoulder Pitch (Servo 15), Shoulder Roll (Servo 16), Elbow (Servo 14)    -->
+<!-- Head: neck_pan / neck_pitch are PWM servos 2 / 1 (pulse 1500 = centred)                     -->
+<!-- Arms (bus servos): shoulder_pitch 8/16, shoulder_roll 7/15, elbow 6/14 (left/right)        -->
+<!-- Legs (bus servos): hip_roll 5/13, hip_pitch 4/12, knee 3/11, ankle_pitch 2/10, ankle_roll 1/9 -->
+<!-- Joint zero = factory stand pose. Servo->angle calibration lives in digital_twin/mapping.py   -->
 <!-- =================================================================================== -->
 <robot name="tonypi">
 
@@ -177,7 +178,7 @@
   </link>
 
   <!-- ==================== LEFT ARM ==================== -->
-  <!-- Left Shoulder Pitch Joint (Servo 7: Forward / Backward) -->
+  <!-- Left Shoulder Pitch Joint (Servo 8: Forward / Backward) -->
   <joint name="l_shoulder_pitch" type="revolute">
     <parent link="torso"/>
     <child link="l_shoulder_pitch_link"/>
@@ -209,7 +210,7 @@
     </collision>
   </link>
 
-  <!-- Left Shoulder Roll Joint (Servo 8: Abduction / Wingspan) -->
+  <!-- Left Shoulder Roll Joint (Servo 7: Abduction / Wingspan) -->
   <joint name="l_shoulder_roll" type="revolute">
     <parent link="l_shoulder_pitch_link"/>
     <child link="l_upper_arm"/>
@@ -315,7 +316,7 @@
   </link>
 
   <!-- ==================== RIGHT ARM ==================== -->
-  <!-- Right Shoulder Pitch Joint (Servo 15: Forward / Backward) -->
+  <!-- Right Shoulder Pitch Joint (Servo 16: Forward / Backward) -->
   <joint name="r_shoulder_pitch" type="revolute">
     <parent link="torso"/>
     <child link="r_shoulder_pitch_link"/>
@@ -347,7 +348,7 @@
     </collision>
   </link>
 
-  <!-- Right Shoulder Roll Joint (Servo 16: Abduction / Wingspan) -->
+  <!-- Right Shoulder Roll Joint (Servo 15: Abduction / Wingspan) -->
   <joint name="r_shoulder_roll" type="revolute">
     <parent link="r_shoulder_pitch_link"/>
     <child link="r_upper_arm"/>
@@ -482,12 +483,36 @@
   </link>
 
   <!-- Left Leg -->
-  <joint name="l_hip_pitch" type="revolute">
+  <!-- L hip roll (servo 5: abduction) -->
+  <joint name="l_hip_roll" type="revolute">
     <parent link="pelvis"/>
-    <child link="l_thigh"/>
+    <child link="l_hip_link"/>
     <origin xyz="0 0.045 -0.028" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.0" upper="1.0" effort="4.0" velocity="4.0"/>
+    <dynamics damping="0.1" friction="0.05"/>
+  </joint>
+  <link name="l_hip_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.04"/>
+      <inertia ixx="0.00002" ixy="0" ixz="0" iyy="0.00002" iyz="0" izz="0.00002"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.034 0.034 0.034"/>
+      </geometry>
+      <material name="servo_black"/>
+    </visual>
+  </link>
+
+  <joint name="l_hip_pitch" type="revolute">
+    <parent link="l_hip_link"/>
+    <child link="l_thigh"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit lower="-1.57" upper="1.57" effort="4.0" velocity="4.0"/>
+    <limit lower="-2.1" upper="2.1" effort="4.0" velocity="4.0"/>
     <dynamics damping="0.1" friction="0.05"/>
   </joint>
 
@@ -524,7 +549,7 @@
     <child link="l_shin"/>
     <origin xyz="0 0 -0.075" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit lower="-1.57" upper="1.57" effort="4.0" velocity="4.0"/>
+    <limit lower="-2.1" upper="2.1" effort="4.0" velocity="4.0"/>
     <dynamics damping="0.1" friction="0.05"/>
   </joint>
 
@@ -556,14 +581,39 @@
     </collision>
   </link>
 
-  <joint name="l_ankle" type="revolute">
+  <!-- L ankle pitch (servo 2) then ankle roll (servo 1) -->
+  <joint name="l_ankle_pitch" type="revolute">
     <parent link="l_shin"/>
-    <child link="l_foot"/>
+    <child link="l_ankle_link"/>
     <origin xyz="0 0 -0.075" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
+    <limit lower="-2.0" upper="2.0" effort="4.0" velocity="4.0"/>
+    <dynamics damping="0.1" friction="0.05"/>
+  </joint>
+  <link name="l_ankle_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.04"/>
+      <inertia ixx="0.00002" ixy="0" ixz="0" iyy="0.00002" iyz="0" izz="0.00002"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.034 0.034 0.034"/>
+      </geometry>
+      <material name="servo_black"/>
+    </visual>
+  </link>
+
+  <joint name="l_ankle_roll" type="revolute">
+    <parent link="l_ankle_link"/>
+    <child link="l_foot"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
     <limit lower="-1.0" upper="1.0" effort="4.0" velocity="4.0"/>
     <dynamics damping="0.1" friction="0.05"/>
   </joint>
+
 
   <link name="l_foot">
     <inertial>
@@ -604,12 +654,36 @@
   </link>
 
   <!-- Right Leg -->
-  <joint name="r_hip_pitch" type="revolute">
+  <!-- R hip roll (servo 13: abduction) -->
+  <joint name="r_hip_roll" type="revolute">
     <parent link="pelvis"/>
-    <child link="r_thigh"/>
+    <child link="r_hip_link"/>
     <origin xyz="0 -0.045 -0.028" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.0" upper="1.0" effort="4.0" velocity="4.0"/>
+    <dynamics damping="0.1" friction="0.05"/>
+  </joint>
+  <link name="r_hip_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.04"/>
+      <inertia ixx="0.00002" ixy="0" ixz="0" iyy="0.00002" iyz="0" izz="0.00002"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.034 0.034 0.034"/>
+      </geometry>
+      <material name="servo_black"/>
+    </visual>
+  </link>
+
+  <joint name="r_hip_pitch" type="revolute">
+    <parent link="r_hip_link"/>
+    <child link="r_thigh"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit lower="-1.57" upper="1.57" effort="4.0" velocity="4.0"/>
+    <limit lower="-2.1" upper="2.1" effort="4.0" velocity="4.0"/>
     <dynamics damping="0.1" friction="0.05"/>
   </joint>
 
@@ -646,7 +720,7 @@
     <child link="r_shin"/>
     <origin xyz="0 0 -0.075" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit lower="-1.57" upper="1.57" effort="4.0" velocity="4.0"/>
+    <limit lower="-2.1" upper="2.1" effort="4.0" velocity="4.0"/>
     <dynamics damping="0.1" friction="0.05"/>
   </joint>
 
@@ -678,14 +752,39 @@
     </collision>
   </link>
 
-  <joint name="r_ankle" type="revolute">
+  <!-- R ankle pitch (servo 10) then ankle roll (servo 9) -->
+  <joint name="r_ankle_pitch" type="revolute">
     <parent link="r_shin"/>
-    <child link="r_foot"/>
+    <child link="r_ankle_link"/>
     <origin xyz="0 0 -0.075" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
+    <limit lower="-2.0" upper="2.0" effort="4.0" velocity="4.0"/>
+    <dynamics damping="0.1" friction="0.05"/>
+  </joint>
+  <link name="r_ankle_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.04"/>
+      <inertia ixx="0.00002" ixy="0" ixz="0" iyy="0.00002" iyz="0" izz="0.00002"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.034 0.034 0.034"/>
+      </geometry>
+      <material name="servo_black"/>
+    </visual>
+  </link>
+
+  <joint name="r_ankle_roll" type="revolute">
+    <parent link="r_ankle_link"/>
+    <child link="r_foot"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
     <limit lower="-1.0" upper="1.0" effort="4.0" velocity="4.0"/>
     <dynamics damping="0.1" friction="0.05"/>
   </joint>
+
 
   <link name="r_foot">
     <inertial>

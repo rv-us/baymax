@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import yolo_est
-from tonypi_sim import TonyPiDigitalTwin
+from digital_twin import TonyPiDigitalTwin
 
 def test_full_pipeline():
     print("Testing YOLO PT Pose & Simulation Pipeline (Full 3D)...")
@@ -35,7 +35,7 @@ def test_full_pipeline():
     print("[PASS] 3D HUD canvas generated successfully with dimensions (480, 960, 3)")
     
     # 2. Test Digital Twin in Headless Mode (Multiprocess Default)
-    twin = TonyPiDigitalTwin(headless=True, use_process=True)
+    twin = TonyPiDigitalTwin(headless=True, port=0)
     twin.start()
     
     # Send Wingspan T-pose (Roll = 90° / -90°)
@@ -63,16 +63,17 @@ def test_full_pipeline():
                      r_pitch_deg=0.0, r_roll_deg=-45.0, r_elbow_deg=180.0)
     print("[PASS] Digital Twin updated to Flapping Wings")
 
-    # Test backward compatibility with legacy 2D update
-    twin.update_arms(l_elbow=50.0, l_shoulder_plane=90.0, r_elbow=50.0, r_shoulder_plane=90.0)
-    print("[PASS] Digital Twin backward-compatibility verified")
-
-    assert twin.is_window_closed() is True  # Headless mode window is never open
+    # The viewer sees what was sent: T-pose servo pulses 7/15 sit ~75 deg from stand
+    twin.update_arms(l_pitch_deg=0.0, l_roll_deg=90.0, l_elbow_deg=180.0,
+                     r_pitch_deg=0.0, r_roll_deg=-90.0, r_elbow_deg=180.0)
+    assert abs(twin.state.command.servos[7] - (800 - round(90 * 1000 / 240))) <= 1
+    assert twin.is_window_open()
     twin.close()
+    assert twin.is_window_closed()
     print("[PASS] Digital Twin cleanly closed")
 
-    # 3. Test Digital Twin in Synchronous Mode
-    sync_twin = TonyPiDigitalTwin(headless=True, use_process=False)
+    # 3. A second twin must coexist with the first (ports are picked per instance)
+    sync_twin = TonyPiDigitalTwin(headless=True, port=0)
     sync_twin.start()
     sync_twin.update_arms(l_pitch_deg=-15.0, l_roll_deg=45.0, l_elbow_deg=70.0,
                           r_pitch_deg=-15.0, r_roll_deg=-45.0, r_elbow_deg=70.0)

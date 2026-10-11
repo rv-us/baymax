@@ -385,13 +385,11 @@ def main():
     sim_status = "Disabled"
     if not args.no_sim:
         try:
-            from tonypi_sim import TonyPiDigitalTwin
-            use_process = not args.sync_sim
-            digital_twin = TonyPiDigitalTwin(use_process=use_process)
+            from digital_twin import TonyPiDigitalTwin
+            digital_twin = TonyPiDigitalTwin()
             digital_twin.start()
             sim_status = "Connected"
-            mode_desc = "synchronous" if args.sync_sim else "multiprocess"
-            print(f"[INFO] TonyPi 3D Digital Twin initialized successfully ({mode_desc} mode).")
+            print(f"[INFO] TonyPi digital twin viewer: {digital_twin.url}")
         except Exception as e:
             sim_status = "Offline"
             print(f"[WARN] TonyPi 3D Digital Twin could not be started: {e}")

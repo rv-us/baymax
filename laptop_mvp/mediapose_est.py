@@ -29,7 +29,9 @@ Features:
    - Bilateral joint angle & pulse readouts.
    - Colored skeleton rendering (upper body + legs when visible, cutoff line when not).
    - Nemotron clinical evaluation supervisor.
-7. 3D Digital Twin Integration (TonyPiDigitalTwin Open3D / PyBullet renderer).
+7. 3D Digital Twin Integration: the servo pulses computed each frame drive digital_twin/
+   (URDF model rendered in the browser; also embeddable in a web dashboard). Add
+   --twin-robot-url to overlay the real robot's servo readback as a ghost.
 """
 
 from __future__ import annotations
@@ -1120,8 +1122,12 @@ def parse_args():
     )
     parser.add_argument("--cam", type=int, default=0, help="Webcam device index (default: 0)")
     parser.add_argument("--source", type=str, default=None, help="Video source (index or path)")
-    parser.add_argument("--no-sim", action="store_true", help="Disable 3D digital twin window")
-    parser.add_argument("--sync-sim", action="store_true", help="Run 3D digital twin synchronously")
+    parser.add_argument("--no-sim", action="store_true", help="Disable the 3D digital twin")
+    parser.add_argument("--sync-sim", action="store_true", help=argparse.SUPPRESS)  # legacy, ignored
+    parser.add_argument("--twin-port", type=int, default=8765, help="Digital twin web viewer port (default 8765)")
+    parser.add_argument("--no-browser", action="store_true", help="Do not open the twin viewer in a browser")
+    parser.add_argument("--twin-robot-url", type=str, default=None,
+                        help="robot_api URL whose servo readback is mirrored in the twin (defaults to --api-url)")
     parser.add_argument("--no-hw-sim", action="store_true", help="Disable TonyPi GC0308 hardware emulation")
     parser.add_argument("--alpha", type=float, default=0.35, help="EMA smoothing factor (0.0 to 1.0)")
     parser.add_argument("--max-step-deg", type=float, default=12.0,
@@ -1167,24 +1173,25 @@ def main():
         else:
             print(f"[WARN] Depth model unavailable, using MediaPipe z only: {depth_est.error}")
 
-    # 3. Initialize TonyPi 3D Digital Twin Visualizer
+    # 3. Initialize TonyPi 3D Digital Twin (web viewer served from this process)
     digital_twin = None
     sim_status = "Disabled"
     if not args.no_sim:
         try:
-            from tonypi_sim import TonyPiDigitalTwin
-            use_process = not args.sync_sim
+            from digital_twin import TonyPiDigitalTwin
             digital_twin = TonyPiDigitalTwin(
                 gui=not args.headless_test,
                 headless=args.headless_test,
-                use_process=use_process and not args.headless_test,
+                port=args.twin_port,
+                open_browser=False if args.no_browser else None,
+                robot_url=args.twin_robot_url or args.api_url,
             )
             digital_twin.start()
             sim_status = "Connected"
-            print("[INFO] TonyPi 3D Digital Twin visualizer initialized successfully.")
+            print(f"[INFO] TonyPi digital twin viewer: {digital_twin.url}")
         except Exception as e:
             sim_status = "Offline"
-            print(f"[WARN] TonyPi 3D Digital Twin could not be started: {e}")
+            print(f"[WARN] TonyPi digital twin could not be started: {e}")
 
     # Optional robot_api client backend
     http_backend = None
@@ -1398,31 +1405,13 @@ def main():
             l_leg_pulses = map_leg_servos(l_leg_filtered, "L", legs_visible)
             r_leg_pulses = map_leg_servos(r_leg_filtered, "R", legs_visible)
 
-            # 5. Update TonyPi 3D Digital Twin Visualizer
+            # 5. Update the digital twin with exactly the pulses the robot would receive
             if digital_twin is not None:
-                if hasattr(digital_twin, "is_window_open") and not digital_twin.is_window_open():
-                    sim_status = "Closed"
-                else:
-                    sim_status = "Connected"
-                digital_twin.update_arms(
-                    l_pitch_deg=sim_l_pitch,
-                    l_roll_deg=sim_l_roll,
-                    l_elbow_deg=filt_l_elbow,
-                    r_pitch_deg=sim_r_pitch,
-                    r_roll_deg=sim_r_roll,
-                    r_elbow_deg=filt_r_elbow,
-                )
-                if legs_visible and hasattr(digital_twin, "update_legs"):
-                    digital_twin.update_legs(
-                        l_knee_deg=filt_l_knee,
-                        l_hip_pitch_deg=filt_l_hip_pitch,
-                        l_ankle_deg=filt_l_ankle_pitch,
-                        r_knee_deg=filt_r_knee,
-                        r_hip_pitch_deg=filt_r_hip_pitch,
-                        r_ankle_deg=filt_r_ankle_pitch,
-                    )
-                elif hasattr(digital_twin, "update_legs"):
-                    digital_twin.update_legs(180.0, 0.0, 0.0, 180.0, 0.0, 0.0)
+                digital_twin.update_servos(build_robot_api_targets(
+                    {"pulse_elbow": pulse_l_elb, "pulse_roll": pulse_l_roll, "pulse_pitch": pulse_l_pitch, "pulse_hand": pulse_l_hand},
+                    {"pulse_elbow": pulse_r_elb, "pulse_roll": pulse_r_roll, "pulse_pitch": pulse_r_pitch, "pulse_hand": pulse_r_hand},
+                    l_leg_pulses, r_leg_pulses,
+                ), label="mediapipe")
 
             # Assemble Telemetry
             left_arm_telemetry = {

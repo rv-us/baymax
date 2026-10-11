@@ -1,5 +1,5 @@
 """
-Synthetic 3D pose examples -> retarget -> TonyPi simulator, compared limb by limb.
+Synthetic 3D pose examples -> retarget -> TonyPi digital twin, compared limb by limb.
 
 Each pose is built as 3D landmarks in the camera convention the estimator produces,
 solved into joint angles, sent to the headless digital twin, and the direction every
@@ -12,7 +12,7 @@ import numpy as np
 from mediapose_est import JointFilter, LandmarkListWrapper, LandmarkPoint
 from retarget import (ARM_IDX, LEG_IDX, L_HIP, L_SHOULDER, R_HIP, R_SHOULDER, ArmIK, arm_fk,
                       leg_angles, shoulder_pulses, elbow_pulse, pulses_to_angles, to_torso_frame)
-from tonypi_sim import TonyPiDigitalTwin
+from digital_twin import TonyPiDigitalTwin
 
 S45 = math.sin(math.radians(45))
 UPPER, FORE, THIGH, SHIN = 0.28, 0.25, 0.42, 0.40
@@ -90,15 +90,15 @@ def sim_limb_errors(twin, pts, arms, legs):
         for links, idx in (((f"{p}_upper_arm", f"{p}_forearm"), ARM_IDX[s]),
                            ((f"{p}_thigh", f"{p}_shin"), LEG_IDX[s])):
             for link, (a, b) in zip(links, ((idx[0], idx[1]), (idx[1], idx[2]))):
-                sim_dir = twin.get_link_rotation(link) @ np.array([0.0, 0.0, -1.0])
+                sim_dir = np.array(twin.get_link_rotation(link)) @ np.array([0.0, 0.0, -1.0])
                 errors[link] = angle_between(sim_dir, pts[b] - pts[a])
-        foot_z = twin.get_link_rotation(f"{p}_foot") @ np.array([0.0, 0.0, 1.0])
+        foot_z = np.array(twin.get_link_rotation(f"{p}_foot")) @ np.array([0.0, 0.0, 1.0])
         errors[f"{p}_foot_tilt"] = angle_between(foot_z, (0, 0, 1))
     return errors
 
 
 def test_fk_matches_simulator():
-    twin = TonyPiDigitalTwin(gui=False, headless=True)
+    twin = TonyPiDigitalTwin(gui=False, headless=True, port=0, enforce_limits=False)
     worst = 0.0
     for pitch, roll, flex in ((0, 0, 0), (-90, 0, 40), (-30, 70, 90), (-150, 110, 20), (40, -20, 80)):
         twin.update_arms(l_pitch_deg=pitch, l_roll_deg=roll, l_elbow_deg=180 - flex,
@@ -106,15 +106,15 @@ def test_fk_matches_simulator():
         for side, sign in (("l", 1), ("r", -1)):
             d, f = arm_fk(math.radians(pitch), math.radians(sign * roll), math.radians(flex))
             down = np.array([0.0, 0.0, -1.0])
-            worst = max(worst, angle_between(twin.get_link_rotation(f"{side}_upper_arm") @ down, d),
-                        angle_between(twin.get_link_rotation(f"{side}_forearm") @ down, f))
+            worst = max(worst, angle_between(np.array(twin.get_link_rotation(f"{side}_upper_arm")) @ down, d),
+                        angle_between(np.array(twin.get_link_rotation(f"{side}_forearm")) @ down, f))
     twin.close()
-    assert worst < 0.01, worst
+    assert worst < 0.3, worst  # servo pulses are integers: 0.24 deg per pulse
     print(f"[PASS] solver FK matches the URDF simulator (worst {worst:.4f} deg)")
 
 
 def test_poses_against_simulator():
-    twin = TonyPiDigitalTwin(gui=False, headless=True)
+    twin = TonyPiDigitalTwin(gui=False, headless=True, port=0, enforce_limits=False)
     for yaw in (0.0, 25.0):
         print(f"\n  subject yaw {yaw:.0f} deg       L arm (pitch, roll, elbow)   R arm (pitch, roll, elbow)   L hip/knee   R hip/knee")
         for name, (arm_dirs, leg_dirs) in POSES.items():
@@ -200,9 +200,11 @@ def test_pulses_match_robot_api():
 
 def twin_landmarks(twin):
     """Human-style landmarks (camera convention) read back from the simulator's own links."""
-    tf = twin.get_link_transforms() if hasattr(twin, "get_link_transforms") else None
-    from tonypi_sim import p as sim
-    tf = sim.get_link_transforms(twin.robot_id)
+    tf = {}
+    for name, (rot, pos) in twin.get_link_transforms().items():  # -> 4x4 homogeneous matrices
+        m = np.eye(4)
+        m[:3, :3], m[:3, 3] = np.array(rot), np.array(pos)
+        tf[name] = m
     body = {}
     for s, sign in (("L", 1), ("R", -1)):
         p = s.lower()
@@ -220,7 +222,7 @@ def twin_landmarks(twin):
 
 def test_round_trip_simulator_to_estimator():
     """sim joint angles -> sim limb positions -> retarget solver -> joint angles: must agree."""
-    twin = TonyPiDigitalTwin(gui=False, headless=True)
+    twin = TonyPiDigitalTwin(gui=False, headless=True, port=0, enforce_limits=False)
     worst = {"pitch": 0.0, "roll": 0.0, "elbow": 0.0}
     n = 0
     for pitch in range(-170, 61, 23):

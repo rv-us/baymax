@@ -53,7 +53,7 @@ from mediapose_est import (
     L_ANKLE, R_ANKLE,
     L_INDEX, R_INDEX,
 )
-from tonypi_sim import TonyPiDigitalTwin
+from digital_twin import TonyPiDigitalTwin
 
 
 def test_gc0308_hardware_simulation():
