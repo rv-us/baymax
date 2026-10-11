@@ -12,9 +12,20 @@ Response of /pose:
      "world":     [[x, y, z], ...],               # meters, origin at mid-hip
      "decode_ms": 1.2, "infer_ms": 18.5}
 
+With --stream it also reads the robot's video stream (streaming/receiver.py) and runs
+the model on every frame it can, adding:
+
+    GET  /latest   the newest pose from the robot's camera, with joint angles
+                   (vision/angles.py) and whether the upper/full body is in view
+    GET  /stats    frames per second, model time, and frame-to-pose latency
+
+Only one program can receive the video stream, so with --stream other programs
+(the workout loop, the digital twin) get poses from /latest instead.
+
 Run on the GX10 (needs mediapipe, opencv-python-headless, fastapi, uvicorn):
 
     python scripts/pose_server.py                    # listens on 0.0.0.0:9000
+    python scripts/pose_server.py --stream           # ...and runs on the robot's video stream
     python scripts/pose_server.py --bench            # time the model on a test frame, no server
 
 Client: scripts/pose_stream.py streams a webcam to it.
@@ -22,62 +33,40 @@ Client: scripts/pose_stream.py streams a webcam to it.
 
 import argparse
 import os
-import threading
+import sys
 import time
 
 import cv2
 import numpy as np
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_MODEL = os.path.join(HERE, "..", "laptop_mvp", "pose_landmarker_full.task")
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+sys.path.insert(0, ROOT)  # run as a script: make vision/ and streaming/ importable
+
+from vision.pose import DEFAULT_MODEL, Pose  # noqa: E402
 
 
-class Pose:
-    """One MediaPipe PoseLandmarker in IMAGE mode, as in laptop_mvp/mediapose_est.py."""
-
-    def __init__(self, model_path: str, min_conf: float = 0.5):
-        import mediapipe as mp
-        from mediapipe.tasks import python as mp_python
-        from mediapipe.tasks.python import vision as mp_vision
-
-        self._mp = mp
-        self.model_path = os.path.abspath(model_path)
-        options = mp_vision.PoseLandmarkerOptions(
-            base_options=mp_python.BaseOptions(model_asset_path=self.model_path),
-            running_mode=mp_vision.RunningMode.IMAGE,
-            min_pose_detection_confidence=min_conf,
-            min_tracking_confidence=min_conf,
-            output_segmentation_masks=False,
-        )
-        self.landmarker = mp_vision.PoseLandmarker.create_from_options(options)
-        self.lock = threading.Lock()  # the landmarker isn't thread-safe
-        self.frames = 0
-
-    def detect(self, bgr) -> dict:
-        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-        image = self._mp.Image(image_format=self._mp.ImageFormat.SRGB, data=rgb)
-        started = time.perf_counter()
-        with self.lock:
-            result = self.landmarker.detect(image)
-            self.frames += 1
-        out = {"found": bool(result.pose_landmarks), "width": bgr.shape[1], "height": bgr.shape[0],
-               "infer_ms": round((time.perf_counter() - started) * 1000, 1)}
-        if result.pose_landmarks:
-            out["landmarks"] = [[round(p.x, 4), round(p.y, 4), round(p.z, 4), round(p.visibility, 3)]
-                                for p in result.pose_landmarks[0]]
-            out["world"] = [[round(p.x, 4), round(p.y, 4), round(p.z, 4)]
-                            for p in result.pose_world_landmarks[0]]
-        return out
-
-
-def make_app(pose: Pose):
+def make_app(pose: Pose, stream=None):
     from fastapi import FastAPI, HTTPException, Request
 
     app = FastAPI(title="Baymax pose server")
 
     @app.get("/health")
     def health():
-        return {"ok": True, "model": pose.model_path, "frames": pose.frames}
+        return {"ok": True, "model": pose.model_path, "frames": pose.frames,
+                "stream": stream.stats() if stream else None}
+
+    @app.get("/latest")
+    def latest():
+        if stream is None:
+            raise HTTPException(404, "not reading the robot's video; start with --stream")
+        result = stream.latest()
+        return result if result is not None else {"found": False, "waiting": True}
+
+    @app.get("/stats")
+    def stats():
+        if stream is None:
+            raise HTTPException(404, "not reading the robot's video; start with --stream")
+        return stream.stats()
 
     @app.post("/pose")
     async def detect(request: Request):
@@ -110,6 +99,9 @@ def main():
     ap.add_argument("--port", type=int, default=9000)
     ap.add_argument("--bench", action="store_true", help="time the model and exit")
     ap.add_argument("--image", help="test image for --bench (default: a blank frame)")
+    ap.add_argument("--stream", action="store_true",
+                    help="also run on the robot's video stream (GET /latest, GET /stats)")
+    ap.add_argument("--video-port", type=int, default=5000, help="robot video stream UDP port")
     args = ap.parse_args()
 
     started = time.time()
@@ -120,9 +112,17 @@ def main():
         pose.landmarker.close()  # closing at interpreter exit prints a harmless traceback
         return
 
+    stream = None
+    if args.stream:
+        from streaming.receiver import FrameReceiver
+        from vision.stream import PoseStream
+
+        stream = PoseStream(FrameReceiver(port=args.video_port).start(), pose).start()
+        print(f"reading the robot's video on UDP {args.video_port}; poses at /latest")
+
     import uvicorn
 
-    uvicorn.run(make_app(pose), host=args.host, port=args.port, log_level="warning")
+    uvicorn.run(make_app(pose, stream), host=args.host, port=args.port, log_level="warning")
 
 
 if __name__ == "__main__":
