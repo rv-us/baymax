@@ -62,6 +62,20 @@ To hear what the robot hears: `python3 audio_receiver.py --wav test.wav --second
 
 Like the video, only one program can receive the audio at a time. If the robot API's `mic_level` says "Device or resource busy," start the API with `BAYMAX_MIC_PCM=mic_shared`.
 
+## Pose estimation on the stream
+
+`scripts/pose_server.py --stream` reads the robot's video and runs MediaPipe on each frame it can (measured on the GX10: 28 fps from a 30 fps stream, 30 ms per frame, a pose ready 39 ms after its frame arrives). Because only one program can receive the video, other programs should read poses from it instead of opening the stream themselves.
+
+```bash
+cd ~/baymax && python scripts/pose_server.py --stream --port 9000   # needs mediapipe in the venv
+curl localhost:9000/latest     # newest pose: landmarks, joint angles, whether the body is in view
+curl localhost:9000/stats      # fps, model time, latency
+```
+
+`/latest` includes `angles` (degrees; left/right are the patient's own): `left_shoulder_elevation` (0 = arm down, 90 = forward or sideways, 180 = overhead), `left_elbow` and `left_knee` (180 = straight), the `right_` versions, `trunk_lean`, and `hip_shift_cm` (+ = toward the patient's left). An angle is `null` when the joints it needs aren't visible. `in_view` says whether the `upper_body` and `full_body` are in the frame and lists `missing` parts.
+
+In Python, without the server: `PoseStream(FrameReceiver().start(), Pose()).start()` from `vision/stream.py`. MediaPipe tracks one person, the most prominent in the frame.
+
 ## Speech to text (`voice.Listener`)
 
 Turns the mic stream into the patient's answers as text. Silero VAD finds where speech starts and stops, and Whisper (`small.en`) transcribes it on the GX10's GPU in about 50 ms. Everything runs on the GX10; nothing goes to an online API.
