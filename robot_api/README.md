@@ -92,7 +92,8 @@ python -m robot_api --dry-run -p "how far is the wall?"              # fake hard
 - **API key:** read from `robot_api/.env` (`claude_key = sk-ant-...`), a repo-root `.env`, or
   `ANTHROPIC_API_KEY`. `.env` is gitignored.
 - **Defaults:** `--model claude-haiku-5-5` and `--thinking low` (1024-token budget; also
-  `off`, `medium`, `high`).
+  `off`, `medium`, `high`). Ollama models default to `--thinking off`: with it on, Qwen took
+  3 to 24 s per step on the GX10.
 - **Local model:** any `--model` not starting with `claude-` runs on Ollama, no API key needed:
   `python -m robot_api --model qwen3.6:35b --ollama-url http://<gx10-ip>:11434` (or set
   `OLLAMA_HOST`). Ollama on the GX10 listens on localhost only, so from a laptop tunnel it first:

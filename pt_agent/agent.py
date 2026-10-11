@@ -111,7 +111,8 @@ def main() -> int:
                     help="mic: robot's microphone via voice.Listener (GX10); keyboard: type the patient's words")
     ap.add_argument("--model", default=os.environ.get("BAYMAX_PT_MODEL", DEFAULT_MODEL))
     ap.add_argument("--ollama-url", help="Ollama server (default $OLLAMA_HOST or localhost)")
-    ap.add_argument("--thinking", choices=["off", "low", "medium", "high"], default="low")
+    ap.add_argument("--thinking", choices=["off", "low", "medium", "high"], default=None,
+                    help="default: off for Ollama models (much faster replies), low for claude-*")
     ap.add_argument("--max-steps", type=int, default=300, help="agent loop steps for the session")
     ap.add_argument("--stationary", action="store_true", help="never walk (robot on a table)")
     ap.add_argument("--real-temperature", action="store_true",
@@ -127,7 +128,11 @@ def main() -> int:
     for noisy in ("httpx", "httpcore"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
-    from robot_api.agent import Session, build_agent, is_claude, load_api_key, make_backend
+    from robot_api.agent import (Session, build_agent, default_thinking, is_claude, load_api_key,
+                                 make_backend)
+
+    if args.thinking is None:
+        args.thinking = default_thinking(args.model)
 
     from .ears import KeyboardEars, MicEars
     from .perception import FrameSource, Perception, make_detector
@@ -177,7 +182,7 @@ def main() -> int:
                                    real_temperature=args.real_temperature))
     agent = build_agent(backend, args.model, args.thinking, api_key, args.ollama_url,
                         tools=tools, system_prompt=SYSTEM_PROMPT)
-    print(f"model {args.model}, backend {args.backend}, ears {args.ears}"
+    print(f"model {args.model}, thinking {args.thinking}, backend {args.backend}, ears {args.ears}"
           + (", walking off" if args.stationary else ""))
     class PTSession(Session):
         interrupted = False

@@ -110,6 +110,12 @@ def is_claude(model: str) -> bool:
     return model.startswith("claude-")
 
 
+def default_thinking(model: str) -> str:
+    """Thinking level when --thinking isn't given: low for Claude, off for Ollama models.
+    On the GX10, Qwen with thinking on took 3 to 24 s per agent step, too slow to talk with."""
+    return "low" if is_claude(model) else "off"
+
+
 def ollama_url(url: str | None) -> str:
     url = url or os.environ.get("OLLAMA_HOST") or DEFAULT_OLLAMA_URL
     return url if "://" in url else f"http://{url}"
@@ -323,12 +329,15 @@ def main() -> int:
     ap.add_argument("--model", default=os.environ.get("BAYMAX_MODEL", DEFAULT_MODEL),
                     help="claude-* runs on Anthropic; anything else (e.g. qwen3.6:35b) on Ollama")
     ap.add_argument("--ollama-url", help=f"Ollama server (default $OLLAMA_HOST or {DEFAULT_OLLAMA_URL})")
-    ap.add_argument("--thinking", choices=list(THINKING_BUDGET), default="low")
+    ap.add_argument("--thinking", choices=list(THINKING_BUDGET), default=None,
+                    help="default: low for claude-* models, off for Ollama models")
     ap.add_argument("--max-steps", type=int, default=40, help="agent loop steps per task")
     ap.add_argument("--show-thinking", action="store_true")
     ap.add_argument("--dry-run", action="store_true", help="fake hardware (local backend)")
     ap.add_argument("-p", "--prompt", help="run one task and exit")
     args = ap.parse_args()
+    if args.thinking is None:
+        args.thinking = default_thinking(args.model)
     if args.dry_run:
         os.environ["BAYMAX_DRY_RUN"] = "1"  # before robot_api.config is imported
 
