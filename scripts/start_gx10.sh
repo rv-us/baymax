@@ -39,7 +39,7 @@ if [ "${VOICE:-1}" = 1 ]; then
   done
   setsid nohup "$VENV/bin/python" -m voice.service --port 9200 > "$HOME/voice_service.log" 2>&1 < /dev/null &
   echo $! > .voice_service.pid
-  echo "voice service starting (Whisper takes a few seconds to load): ~/voice_service.log"
+  echo "voice service up, idle: Whisper loads when a question is asked and unloads after 15 s: ~/voice_service.log"
 fi
 
 if [ -f .dashboard.pid ] && kill -0 "$(cat .dashboard.pid)" 2>/dev/null; then

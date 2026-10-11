@@ -1,0 +1,27 @@
+# Starts the GX10's Baymax services (pose, voice, dashboard) when the machine boots, so a power cycle
+# is all it takes. Install on the GX10 with scripts/install_gx10_autostart.sh.
+[Unit]
+Description=Baymax GX10 services (pose, voice, dashboard)
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=asus
+WorkingDirectory=/home/asus/baymax
+# Give the network, the Pi and the audio stack a moment after boot.
+ExecStartPre=/bin/sleep 20
+ExecStart=/home/asus/baymax/scripts/start_gx10.sh
+ExecStop=/home/asus/baymax/scripts/stop_gx10.sh
+# A failed start (the Pi not up yet, say) is retried.
+Restart=on-failure
+RestartSec=30
+# The services are started with setsid/nohup; leave them alone if this unit's main process exits.
+KillMode=process
+TimeoutStartSec=180
+
+[Install]
+WantedBy=multi-user.target
