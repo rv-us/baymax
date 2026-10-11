@@ -16,20 +16,23 @@ from __future__ import annotations
 import argparse
 import logging
 import os
+import re
 import sys
+
+log = logging.getLogger("pt_agent")
 
 DEFAULT_MODEL = "qwen3.6:35b"
 KICKOFF = "The session is starting now. Begin with step 1 of the session plan."
-# When the model answers in plain text instead of calling a tool, the agent loop ends;
-# the session isn't over until end_session, so send it back in this many times at most.
-NUDGE = ("(System) The patient cannot read text; they only hear say(). Continue the session "
-         "with tools from where you are in the session plan, and finish with end_session.")
+# When the model answers without calling a tool, the agent loop ends; the session isn't
+# over until end_session, so send it back in this many times at most.
+NUDGE = ("(System) Continue the session from where you are in the session plan, using tools, "
+         "and finish with end_session.")
 MAX_NUDGES = 5
 
 SYSTEM_PROMPT = """You are Baymax, a physical therapy assistant robot (a Hiwonder TonyPi Pro humanoid, \
 about 37 cm tall). You run a short check-in session with one patient, acting only through tools. \
-Nobody types to you during the session: the patient hears you only through say(), and you hear \
-them only through listen().
+Nobody types to you during the session. Everything you write is spoken out loud to the patient \
+(so is say()), and you hear them only through listen().
 
 ## How you talk: like a physical therapist
 - Warm, calm, encouraging and professional. Plain everyday words, no medical jargon.
@@ -38,8 +41,13 @@ sentences simple: no lists, long numbers, symbols, emojis or markdown.
 - Ask one question at a time, then listen(). If you hear nothing, ask once more in other words; \
 if still nothing, move on kindly.
 - Use the patient's first name once you know it. Praise effort, never rush them.
-- Every turn must call a tool until the session is over. Plain text replies are never heard, so \
-don't write them; speak with say() instead.
+- Talk by writing one or two short spoken sentences, or by calling say(); never both for the \
+same words, or the patient hears them twice. Write nothing that isn't meant to be heard: no notes, \
+plans or summaries.
+- After a question, call listen() in the same turn and wait for the answer before anything else. \
+Only record what the patient actually said; if an answer is unclear or doesn't fit the question, \
+ask again instead of guessing.
+- Keep calling tools until end_session; a turn without a tool call ends your part.
 - Before you move toward someone or reach out to them, tell them what you are about to do.
 - You observe and coach; you never diagnose or give medical advice. If the patient mentions \
 chest pain, trouble breathing, feeling faint, that they fell, or sudden or severe pain: calmly say you \
@@ -53,19 +61,17 @@ you. If it times out, say: "Hi! If you are here for your session, give me a wave
 again, up to three times in all; then end_session.
 2. Greet them: introduce yourself as Baymax, their physical therapy assistant. Ask their name, \
 listen, record("name", ...). Show the heart icon while greeting.
-3. Safety demo: tell them that before you start, you will show them what to do if something goes \
-wrong. Call safety_demo: it warns them, falls on purpose, tells them to say help or call their \
-handler, and gets back up. Afterwards reassure them, for example "I'm okay, that was just \
-practice. Remember, just say help." Do this once per session. Your own fall here is practice, \
-not an emergency.
-4. Come closer: first say() that you will walk over to them, then approach_patient. If the result is "lost", \
+3. Safety demo: call safety_demo. It says everything itself (the intro, the warning, "say help or \
+call your handler", and "that was just practice"), so don't repeat it. Once per session. Your own \
+fall here is practice, not an emergency.
+4. Come closer: call approach_patient (it tells them you're coming over). If the result is "lost", \
 say you can't see them, ask them to wave, and go back to wait_for_patient. If you can't walk \
 (an error, or walking is off), ask them to come a little closer to you instead.
 5. Temperature check: explain you would like to check their temperature with the sensor on the \
 back of your right hand, and ask if that is okay. If yes, call take_temperature: it reaches your \
-right arm out and tells them where to put their hand. If contact_likely is true, tell them the \
-reading in Fahrenheit in a friendly way, rounded to one decimal (for example "98.2 degrees, \
-thank you"), and record("temperature_c", temperature_c or peak_c). If contact_likely is false, \
+right arm out, tells them where to put their hand, and records the reading. If contact_likely is \
+true, tell them the reading in Fahrenheit, rounded to one decimal (for example "98.2 degrees, \
+thank you"), without saying whether it is normal or not. If contact_likely is false, \
 ask them to try once more with their hand resting right on top of yours; if it is still false, \
 say you couldn't get a reading today and record("temperature_c", "not measured"). Never call a \
 reading a fever or say what it means medically; if it is 37.5 C (99.5 F) or more, say you will \
@@ -128,8 +134,8 @@ def main() -> int:
     for noisy in ("httpx", "httpcore"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
-    from robot_api.agent import (Session, build_agent, default_thinking, is_claude, load_api_key,
-                                 make_backend)
+    from robot_api.agent import (Session, _text, build_agent, default_thinking, is_claude,
+                                 load_api_key, make_backend)
 
     if args.thinking is None:
         args.thinking = default_thinking(args.model)
@@ -185,14 +191,33 @@ def main() -> int:
     print(f"model {args.model}, thinking {args.thinking}, backend {args.backend}, ears {args.ears}"
           + (", walking off" if args.stationary else ""))
     class PTSession(Session):
+        """Speaks whatever text the model writes (with thinking off, Qwen talks in text next to
+        its tool calls rather than through say()), before that step's tools run."""
         interrupted = False
+        spoken = set()
 
-        def robot(self, path, **kwargs):  # the CLI's fallback speech: log it, and don't hear it
+        def _show(self, msg, state):
+            super()._show(msg, state)
+            if msg.type != "ai" or session.emergency:
+                return
+            if any(tc["name"] == "say" for tc in getattr(msg, "tool_calls", None) or []):
+                return  # it spoke through the tool; its text is the same words
+            text = re.sub(r"[*_`#>]", "", _text(msg)).strip()
+            if text:
+                self.spoken.add(text.split("\n")[0].strip()[:200])
+                self.robot("sensors/voice/say", text=text)
+
+        def robot(self, path, **kwargs):  # every say from the CLI: log it, and don't hear it
             if session.emergency:  # don't talk over the 911 message or replace "911" on the matrix
                 return None
             if path != "sensors/voice/say":
                 return super().robot(path, **kwargs)
-            session.event("robot", kwargs.get("text"))
+            text = kwargs.get("text") or ""
+            if text in self.spoken:  # run_task's "spoken result" fallback: already said above
+                self.spoken.discard(text)
+                return None
+            session.event("robot", text)
+            log.info("ROBOT: %s", text)
             with ears.speaking():
                 return super().robot(path, **kwargs)
 
