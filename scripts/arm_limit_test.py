@@ -13,6 +13,8 @@ The robot_api clamps anything outside the servo limits and the move result says 
     python scripts/arm_limit_test.py move L_p0_rollin_straight 20
     python scripts/arm_limit_test.py list              steps with their 0% and 100% pulses
     python scripts/arm_limit_test.py mark L_ref_forearm_up recapture "why"   note a review result
+    python scripts/arm_limit_test.py verify [STEP ...]  drive every contact step past its contact and
+                                                     check robot_api's arm limits stop it clear
 
 `move` also tells a running `twin` which step to demonstrate (0% -> 100% and back, on loop).
 """
@@ -110,6 +112,56 @@ def cmd_move(args):
     print("  now reads:", back)
 
 
+VERIFY_PCT, PRESS_TOL = 120.0, 8  # overshoot the contact; readback this far off target = pressing
+
+
+def _go(robot, target, ms=None):
+    now = {int(k): v for k, v in robot.call("servo/positions", servos=list(target))["positions"].items()}
+    if ms is None:
+        ms = max(MIN_MS, int(MS_PER_PULSE * max(abs(target[s] - (now.get(s) or target[s])) for s in target)))
+    res = robot.call("servo/set_many", targets={str(s): p for s, p in target.items()}, ms=ms, wait=True)
+    time.sleep(0.4)
+    back = {int(k): v for k, v in robot.call("servo/positions", servos=list(target))["positions"].items()}
+    return res, back
+
+
+def cmd_verify(args):
+    """Every contact step (or the given ones): 0%, then VERIFY_PCT%. robot_api should pull the roll
+    out to its coupled limit; if the arm then reads short of where it was sent, it is pressing on
+    the body and the map is wrong there."""
+    from robot_api.servo.joints import NAMES
+
+    poses = load()
+    names = args.steps or [n for n in poses if "_ref_" not in n and n not in EXTRA_STEPS]
+    robot = HttpBackend(url=args.api_url, timeout=30)
+    print(robot.call("actions/stand"))
+    results = {}
+    try:
+        for name in names:
+            start, full = endpoints(name, poses[name])
+            arm = {sid: STAND[sid] for sid in (6, 7, 8, 14, 15, 16)}
+            _go(robot, {**arm, **at(start, full, 0.0)})
+            res, back = _go(robot, {**arm, **at(start, full, VERIFY_PCT)})
+            moved = {sid: res["moved"][NAMES[sid]] for sid in full}
+            short = {sid: moved[sid] - (back.get(sid) or 0) for sid in full
+                     if back.get(sid) is None or abs(moved[sid] - back[sid]) > PRESS_TOL}
+            ok = not short
+            results[name] = {"ok": ok, "sent": moved, "reads": {s: back.get(s) for s in full},
+                             "arm_limited": res.get("arm_limited", {}), "clamped": res.get("clamped", {})}
+            lim = ", ".join(f"{j} {v['requested']}->{v['applied']}" for j, v in res.get("arm_limited", {}).items())
+            print(f"{name:26s} {'ok      ' if ok else 'PRESSING'} sent {moved} reads {results[name]['reads']}"
+                  + (f"  limited: {lim}" if lim else "") + (f"  off by {short}" if short else ""))
+            _go(robot, {**arm, **at(start, full, 0.0)})
+    finally:
+        robot.call("actions/stand")
+        temps = [s.get("temp_c") or 0 for s in robot.call("servo/status")["servos"]]
+        print(f"back at stand, hottest servo {max(temps)} C")
+    bad = [n for n, r in results.items() if not r["ok"]]
+    print(f"{len(results) - len(bad)}/{len(results)} clear" + (f"; pressing: {', '.join(bad)}" if bad else ""))
+    with open(os.path.join(os.path.dirname(LIMITS_FILE), "arm_limits_verify.json"), "w") as f:
+        json.dump(results, f, indent=1)
+
+
 def cmd_mark(args):
     review = {}
     if os.path.exists(REVIEW_FILE):
@@ -161,6 +213,9 @@ def main():
     sub.add_parser("list").set_defaults(fn=cmd_list)
     sub.add_parser("stand").set_defaults(fn=cmd_stand)
     sub.add_parser("twin").set_defaults(fn=cmd_twin)
+    vf = sub.add_parser("verify")
+    vf.add_argument("steps", nargs="*")
+    vf.set_defaults(fn=cmd_verify)
     mk = sub.add_parser("mark")
     mk.add_argument("step")
     mk.add_argument("status", choices=("ok", "recapture"))

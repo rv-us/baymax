@@ -1,0 +1,531 @@
+{
+ "L_back30_rollin_straight": {
+  "ok": true,
+  "sent": {
+   "8": 824,
+   "7": 868,
+   "6": 499
+  },
+  "reads": {
+   "8": 817,
+   "7": 863,
+   "6": 504
+  },
+  "arm_limited": {
+   "left_shoulder_roll": {
+    "requested": 903,
+    "applied": 868
+   }
+  },
+  "clamped": {}
+ },
+ "L_back30_rollin_bent": {
+  "ok": true,
+  "sent": {
+   "8": 864,
+   "7": 871,
+   "6": 652
+  },
+  "reads": {
+   "8": 858,
+   "7": 866,
+   "6": 646
+  },
+  "arm_limited": {
+   "left_shoulder_roll": {
+    "requested": 904,
+    "applied": 871
+   }
+  },
+  "clamped": {}
+ },
+ "L_back30_elbow_max": {
+  "ok": true,
+  "sent": {
+   "8": 864,
+   "7": 844,
+   "6": 738
+  },
+  "reads": {
+   "8": 857,
+   "7": 840,
+   "6": 731
+  },
+  "arm_limited": {
+   "left_shoulder_roll": {
+    "requested": 903,
+    "applied": 844
+   }
+  },
+  "clamped": {}
+ },
+ "L_p0_rollin_straight": {
+  "ok": true,
+  "sent": {
+   "8": 686,
+   "7": 854,
+   "6": 574
+  },
+  "reads": {
+   "8": 688,
+   "7": 848,
+   "6": 580
+  },
+  "arm_limited": {
+   "left_shoulder_roll": {
+    "requested": 883,
+    "applied": 854
+   }
+  },
+  "clamped": {}
+ },
+ "L_p0_rollin_bent": {
+  "ok": true,
+  "sent": {
+   "8": 686,
+   "7": 598,
+   "6": 949
+  },
+  "reads": {
+   "8": 688,
+   "7": 602,
+   "6": 942
+  },
+  "arm_limited": {
+   "left_shoulder_roll": {
+    "requested": 645,
+    "applied": 598
+   }
+  },
+  "clamped": {}
+ },
+ "L_p0_elbow_max": {
+  "ok": true,
+  "sent": {
+   "8": 682,
+   "7": 525,
+   "6": 990
+  },
+  "reads": {
+   "8": 684,
+   "7": 532,
+   "6": 982
+  },
+  "arm_limited": {},
+  "clamped": {
+   "left_elbow": {
+    "requested": 1078,
+    "applied": 990,
+    "limits": [
+     125,
+     990
+    ]
+   }
+  }
+ },
+ "L_p45_rollin_straight": {
+  "ok": true,
+  "sent": {
+   "8": 387,
+   "7": 937,
+   "6": 480
+  },
+  "reads": {
+   "8": 392,
+   "7": 931,
+   "6": 485
+  },
+  "arm_limited": {
+   "left_shoulder_roll": {
+    "requested": 970,
+    "applied": 937
+   }
+  },
+  "clamped": {
+   "left_shoulder_roll": {
+    "requested": 984,
+    "applied": 970,
+    "limits": [
+     125,
+     970
+    ]
+   }
+  }
+ },
+ "L_p45_rollin_bent": {
+  "ok": true,
+  "sent": {
+   "8": 364,
+   "7": 913,
+   "6": 706
+  },
+  "reads": {
+   "8": 368,
+   "7": 908,
+   "6": 700
+  },
+  "arm_limited": {
+   "left_shoulder_roll": {
+    "requested": 970,
+    "applied": 913
+   }
+  },
+  "clamped": {
+   "left_shoulder_roll": {
+    "requested": 984,
+    "applied": 970,
+    "limits": [
+     125,
+     970
+    ]
+   }
+  }
+ },
+ "L_p45_elbow_max": {
+  "ok": true,
+  "sent": {
+   "8": 401,
+   "7": 908,
+   "6": 705
+  },
+  "reads": {
+   "8": 398,
+   "7": 903,
+   "6": 699
+  },
+  "arm_limited": {
+   "left_shoulder_roll": {
+    "requested": 970,
+    "applied": 908
+   }
+  },
+  "clamped": {
+   "left_shoulder_roll": {
+    "requested": 984,
+    "applied": 970,
+    "limits": [
+     125,
+     970
+    ]
+   }
+  }
+ },
+ "L_p90_rollin_straight": {
+  "ok": true,
+  "sent": {
+   "8": 313,
+   "7": 909,
+   "6": 517
+  },
+  "reads": {
+   "8": 317,
+   "7": 906,
+   "6": 520
+  },
+  "arm_limited": {
+   "left_shoulder_roll": {
+    "requested": 949,
+    "applied": 909
+   }
+  },
+  "clamped": {}
+ },
+ "L_p90_rollin_bent": {
+  "ok": true,
+  "sent": {
+   "8": 313,
+   "7": 880,
+   "6": 743
+  },
+  "reads": {
+   "8": 317,
+   "7": 874,
+   "6": 738
+  },
+  "arm_limited": {
+   "left_shoulder_roll": {
+    "requested": 948,
+    "applied": 880
+   }
+  },
+  "clamped": {}
+ },
+ "L_p90_elbow_max": {
+  "ok": true,
+  "sent": {
+   "8": 312,
+   "7": 880,
+   "6": 743
+  },
+  "reads": {
+   "8": 318,
+   "7": 877,
+   "6": 736
+  },
+  "arm_limited": {
+   "left_shoulder_roll": {
+    "requested": 949,
+    "applied": 880
+   }
+  },
+  "clamped": {}
+ },
+ "R_back30_rollin_straight": {
+  "ok": true,
+  "sent": {
+   "16": 199,
+   "15": 118,
+   "14": 540
+  },
+  "reads": {
+   "16": 203,
+   "15": 120,
+   "14": 536
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 84,
+    "applied": 118
+   }
+  },
+  "clamped": {}
+ },
+ "R_back30_rollin_bent": {
+  "ok": true,
+  "sent": {
+   "16": 195,
+   "15": 118,
+   "14": 453
+  },
+  "reads": {
+   "16": 199,
+   "15": 120,
+   "14": 448
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 84,
+    "applied": 118
+   }
+  },
+  "clamped": {}
+ },
+ "R_back30_elbow_max": {
+  "ok": true,
+  "sent": {
+   "16": 196,
+   "15": 118,
+   "14": 453
+  },
+  "reads": {
+   "16": 199,
+   "15": 121,
+   "14": 447
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 84,
+    "applied": 118
+   }
+  },
+  "clamped": {}
+ },
+ "R_p0_rollin_straight": {
+  "ok": true,
+  "sent": {
+   "16": 291,
+   "15": 126,
+   "14": 501
+  },
+  "reads": {
+   "16": 287,
+   "15": 128,
+   "14": 496
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 94,
+    "applied": 126
+   }
+  },
+  "clamped": {}
+ },
+ "R_p0_rollin_bent": {
+  "ok": true,
+  "sent": {
+   "16": 288,
+   "15": 272,
+   "14": 263
+  },
+  "reads": {
+   "16": 287,
+   "15": 269,
+   "14": 268
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 236,
+    "applied": 272
+   }
+  },
+  "clamped": {}
+ },
+ "R_p0_elbow_max": {
+  "ok": true,
+  "sent": {
+   "16": 292,
+   "15": 126,
+   "14": 490
+  },
+  "reads": {
+   "16": 288,
+   "15": 128,
+   "14": 485
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 122,
+    "applied": 126
+   }
+  },
+  "clamped": {}
+ },
+ "R_p45_rollin_straight": {
+  "ok": true,
+  "sent": {
+   "16": 502,
+   "15": 85,
+   "14": 491
+  },
+  "reads": {
+   "16": 497,
+   "15": 90,
+   "14": 488
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 44,
+    "applied": 85
+   }
+  },
+  "clamped": {}
+ },
+ "R_p45_rollin_bent": {
+  "ok": true,
+  "sent": {
+   "16": 502,
+   "15": 92,
+   "14": 322
+  },
+  "reads": {
+   "16": 498,
+   "15": 95,
+   "14": 324
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 44,
+    "applied": 92
+   }
+  },
+  "clamped": {}
+ },
+ "R_p45_elbow_max": {
+  "ok": true,
+  "sent": {
+   "16": 502,
+   "15": 180,
+   "14": 177
+  },
+  "reads": {
+   "16": 498,
+   "15": 185,
+   "14": 182
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 109,
+    "applied": 180
+   }
+  },
+  "clamped": {}
+ },
+ "R_p90_rollin_straight": {
+  "ok": true,
+  "sent": {
+   "16": 667,
+   "15": 48,
+   "14": 510
+  },
+  "reads": {
+   "16": 661,
+   "15": 51,
+   "14": 504
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 30,
+    "applied": 48
+   }
+  },
+  "clamped": {
+   "right_shoulder_roll": {
+    "requested": 0,
+    "applied": 30,
+    "limits": [
+     30,
+     875
+    ]
+   }
+  }
+ },
+ "R_p90_rollin_bent": {
+  "ok": true,
+  "sent": {
+   "16": 667,
+   "15": 55,
+   "14": 321
+  },
+  "reads": {
+   "16": 661,
+   "15": 61,
+   "14": 324
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 30,
+    "applied": 55
+   }
+  },
+  "clamped": {
+   "right_shoulder_roll": {
+    "requested": 0,
+    "applied": 30,
+    "limits": [
+     30,
+     875
+    ]
+   }
+  }
+ },
+ "R_p90_elbow_max": {
+  "ok": true,
+  "sent": {
+   "16": 667,
+   "15": 163,
+   "14": 136
+  },
+  "reads": {
+   "16": 661,
+   "15": 167,
+   "14": 139
+  },
+  "arm_limited": {
+   "right_shoulder_roll": {
+    "requested": 80,
+    "applied": 163
+   }
+  },
+  "clamped": {}
+ }
+}

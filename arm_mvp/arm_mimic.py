@@ -328,7 +328,7 @@ def main():
                 target = {}
                 for side, arm in arms.items():
                     target.update(solver.arm_pulses(side, *arm["angles"]))
-                pulses = solver.rate_limit(pulses, target, args.max_pulse_step)
+                pulses = solver.body_safe(solver.rate_limit(pulses, target, args.max_pulse_step))
             if twin is not None:
                 twin.update_servos({**STAND_PULSES, **pulses}, label="arm_mimic")
                 twin.update_landmarks(*(twin_landmarks(arms) if not paused else (None, None)), legs=False)

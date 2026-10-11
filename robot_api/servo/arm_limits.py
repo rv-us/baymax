@@ -7,7 +7,7 @@ arm_limit_map.json (fitted by scripts/fit_arm_limits.py from captured contact po
 captured shoulder pitch, a boundary of (elbow bend inward, max roll inward) points. Between rows
 it interpolates on pitch, between points on elbow bend; past the last point every extra pulse of
 elbow bend costs a pulse of roll, past the first or last pitch the nearest row applies. The roll
-is held MARGIN pulses clear of the boundary.
+is held the map's margin (or BAYMAX_ARM_MARGIN) pulses clear of the boundary.
 
 Only the commanded target is checked, not the path a move takes to get there.
 The map is in the left arm's pulse frame; right arm pulses are mirrored (1000 - pulse).
@@ -30,7 +30,7 @@ def load(path: str = MAP_FILE) -> dict | None:
 
 
 MAP = load()
-MARGIN = int(os.environ.get("BAYMAX_ARM_MARGIN", (MAP or {}).get("margin", 15)))
+ENV_MARGIN = os.environ.get("BAYMAX_ARM_MARGIN")  # overrides the map's margin
 
 
 def _mirror(side: str, pulse: float) -> float:
@@ -65,7 +65,9 @@ def roll_limit(side: str, pitch: int, elbow: int, limit_map: dict | None = None,
                 t = (p - a["pitch"]) / (b["pitch"] - a["pitch"])
                 r = (1 - t) * _row_limit(a["points"], e) + t * _row_limit(b["points"], e)
                 break
-    r -= MARGIN if margin is None else margin
+    if margin is None:
+        margin = int(ENV_MARGIN) if ENV_MARGIN else limit_map.get("margin", 15)
+    r -= margin
     return int(_mirror(side, r))
 
 

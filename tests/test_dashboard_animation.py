@@ -20,7 +20,7 @@ ANIM = {"name": "Slow arm raise", "keyframes": RAISE,
 @pytest.mark.parametrize("frames, message", [
     ([], "1 to 60"),
     ([{"ms": 1000, "servos": {"left_knee": 500}}], "not an arm joint"),
-    ([{"ms": 1000, "servos": {"left_elbow": 990}}], "left_elbow must be a whole pulse from 125 to 875"),
+    ([{"ms": 1000, "servos": {"left_elbow": 995}}], "left_elbow must be a whole pulse from 125 to 990"),
     ([{"ms": 100, "servos": {"left_elbow": 500}}], "ms must be"),
     ([{"ms": 1000, "servos": {"left_elbow": 500}, "ease": "bounce"}], "ease"),
     ([{"ms": 1000}], "needs 'servos'"),

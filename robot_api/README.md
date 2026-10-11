@@ -18,7 +18,14 @@ let a Claude agent use it.
 
 ## Safety (enforced in the library, for every caller)
 - **Clamping:** pulses are clamped to each servo's range. That range is what the 127 factory action
-  groups use (`servo/limits.py`).
+  groups use (`servo/limits.py`), widened for the arms to the deepest contact poses captured by
+  `scripts/arm_limit_capture.py`.
+- **Arm self-collision:** a shoulder roll that would put the arm into the body, given that arm's
+  shoulder pitch and elbow, is pulled out and reported under `arm_limited` (`servo/arm_limits.py`,
+  map fitted from captured contact poses by `scripts/fit_arm_limits.py`; `BAYMAX_ARM_MARGIN` pulses
+  of clearance, default 15). Only the target is checked, not the path.
+  `python scripts/arm_limit_test.py verify` drives every captured contact past its limit on the
+  robot and checks the arm stops clear (results in `scripts/arm_limits_verify.json`).
 - **Speed limit:** at most 1 pulse/ms, and every move takes at least 300 ms.
 - **Temperature:** off by default. With `BAYMAX_TEMP_CHECK=1`, motion is refused while any body servo is
   above 82.5 °C (reads 83 °C or more; cutoff 85 °C) (`BAYMAX_MAX_TEMP`), or when temperatures can't be read.
@@ -126,5 +133,5 @@ Environment variables: `BAYMAX_DRY_RUN`, `BAYMAX_TEMP_CHECK` (`1` turns the temp
 while the microphone streams to the GX10, see [streaming/README.md](../streaming/README.md)),
 `BAYMAX_SPEAKER_PCM` (playback device; set it to `pulse` when PipeWire runs on the Pi, or `say` stalls
 about 30 s on every other call while PipeWire holds the sound card), `BAYMAX_STREAM_CAMERA` (camera
-controls while a stream runs; default fixed exposure for ~23 fps), `BAYMAX_UDP_SNAPSHOT_FPS` (snapshot
+controls while a stream runs; default a fixed 12 ms exposure for a normally lit room, see `config.py` for a dim-room setting), `BAYMAX_UDP_SNAPSHOT_FPS` (snapshot
 rate for the API's own camera users while the UDP stream runs; default 15).

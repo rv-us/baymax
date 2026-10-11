@@ -96,3 +96,44 @@ def test_mjpeg_sends_each_shared_frame_once(tmp_path, monkeypatch):
     st = os.stat(shared)
     os.utime(shared, ns=(st.st_atime_ns, st.st_mtime_ns + 10_000_000))  # a new frame arrives
     assert got.wait(1.0)
+
+
+class FailingProc:
+    """A pipeline that exits at once, like the camera refusing its format."""
+    pid = -2
+
+    def __init__(self):
+        import io
+        self.stderr = io.BytesIO(b"streaming stopped, reason not-negotiated (-4)")
+
+    def poll(self):
+        return 1
+
+    def wait(self, timeout=None):
+        return 1
+
+    def terminate(self):
+        pass
+
+    kill = terminate
+
+
+def test_a_pipeline_that_fails_to_start_is_retried_once(monkeypatch):
+    launches = []
+    real = camera_udp._launch
+
+    def launch(host, port, bitrate):
+        launches.append(port)
+        return FailingProc() if len(launches) == 1 else real(host, port, bitrate)
+
+    monkeypatch.setattr(camera_udp, "_launch", launch)
+    r = client.post("/sensors/camera/udp", json={"port": 5400})
+    assert r.status_code == 200 and r.json()["running"], r.text
+    assert launches == [5400, 5400]
+
+
+def test_two_failed_starts_are_reported(monkeypatch):
+    monkeypatch.setattr(camera_udp, "_launch", lambda host, port, bitrate: FailingProc())
+    r = client.post("/sensors/camera/udp", json={"port": 5401})
+    assert r.status_code == 409 and "not-negotiated" in r.json()["detail"]
+    assert not client.get("/sensors/camera/udp/status").json()["running"]

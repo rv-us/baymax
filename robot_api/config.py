@@ -19,11 +19,14 @@ MS_PER_PULSE = 1.0  # minimum move time grows with distance: 1000 pulses >= 1 s
 MAX_REPEATS = 5  # walking steps / action-group repeats per call
 
 # Camera controls (v4l2-ctl -c) applied while an MJPEG stream runs, restored after. Auto exposure
-# drops the head camera to ~6 fps indoors; a fixed 25 ms exposure (units of 100 us) runs at its
-# 640x480 maximum of ~23 fps, and brightness/gamma win back the light. Empty = leave the camera alone.
+# drops the head camera to ~6 fps indoors, so the stream uses a fixed exposure (units of 100 us)
+# with the camera's default brightness (0) and gamma (67). 12 ms suits a normally lit room (mean
+# ~140/255, almost nothing clipped); in a dim room use e.g.
+# BAYMAX_STREAM_CAMERA=auto_exposure=1,exposure_time_absolute=250,brightness=30,gamma=150.
+# Empty = leave the camera alone.
 CAMERA_DEVICE = "/dev/video0"
 STREAM_CAMERA_CONTROLS = os.environ.get(
-    "BAYMAX_STREAM_CAMERA", "auto_exposure=1,exposure_time_absolute=250,brightness=30,gamma=150")
+    "BAYMAX_STREAM_CAMERA", "auto_exposure=1,exposure_time_absolute=120,brightness=0,gamma=67")
 
 # H.264 over UDP (sensors/camera_udp.py), the format streaming/receiver.py on the GX10 reads.
 # While it runs, JPEG snapshots go to /dev/shm at UDP_SNAPSHOT_FPS for the API's other camera

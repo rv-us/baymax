@@ -18,12 +18,19 @@ for _p in (os.path.join(_HERE, ".."), os.path.join(_HERE, "..", "laptop_mvp")):
 
 from mediapose_est import SERVO_LIMITS, STAND_PULSES  # noqa: E402
 from retarget import elbow_pulse, shoulder_pulses  # noqa: E402
+from robot_api.servo import arm_limits  # noqa: E402
+from robot_api.servo.limits import LIMITS as ROBOT_LIMITS  # noqa: E402
 
 ARM_SERVOS = {"L": (8, 7, 6), "R": (16, 15, 14)}  # shoulder pitch, shoulder roll, elbow
 REST = (0.0, 0.0, 180.0)  # pitch, roll, interior elbow: the stand pose
-# Elbows and shoulder rolls tightened to robot_api/servo/limits.py (125..875, bracket protection).
-ARM_LIMITS = {sid: (max(SERVO_LIMITS[sid][0], 125), min(SERVO_LIMITS[sid][1], 875)) if sid in (6, 7, 14, 15)
-              else SERVO_LIMITS[sid] for side in "LR" for sid in ARM_SERVOS[side]}
+# Same per-servo ranges robot_api clamps to; arm_limits keeps the rolls off the body on top of that.
+ARM_LIMITS = {sid: ROBOT_LIMITS[sid] for side in "LR" for sid in ARM_SERVOS[side]}
+
+
+def body_safe(pulses):
+    """robot_api's coupled arm limits applied locally (the robot applies them too), so the twin
+    and HUD show what the robot will do. pulses: {servo id: pulse} for both arms."""
+    return arm_limits.limit(pulses, {})[0]
 
 
 def ray(px, focal, center):
