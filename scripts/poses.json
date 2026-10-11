@@ -1,5 +1,5 @@
 {
-  "pose_0": {
+  "default_standing_pose": {
     "servos": {
       "1": 497,
       "2": 389,
@@ -37,7 +37,7 @@
       "right_shoulder_pitch": 279
     }
   },
-  "pose_1": {
+  "zombie_arms_forward": {
     "servos": {
       "1": 497,
       "2": 388,
@@ -75,7 +75,7 @@
       "right_shoulder_pitch": 676
     }
   },
-  "pose_2": {
+  "t_pose": {
     "servos": {
       "1": 498,
       "2": 390,
@@ -113,45 +113,7 @@
       "right_shoulder_pitch": 317
     }
   },
-  "pose_3": {
-    "servos": {
-      "1": 497,
-      "2": 390,
-      "3": 497,
-      "4": 610,
-      "5": 498,
-      "6": 508,
-      "7": 150,
-      "8": 681,
-      "9": 498,
-      "10": 611,
-      "11": 501,
-      "12": 396,
-      "13": 495,
-      "14": 511,
-      "15": 855,
-      "16": 314
-    },
-    "joints": {
-      "left_ankle_roll": 497,
-      "left_ankle_pitch": 390,
-      "left_knee": 497,
-      "left_hip_pitch": 610,
-      "left_hip_roll": 498,
-      "left_elbow": 508,
-      "left_shoulder_roll": 150,
-      "left_shoulder_pitch": 681,
-      "right_ankle_roll": 498,
-      "right_ankle_pitch": 611,
-      "right_knee": 501,
-      "right_hip_pitch": 396,
-      "right_hip_roll": 495,
-      "right_elbow": 511,
-      "right_shoulder_roll": 855,
-      "right_shoulder_pitch": 314
-    }
-  },
-  "pose_4": {
+  "celebration_hands_up": {
     "servos": {
       "1": 498,
       "2": 389,
@@ -189,7 +151,7 @@
       "right_shoulder_pitch": 314
     }
   },
-  "pose_5": {
+  "superhero_hands_on_hips": {
     "servos": {
       "1": 496,
       "2": 535,
@@ -227,7 +189,7 @@
       "right_shoulder_pitch": 310
     }
   },
-  "pose_6": {
+  "scorpion_pose_bending_backwards": {
     "servos": {
       "1": 490,
       "2": 193,
