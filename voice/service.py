@@ -53,6 +53,7 @@ class VoiceHub:
         self._muted_at = None
         self._wanted_at = time.monotonic()
         self._loading = False
+        self._release = threading.Event()
         if listener:
             self._hook(listener)
         elif factory:
@@ -75,6 +76,9 @@ class VoiceHub:
         threading.Thread(target=self._load, name="voice-load", daemon=True).start()
 
     def _load(self) -> None:
+        """Build the listener and then stay alive until it is dropped: the audio decoder it starts dies with the
+        THREAD that started it (PR_SET_PDEATHSIG), so this thread must outlive the listener."""
+        self._release = release = threading.Event()
         try:
             listener = self.factory()
             self._hook(listener)
@@ -88,6 +92,8 @@ class VoiceHub:
             with self.cond:
                 self._loading = False
                 self.cond.notify_all()
+        if self.listener:
+            release.wait()
 
     def _reap(self) -> None:
         while True:
@@ -98,9 +104,10 @@ class VoiceHub:
                 if listener:
                     self._stack.close()
                     self._stack = contextlib.ExitStack()
-                    self.listener = None
+                    self.listener, release = None, self._release
             if listener:
                 self._unload(listener)
+                release.set()
 
     @staticmethod
     def _unload(listener) -> None:
