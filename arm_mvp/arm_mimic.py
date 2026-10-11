@@ -4,7 +4,8 @@ Arms-only mimic: one RGB camera -> TonyPi digital twin arms (servos 6, 7, 8, 14,
     python arm_mimic.py                  webcam, opens the twin viewer
     python arm_mimic.py --source clip.mp4 --headless-test 300
 
-Keys: c = calibrate (T-pose), x = emergency stand and pause (press again to resume), q = quit.
+Keys: c = recalibrate from scratch, x = emergency stand and pause (press again to resume), q = quit.
+Calibration is automatic: face the camera with straight arms (hanging or T-pose) and hold still.
 Copy mode: your right arm drives the robot's right arm. The frame is mirrored for display only.
 """
 import argparse
@@ -37,8 +38,8 @@ def parse_args(argv=None):
     p.add_argument("--max-jump", type=float, default=0.5, help="max wrist move per frame in metres (left/right swap guard)")
     p.add_argument("--max-step-deg", type=float, default=12.0, help="joint slew limit in degrees per frame at 30 fps")
     p.add_argument("--max-pulse-step", type=int, default=33, help="max servo pulse change per tick (33 = robot_api's 1 pulse/ms)")
-    p.add_argument("--calib-delay", type=float, default=3.0, help="seconds between pressing c and the 2 s T-pose hold")
-    p.add_argument("--api-url", default=None, help="robot_api base URL. Only when given, arm pulses are sent to servo/set_many at 30 Hz")
+    p.add_argument("--api-url", default=None, help="robot_api base URL. Only when given, arm pulses go to servo/set_many at 30 Hz "
+                   "and calibration progress to the LED matrix")
     p.add_argument("--no-twin", action="store_true", help="do not start the digital twin")
     p.add_argument("--twin-port", type=int, default=8765)
     p.add_argument("--record-landmarks", default=None, metavar="OUT.npz", help="save raw landmarks of the run")
@@ -180,21 +181,25 @@ def twin_landmarks(arms):
 
 
 def start_api_sender(url, hz=30.0):
-    """Background sender to robot_api servo/set_many. Latest targets only, never blocks the loop."""
+    """Background sender to robot_api: servo/set_many for box["targets"], and box["matrix"] =
+    (path, kwargs) for the LED matrix. Latest values only, never blocks the loop."""
     from robot_api.client import HttpBackend
 
-    backend, box = HttpBackend(url=url, timeout=2.0), {"targets": None, "error": None}
+    backend, box = HttpBackend(url=url, timeout=2.0), {"targets": None, "matrix": None, "error": None}
 
     def loop():
         while True:
             t0 = time.monotonic()
             targets, box["targets"] = box["targets"], None
-            if targets:
-                try:
+            matrix, box["matrix"] = box["matrix"], None
+            try:
+                if targets:
                     backend.call("servo/set_many", targets=targets, wait=False)
-                    box["error"] = None
-                except Exception as e:  # keep tracking, show the error on the HUD
-                    box["error"] = str(e)[:60]
+                if matrix:
+                    backend.call(matrix[0], **matrix[1])
+                box["error"] = None if targets or matrix else box["error"]
+            except Exception as e:  # keep tracking, show the error on the HUD
+                box["error"] = str(e)[:60]
             time.sleep(max(0.0, 1.0 / hz - (time.monotonic() - t0)))
 
     threading.Thread(target=loop, daemon=True).start()
@@ -232,7 +237,8 @@ def draw_hud(frame, lm, arms, pulses, status):
 def main():
     args = parse_args()
     headless = args.headless_test > 0
-    cal = calibration.load()
+    calib = calibration.new_state(calibration.load())
+    persist = args.source.isdigit()  # replaying a file never overwrites your calibration.json
     detect, close_landmarker = make_landmarker()
     sim = GC0308HardwareSimulator() if args.sim_camera else None
     twin = None
@@ -244,7 +250,7 @@ def main():
 
     arms = {side: new_arm(side, args) for side in "LR"}
     pulses = solver.stand_arm_pulses()
-    paused, calib, note = False, None, ""
+    paused, bar = False, None
     record = {"image": [], "world": [], "vis": [], "t": []}
     stats = {s: {"min": [np.inf] * 3, "max": [-np.inf] * 3, "TRACKING": 0, "HOLD": 0, "LOST": 0} for s in "LR"}
     n, fps, t_prev, ts_prev, wall_prev, wall_start = 0, 0.0, None, -1, time.monotonic(), time.monotonic()
@@ -263,19 +269,16 @@ def main():
                 for key, val in zip(("image", "world", "vis", "t"), (*(lm or (blank, blank, blank[:, 0])), t)):
                     record[key].append(val)
 
-            if calib is not None:  # c pressed: countdown, then a 2 s T-pose hold
-                left = calib["t0"] + args.calib_delay + 2.0 - t
-                if left <= 0.0:
-                    done = calibration.finish(calib["samples"])
-                    if done is not None:
-                        cal = done
-                        calibration.save(cal)
-                    note, calib = "calibration saved" if done else "calibration FAILED (arms not visible)", None
-                else:
-                    note = f"T-POSE in {left - 2.0:.1f}s" if left > 2.0 else f"HOLD T-POSE {left:.1f}s"
-                    if left <= 2.0 and lm is not None:
-                        s = calibration.sample(lm[0][:, :2] * (w, h), lm[1], lm[2], args.min_vis)
-                        calib["samples"] += [s] if s is not None else []
+            if lm is None:
+                calibration.update(calib, None, None, None, t)
+            elif calibration.update(calib, lm[0][:, :2] * (w, h), lm[1], lm[2], t) and persist:
+                calibration.save(calib["cal"])
+            cal, done = calib["cal"], calibration.progress(calib)
+            if api is not None and not calib["locked"] and bar != calibration.matrix_rows(done):
+                bar = calibration.matrix_rows(done)  # LED matrix as a progress bar
+                api["matrix"] = ("sensors/matrix/rows", {"rows": bar})
+            elif api is not None and calib["locked"] and bar != "check":
+                bar, api["matrix"] = "check", ("sensors/matrix/icon", {"name": "check"})
 
             if paused:
                 pulses = solver.stand_arm_pulses()
@@ -302,18 +305,19 @@ def main():
                     break
                 continue
 
-            status = f"FPS {fps:4.1f}  " + ("CALIBRATED" if cal["calibrated"] else "UNCALIBRATED")
+            status = f"FPS {fps:4.1f}  " + ("CALIBRATED" if calib["locked"] else f"CALIBRATING {done}/{calibration.LOCK_SAMPLES}"
+                                            if done else "UNCALIBRATED (face camera, arms straight, hold still)")
             if cal.get("shoulder_px") and lm is not None:
                 now_px = np.linalg.norm((lm[0][11, :2] - lm[0][12, :2]) * (w, h))
                 status += f"  dist x{cal['shoulder_px'] / max(now_px, 1.0):.2f}"
             status += "  PAUSED (x resumes)" if paused else ""
             status += f"  API {api['error'] or 'on'}" if api is not None else ""
-            cv2.imshow("arm mimic", draw_hud(frame, lm, arms, pulses, f"{status}  {note}"))
+            cv2.imshow("arm mimic", draw_hud(frame, lm, arms, pulses, status))
             key = cv2.waitKey(1) & 0xFF
             if key in (ord("q"), 27):
                 break
-            if key == ord("c"):
-                calib = {"t0": t, "samples": []}
+            if key == ord("c"):  # discard everything and calibrate from scratch
+                calib = calibration.new_state()
             if key == ord("x"):  # emergency: straight to the stand pose, tracking restarts from rest
                 paused = not paused
                 arms = {side: new_arm(side, args) for side in "LR"}
@@ -322,13 +326,15 @@ def main():
         cv2.destroyAllWindows()
         if twin is not None:
             twin.close()
+        if calib["locked"] and persist:
+            calibration.save(calib["cal"])  # keep the slow refinement
         if args.record_landmarks and record["t"]:
             np.savez_compressed(args.record_landmarks, **{k: np.array(v) for k, v in record.items()})
             print(f"[record] {len(record['t'])} frames -> {args.record_landmarks}")
 
     if headless:
         print(f"frames {n}  avg fps {n / max(time.monotonic() - wall_start, 1e-6):.1f}  "
-              f"{'calibrated' if cal['calibrated'] else 'UNCALIBRATED'}")
+              + ("calibrated" if calib["locked"] else f"UNCALIBRATED (samples {calibration.progress(calib)}/{calibration.LOCK_SAMPLES})"))
         for side, st in stats.items():
             rng = "  ".join(f"{name} {lo:7.1f}..{hi:7.1f}" for name, lo, hi in zip(("pitch", "roll", "elbow"), st["min"], st["max"]))
             print(f"{side}: {rng}  tracking {st['TRACKING']}  hold {st['HOLD']}  lost {st['LOST']}")

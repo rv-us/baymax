@@ -155,23 +155,18 @@ def test_rate_limit_and_stand():
     assert out[8] == stand[8] - 30 and out[16] == 280 and out[6] == stand[6]
 
 
-def test_calibration_roundtrip(tmp_path):
+def test_calibration_file_roundtrip(tmp_path):
     assert calibration.load(str(tmp_path / "missing.json"))["calibrated"] is False
-    px, world, vis = np.zeros((33, 2)), np.zeros((33, 3)), np.ones(33)
-    for i, x in ((11, 0.18), (12, -0.18), (13, 0.47), (14, -0.47), (15, 0.72), (16, -0.72)):  # T-pose
-        world[i] = (x, 0.0, 0.0)
-        px[i] = (320 + 300 * x, 200)
-    assert calibration.finish([calibration.sample(px, world, vis)] * 3) is None  # too few frames
-    cal = calibration.finish([calibration.sample(px, world, vis)] * 30)
-    assert cal["shoulder_m"] == pytest.approx(0.36) and cal["shoulder_px"] == pytest.approx(108.0)
-    assert cal["upper"]["L"] == pytest.approx(0.29) and cal["fore"]["R"] == pytest.approx(0.25)
-    vis[13] = 0.2
-    assert calibration.sample(px, world, vis) is None
+    assert calibration.new_state()["locked"] is False
+    cal = {**calibration.default_calibration(0.4), "calibrated": True, "shoulder_px": 120.0}
     calibration.save(cal, str(tmp_path / "c.json"))
     assert calibration.load(str(tmp_path / "c.json")) == cal
+    assert calibration.new_state(cal)["locked"] is True
+    assert calibration.matrix_rows(0) == ["0" * 16] * 8 and calibration.matrix_rows(45) == ["1" * 16] * 8
+    assert calibration.matrix_rows(23)[0] == "1" * 8 + "0" * 8
 
 
-def landmarks_for(angles, distance=2.0, size=(640, 480)):
+def landmarks_for(angles, distance=2.0, size=(640, 480), yaw_deg=0.0):
     """MediaPipe style (image, world, vis) for a subject facing the camera whose arms are at the
     given robot angles {side: (pitch, roll, flex) in degrees}."""
     from retarget import arm_fk
@@ -183,6 +178,8 @@ def landmarks_for(angles, distance=2.0, size=(640, 480)):
         torso[sh] = (0.0, y, 0.0)
         torso[el] = torso[sh] + UPPER * upper
         torso[wr] = torso[el] + FORE * fore
+    c, s = math.cos(math.radians(yaw_deg)), math.sin(math.radians(yaw_deg))
+    torso = torso @ np.array([[c, s, 0.0], [-s, c, 0.0], [0.0, 0.0, 1.0]])  # turn about the vertical
     cam = np.stack([torso[:, 1], -torso[:, 2], -torso[:, 0]], axis=1)  # x right, y down, z away
     px = 0.9 * size[0] * (cam[:, :2] + (0.1, -0.05)) / (cam[:, 2:] + distance) + (size[0] / 2, size[1] / 2)
     return np.concatenate([px / size, cam[:, 2:]], axis=1), cam, np.ones(33)
@@ -242,3 +239,75 @@ def test_tracking_gates_hold_then_lost():
     for side in "LR":
         assert arms[side]["state"] == "LOST"
         assert np.allclose(arms[side]["angles"], solver.REST, atol=0.5)  # eased back to rest
+
+
+HANG = {"L": (0, 0, 0), "R": (0, 0, 0)}
+T_POSE = {"L": (0, 90, 0), "R": (0, -90, 0)}
+
+
+def feed(state, angles, t, frames, vis=None, jitter=None, **kw):
+    """Feeds `frames` frames of one pose at 30 fps. Returns (new time, samples added per side)."""
+    before = {s: len(state["buf"][s]) for s in "LR"}
+    for i in range(frames):
+        img, world, v = landmarks_for(angles, **kw)
+        px = img[:, :2] * (640, 480) + (jitter(i) if jitter else 0.0)
+        calibration.update(state, px, world, v if vis is None else vis, t)
+        t += 1 / 30.0
+    return t, {s: len(state["buf"][s]) - before[s] for s in "LR"}
+
+
+def test_auto_calibration_collects_only_good_frames():
+    state, t = calibration.new_state(), 0.0
+    # Bad frames first: nothing may be collected from any of them.
+    bad = [
+        {"L": (-90, 0, 0), "R": (-90, 0, 0)},     # arms pointing at the camera
+        {"L": (0, 0, 60), "R": (0, 0, 60)},       # bent elbows
+        {"L": (-35, 0, 0), "R": (-35, 0, 0)},     # straight but 35 degrees out of the image plane
+    ]
+    for pose in bad:
+        t, added = feed(state, pose, t, 30)
+        assert added == {"L": 0, "R": 0}, pose
+    t, added = feed(state, HANG, t, 30, yaw_deg=30)  # shoulders turned away
+    assert added == {"L": 0, "R": 0}
+    low = np.ones(33)
+    low[[13, 16]] = 0.55
+    t, added = feed(state, HANG, t, 30, vis=low)     # visibility under 0.6 on both chains
+    assert added == {"L": 0, "R": 0}
+    t, added = feed(state, HANG, t, 30, jitter=lambda i: (12.0 * (i + 1), 0.0))  # walking sideways
+    assert added == {"L": 0, "R": 0}
+    assert not state["locked"] and calibration.progress(state) == 0
+
+    # One good arm only: that side collects, the bent side does not, and nothing locks.
+    t, added = feed(state, {"L": (0, 0, 0), "R": (0, 0, 70)}, t, 30)
+    assert added["R"] == 0 and 15 <= added["L"] <= 21  # 30 frames minus the 0.3 s stillness wait
+    assert not state["locked"]
+
+    # Good frames: hanging arms, then a T-pose. Locks at 45 per side.
+    t, added = feed(state, HANG, t, 40)
+    assert 25 <= added["R"] <= 31 and not state["locked"] and calibration.progress(state) == added["R"]
+    t, added = feed(state, T_POSE, t, 40)
+    assert added["L"] > 25 and state["locked"]
+    cal = state["cal"]
+    assert cal["calibrated"] and abs(cal["shoulder_m"] - WIDTH) < 0.02
+    for side in "LR":
+        assert abs(cal["upper"][side] - UPPER) < 0.02 and abs(cal["fore"][side] - FORE) < 0.02, cal
+
+
+def test_auto_calibration_median_rejects_outliers_and_refines_slowly():
+    rng = np.random.default_rng(3)
+    state, t = calibration.new_state(), 0.0
+    t, _ = feed(state, HANG, t, 80, jitter=lambda i: rng.normal(0.0, 0.6, (33, 2)))  # pixel noise
+    assert state["locked"]
+    for side in "LR":
+        assert abs(state["cal"]["upper"][side] - UPPER) < 0.02 and abs(state["cal"]["fore"][side] - FORE) < 0.02
+    # After locking, a burst of wrong samples moves a length by at most 3 percent per sample.
+    before = state["cal"]["upper"]["L"]
+    state["buf"]["L"].extend([(2 * UPPER, 2 * FORE, WIDTH, 100.0)] * 100)
+    t, _ = feed(state, HANG, t, 1)
+    assert before < state["cal"]["upper"]["L"] <= before * 1.03 + 1e-9
+
+    # A loaded calibration is not touched until the buffer holds enough fresh samples again.
+    loaded = {**calibration.default_calibration(0.5), "calibrated": True}
+    state = calibration.new_state(loaded)
+    t, _ = feed(state, HANG, t, 30)
+    assert state["cal"]["upper"]["L"] == 0.8 * 0.5
