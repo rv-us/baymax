@@ -9,7 +9,7 @@ A physical therapy robot: a Hiwonder TonyPi Pro (Raspberry Pi 5) demonstrates ex
 | **TonyPi** (the robot) | `robot_api` server: servos, speaker, sensors, camera | HTTP API on port 8000 (token in `BAYMAX_API_TOKEN`) |
 | **GX10** | Everything else: workout loop, agents, pose estimation, speech-to-text, Ollama models, dashboard | Calls the robot API; receives the camera (H.264 over UDP, on request) and microphone (Opus over UDP) |
 
-Most GX10 tools need `BAYMAX_API_URL=http://<robot>:8000` and `BAYMAX_API_TOKEN` set. Almost everything has a dry run (`--dry-run` or `BAYMAX_DRY_RUN=1`) that fakes the robot.
+Most GX10 tools need `BAYMAX_API_URL=http://<robot>:8000` and `BAYMAX_API_TOKEN` set, and the Python environment in `~/venvs/baymax` (`scripts/setup_gx10_venv.sh` builds it; keep it outside the repo). Almost everything has a dry run (`--dry-run` or `BAYMAX_DRY_RUN=1`) that fakes the robot.
 
 ## What's where
 

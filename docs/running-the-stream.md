@@ -17,6 +17,7 @@ Use `~/baymax/streaming`. Older copies (such as `~/robot-stream` or files from a
 ```bash
 cd ~/baymax/streaming
 ./install.sh          # installs packages (asks for your sudo password) and checks GStreamer, numpy, and SSH to the Pi
+../scripts/setup_gx10_venv.sh --models   # Python environment in ~/venvs/baymax (outside the repo), plus the Whisper model
 ./setup_pi_audio.sh   # makes a shared mic device on the Pi so the audio stream and the robot API can both record
 ```
 
@@ -92,7 +93,7 @@ Turns the mic stream into the patient's answers as text. Silero VAD finds where 
 Install once, in the venv:
 
 ```bash
-cd ~/baymax && source .venv/bin/activate
+source ~/venvs/baymax/bin/activate
 pip install silero-vad transformers   # Whisper's weights (~1 GB) download on first use
 ```
 
