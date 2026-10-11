@@ -63,7 +63,7 @@ export function Headline({ overall, insights, scores }: { overall: Overall; insi
       <div class="headline-score">
         <ScoreArc score={overall.score} />
         <div class="headline-number">
-          <b>{overall.score ?? "–"}</b>
+          <b>{overall.score ?? "n/a"}</b>
           <span>out of 100</span>
           <strong>{overall.label}</strong>
         </div>

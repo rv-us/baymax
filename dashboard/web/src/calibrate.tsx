@@ -208,11 +208,11 @@ export function Calibrate() {
                               {r.actual != null && <i class="range-doing" style={{ left: pos(r.actual) }} />}
                             </span>
                           </th>
-                          <td>{r.commanded ?? "–"}</td>
-                          <td>{r.actual ?? "–"}{r.raw != null && c.offset !== 0 && <small> raw {r.raw}</small>}</td>
-                          <td class={off ? "is-bad" : ""}>{r.error == null ? "–" : <>{off && <Icon name="alert" size={14} />}{r.error > 0 ? "+" : ""}{r.error}</>}</td>
-                          <td class={hot ? "is-bad" : ""}>{r.temp_c == null ? "–" : `${r.temp_c} °C`}</td>
-                          <td>{r.vin_v == null ? "–" : `${r.vin_v.toFixed(1)} V`}</td>
+                          <td>{r.commanded ?? "n/a"}</td>
+                          <td>{r.actual ?? "n/a"}{r.raw != null && c.offset !== 0 && <small> raw {r.raw}</small>}</td>
+                          <td class={off ? "is-bad" : ""}>{r.error == null ? "n/a" : <>{off && <Icon name="alert" size={14} />}{r.error > 0 ? "+" : ""}{r.error}</>}</td>
+                          <td class={hot ? "is-bad" : ""}>{r.temp_c == null ? "n/a" : `${r.temp_c} °C`}</td>
+                          <td>{r.vin_v == null ? "n/a" : `${r.vin_v.toFixed(1)} V`}</td>
                           <td><small>not reported</small></td>
                           <td><Num value={c.min} min={r.hard_limits[0]} max={c.max - 10} label={`${words(r.joint)} minimum`} onChange={(v) => change(r.joint, { min: v })} /></td>
                           <td><Num value={c.max} min={c.min + 10} max={r.hard_limits[1]} label={`${words(r.joint)} maximum`} onChange={(v) => change(r.joint, { max: v })} /></td>

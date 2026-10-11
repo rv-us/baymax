@@ -144,7 +144,7 @@ export function LinksDrawer() {
                 <ul class="temps">
                   {Object.entries(s.health.temps_c).map(([joint, t]) => (
                     <li key={joint} class={t != null && s.health!.max_allowed_c != null && t >= s.health!.max_allowed_c ? "is-bad" : ""}>
-                      <span>{cap(words(joint))}</span><b>{t ?? "–"} °C</b>
+                      <span>{cap(words(joint))}</span><b>{t == null ? "no reading" : `${t} °C`}</b>
                     </li>
                   ))}
                 </ul>

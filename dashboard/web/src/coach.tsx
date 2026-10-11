@@ -86,7 +86,7 @@ export function Coach({ id }: { id?: string }) {
           {session && (
             <div class="coach-context">
               <div class="score-dial small" style={{ "--v": session.scores.overall.score ?? 0 } as any}>
-                <b>{session.scores.overall.score ?? "–"}</b><small>out of 100</small>
+                <b>{session.scores.overall.score ?? "n/a"}</b><small>out of 100</small>
               </div>
               <dl>
                 <div><dt>Range reached</dt><dd>{pct(session.scores.accuracy_pct)}</dd></div>

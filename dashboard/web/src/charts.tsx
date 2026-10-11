@@ -140,7 +140,7 @@ export function Meter({ value, label }: { value: number | null; label: string })
   return (
     <div class="meter" role="img" aria-label={`${label}: ${value == null ? "not measured" : value + "%"}`}>
       <span class="meter-track"><i style={{ width: `${value ?? 0}%` }} /></span>
-      <b>{value == null ? "–" : `${value}%`}</b>
+      <b>{value == null ? "n/a" : `${value}%`}</b>
     </div>
   );
 }

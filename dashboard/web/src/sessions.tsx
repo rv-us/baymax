@@ -108,8 +108,8 @@ export function SessionList() {
                 </span>
               </span>
               <span data-label="Score" class="cell-score">{r.scores.overall.score != null ? <><b>{r.scores.overall.score}</b><small>of 100</small></> : <small>{r.kind === "recording" ? "not scored" : "no score"}</small>}</span>
-              <span data-label="Range reached">{r.kind === "recording" ? <small>–</small> : <Meter value={r.scores.accuracy_pct} label="Range reached" />}</span>
-              <span data-label="Reps" class="cell-reps">{r.kind === "recording" ? <small>–</small> : <><b>{r.scores.reps}</b> of {r.scores.target_reps}</>}</span>
+              <span data-label="Range reached">{r.kind === "recording" ? <small>n/a</small> : <Meter value={r.scores.accuracy_pct} label="Range reached" />}</span>
+              <span data-label="Reps" class="cell-reps">{r.kind === "recording" ? <small>n/a</small> : <><b>{r.scores.reps}</b> of {r.scores.target_reps}</>}</span>
               <span data-label="Length">{clock(r.duration_s)}</span>
               <button class="btn icon-only quiet row-action" aria-label={`Delete the session from ${when(r.started).date}, ${when(r.started).time}`}
                 onClick={async () => { if (await removeSession(r.id, `${when(r.started).date}, ${when(r.started).time}`)) load(); }}><Icon name="trash" size={18} /></button>
@@ -187,7 +187,7 @@ function Calories({ session }: { session: Session }) {
   }, [kg, session.id]);
   return (
     <p class="calories">
-      About <b>{kcal ?? "–"} kcal</b> of light exercise, estimated for a body weight of
+      About <b>{kcal ?? "n/a"} kcal</b> of light exercise, estimated for a body weight of
       <input type="number" min="20" max="250" value={kg} aria-label="Body weight in kilograms" onChange={(e) => setKg(Math.min(250, Math.max(20, +e.currentTarget.value || 70)))} /> kg.
       <small> Estimate only: effort level × weight × active time.</small>
     </p>
@@ -318,7 +318,7 @@ export function SessionDetail({ id }: { id: string }) {
                 <div class="chips">
                   {sets.map((s, i) => (
                     <button key={setKey(s, i)} class="chip" aria-pressed={i === pick} onClick={() => choose(i)}>
-                      {s.exercise}, set {s.set}{s.finished === false ? " (cut short)" : ""}<small>{s.scores.overall.score ?? "–"}</small>
+                      {s.exercise}, set {s.set}{s.finished === false ? " (cut short)" : ""}<small>{s.scores.overall.score ?? "n/a"}</small>
                     </button>
                   ))}
                 </div>
@@ -339,7 +339,7 @@ export function SessionDetail({ id }: { id: string }) {
               <ChartCard title="Range of motion per joint" unit="degrees" id="chart-accuracy_pct"
                 means="Longer bars mean the joint moved through more of its range. A shoulder bar well short of its target means the arms aren't being lifted as high as shown.">
                 {set.rom_by_joint.length ? <RomChart rows={set.rom_by_joint} /> : <Unmeasured what="Range per joint" why="It needs each side tracked on its own; this set only has one combined angle." />}
-                <p class="chart-facts">Range reached this set: <b>{set.scores.accuracy_pct ?? "–"}%</b> of the target. {FATIGUE[set.scores.fatigue.label]}{set.scores.fatigue.rom_change_pct != null && ` (range ${set.scores.fatigue.rom_change_pct > 0 ? "+" : ""}${set.scores.fatigue.rom_change_pct}% from first reps to last)`}.</p>
+                <p class="chart-facts">Range reached this set: <b>{set.scores.accuracy_pct == null ? "not measured" : `${set.scores.accuracy_pct}% of the target`}</b>. {FATIGUE[set.scores.fatigue.label]}{set.scores.fatigue.rom_change_pct != null && ` (range ${set.scores.fatigue.rom_change_pct > 0 ? "+" : ""}${set.scores.fatigue.rom_change_pct}% from first reps to last)`}.</p>
               </ChartCard>
 
               <ChartCard title="Reps: how many, and how good" unit="reps, whole session" id="chart-completion_pct"
@@ -374,9 +374,9 @@ export function SessionDetail({ id }: { id: string }) {
                       <thead><tr><th>Rep</th><th>Peak</th><th>Range</th><th>Of target</th><th>Time</th><th>Against demo</th><th>Smooth</th><th>Balance</th><th>Notes</th></tr></thead>
                       <tbody>
                         {set.reps_detail.map((r) => (
-                          <tr key={r.n}><td>{r.n}</td><td>{Math.round(r.peak_deg)}°</td><td>{Math.round(r.rom_deg)}°</td><td>{r.accuracy_pct ?? "–"}%</td>
-                            <td>{r.duration_s.toFixed(1)} s</td><td>{r.pace_ratio != null ? `${r.pace_ratio.toFixed(2)}×` : "–"}</td>
-                            <td>{r.smoothness_pct != null ? `${r.smoothness_pct}%` : "–"}</td><td>{r.symmetry_pct != null ? `${r.symmetry_pct}%` : "–"}</td>
+                          <tr key={r.n}><td>{r.n}</td><td>{Math.round(r.peak_deg)}°</td><td>{Math.round(r.rom_deg)}°</td><td>{r.accuracy_pct == null ? "n/a" : `${r.accuracy_pct}%`}</td>
+                            <td>{r.duration_s.toFixed(1)} s</td><td>{r.pace_ratio != null ? `${r.pace_ratio.toFixed(2)}×` : "n/a"}</td>
+                            <td>{r.smoothness_pct != null ? `${r.smoothness_pct}%` : "n/a"}</td><td>{r.symmetry_pct != null ? `${r.symmetry_pct}%` : "n/a"}</td>
                             <td>{r.misses.length ? r.misses.map(words).join(", ") : "on target"}</td></tr>
                         ))}
                       </tbody>

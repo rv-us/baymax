@@ -27,5 +27,5 @@ Pain words ("hurts," "ow," "stop," ...) are checked on everything the mic hears,
 | Stand-in | Replaced by |
 |---|---|
 | `classify_ready`, `classify_trouble`, `is_pain` (keyword rules) | LLM classifier, #10 |
-| `FakeTracker` (simulated reps) | Pose estimation, rep counting, mirroring, #11–#13 |
+| `FakeTracker` (simulated reps) | Pose estimation, rep counting, mirroring, #11 to #13 |
 | `TemplateCoach` | LLM coach, #15 |
