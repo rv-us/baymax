@@ -26,6 +26,7 @@ class Settings:
     ollama_url: str = field(default_factory=lambda: ollama_url(os.environ.get("OLLAMA_HOST")))
     model: str = field(default_factory=lambda: os.environ.get("BAYMAX_COACH_MODEL", DEFAULT_MODEL))
     coach_timeout_s: float = field(default_factory=lambda: float(os.environ.get("BAYMAX_COACH_TIMEOUT", "60")))
+    webcam: str | None = None       # "auto" or a camera number: the laptop webcam stands in for the robot camera
     stub_llm: bool = False          # dry-run without --ollama-url: a canned coach, labelled as such
     host: str = "127.0.0.1"
     port: int = 8080

@@ -19,6 +19,9 @@ def main():
     ap.add_argument("--robot-url", help="robot API base URL (default: BAYMAX_API_URL)")
     ap.add_argument("--ollama-url", help="Ollama base URL (default: OLLAMA_HOST, else localhost:11434)")
     ap.add_argument("--model", help="coach model (default: BAYMAX_COACH_MODEL, else qwen3.6:35b)")
+    ap.add_argument("--webcam", default=None, metavar="auto|N|off",
+                    help="use the laptop webcam as the robot camera and track the patient's arms with arm_mvp "
+                         "(default: auto in a dry run, off with a robot)")
     ap.add_argument("--host", default="127.0.0.1", help="0.0.0.0 to serve tablets and phones on the LAN")
     ap.add_argument("--port", type=int, default=8080)
     args = ap.parse_args()
@@ -38,6 +41,8 @@ def main():
         settings.ollama_url = ollama_url(args.ollama_url)
     if args.model:
         settings.model = args.model
+    choice = args.webcam or ("auto" if args.dry_run else "off")
+    settings.webcam = None if choice == "off" else choice
     settings.stub_llm = args.dry_run and not args.ollama_url
 
     if args.host not in ("127.0.0.1", "localhost"):

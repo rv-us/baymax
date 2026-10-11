@@ -197,12 +197,14 @@ function SessionRunner() {
             </div>
             <label class="check"><input type="checkbox" checked={simulate} onChange={(e) => setSimulate(e.currentTarget.checked)} />
               Simulate the patient's answers</label>
-            <label>Pace
+            {!status.value?.webcam && <label>Pace
               <select value={pace} onChange={(e) => setPace(+e.currentTarget.value)}>
                 <option value="1">Real time</option><option value="3">3× faster (demo)</option><option value="6">6× faster (demo)</option>
               </select>
-            </label>
-            <p class="note"><Icon name="alert" size={16} />Pose tracking isn't finished, so the patient's movement in a session is simulated. The log is marked synthetic.</p>
+            </label>}
+            {status.value?.webcam
+              ? <p class="note"><Icon name="camera" size={16} />The laptop webcam tracks the patient's arms, so the session runs in real time on real movement. Face the camera with your arms in view.</p>
+              : <p class="note"><Icon name="alert" size={16} />No webcam, so the patient's movement in a session is simulated. The log is marked synthetic.</p>}
             <button class="btn primary big" disabled={!!stopped || !draft.length} onClick={startDraft}>
               <Icon name="play" />Start session
             </button>
@@ -357,12 +359,16 @@ function DryRunPanel() {
       <div class="row">
         <button class="btn" onClick={() => attempt(() => api("POST", "/api/safety/heard", { text: "ow, my shoulder hurts" }))}>Patient says “ow, my shoulder hurts”</button>
         <button class="btn" onClick={() => attempt(() => api("POST", "/api/safety/report", { kind: "fall", detail: "Simulated from the dry-run panel." }))}>Report a fall</button>
-        <button class="btn toggle" aria-pressed={!l.frame.visible} onClick={() => frame({ visible: !l.frame.visible })}>Patient walks out of view</button>
+        {l.frame.simulated !== false && <button class="btn toggle" aria-pressed={!l.frame.visible} onClick={() => frame({ visible: !l.frame.visible })}>Patient walks out of view</button>}
       </div>
+      {l.frame.simulated === false
+        ? <p class="hint">The webcam is supplying where the patient stands, so these sliders are off. Step out of view to test a pause.</p>
+        : <>
       <label>Patient left to right in the camera frame
         <input type="range" min="-1" max="1" step="0.05" value={l.frame.x} onInput={(e) => frame({ x: +e.currentTarget.value })} /></label>
       <label>Patient distance (far to near)
         <input type="range" min="0.15" max="1" step="0.05" value={l.frame.size} onInput={(e) => frame({ size: +e.currentTarget.value })} /></label>
+      </>}
     </details>
   );
 }

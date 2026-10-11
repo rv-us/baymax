@@ -353,6 +353,62 @@ def test_the_robot_mirrors_every_rep_in_a_live_session(tmp_path, fake_robot):
     assert abs(ref[-1] - min(ref)) < 5      # and it ends back at rest
 
 
+class FakeCam:
+    """A webcam that sees a patient doing one 1 s rep after another."""
+    tracking = True
+    status = {"state": "ok", "detail": "Laptop webcam"}
+
+    def __init__(self):
+        self.t0, self.visible = time.time(), True
+
+    def pose(self):
+        import math
+        t = time.time() - self.t0
+        angle = 15 + 75 * (0.5 - 0.5 * math.cos(2 * math.pi * t))
+        return {"visible": self.visible, "x": 0.1, "size": 0.6, "t": time.time(), "arms": {},
+                "angles": {"shoulder_elevation": angle, "elbow": None}}
+
+    def jpeg(self, width=640, quality=70):
+        return b"WEBCAMJPEG"
+
+
+def test_the_webcam_is_the_camera_and_the_patients_position(tmp_path, fake_robot):
+    client, parts = make(tmp_path)
+    parts["gateway"].webcam = cam = FakeCam()
+    r = client.get("/api/camera.jpg")
+    assert r.status_code == 200 and r.content == b"WEBCAMJPEG"
+    parts["live"].apply_pose({**cam.pose(), "visible": False, "x": 0.7})
+    frame = parts["live"].state["frame"]
+    assert frame["visible"] is False and frame["x"] == 0.7 and frame["simulated"] is False
+    assert parts["live"].state["advice"] is None  # not visible: nothing to advise
+
+
+def test_a_session_follows_the_webcam_and_is_logged_as_real(tmp_path, fake_robot):
+    client, parts = make(tmp_path)
+    tiny_plan(tmp_path)
+    parts["gateway"].webcam = FakeCam()
+    ex = client.get("/api/plans").json()[0]["exercises"][0]
+    r = client.post("/api/live/start", json={"exercises": [{**ex, "reps": 3}], "simulate": True, "pace": 8})
+    assert r.status_code == 200 and r.json()["pace"] == 1.0 and r.json()["synthetic_tracker"] is False
+    assert wait_for(lambda: not parts["live"].running, 40)
+    last = parts["live"].state["last"]
+    assert last["status"] == "completed", parts["live"].state
+    s = client.get(f"/api/sessions/{last['id']}").json()
+    assert s["synthetic"] is False and s["source"] == "live-webcam"
+    assert s["sets"][0]["reps"] == 3 and "joints" not in s["sets"][0]["trace"]
+
+
+def test_a_joint_the_webcam_cannot_read_falls_back_and_says_so(tmp_path, fake_robot):
+    client, parts = make(tmp_path)
+    tiny_plan(tmp_path)
+    parts["gateway"].webcam = FakeCam()
+    ex = client.get("/api/plans").json()[0]["exercises"][0]
+    client.post("/api/live/start", json={"exercises": [{**ex, "track_joint": "knee", "targets": {}, "reps": 2}], "pace": 8, "seed": 1})
+    assert wait_for(lambda: not parts["live"].running, 40)
+    s = client.get(f"/api/sessions/{parts['live'].state['last']['id']}").json()
+    assert s["synthetic"] is True
+
+
 def test_pain_during_a_live_session_stops_flags_and_latches(tmp_path, fake_robot):
     client, parts = make(tmp_path)
     tiny_plan(tmp_path)

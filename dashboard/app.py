@@ -69,12 +69,21 @@ def create_app(settings: Settings | None = None, backend=None) -> FastAPI:
     player = Player(gateway, twin.state, hub)
     live = Live(settings, gateway, safety, sessions, hub)
     recorder = Recorder(settings, gateway, hub, animations, sessions)
+    webcam = None
+    if settings.webcam:  # a dry run's camera: the laptop's own, with arm tracking, if it can be opened
+        from .webcam import Webcam
+
+        webcam = Webcam(settings.webcam, on_pose=live.apply_pose)
+        if webcam.start():
+            gateway.webcam = webcam
+        else:
+            print(f"webcam: {webcam.status['detail']} Using the fake frame instead.")
     safety.on_trip.append(lambda kind, entry: player.stop())
     safety.on_trip.append(lambda kind, entry: recorder.stop())
     app.state.parts = dict(settings=settings, hub=hub, gateway=gateway, safety=safety, sessions=sessions,
                            animations=animations, plans=plans, coach=coach, monitor=monitor,
                            twin=twin, player=player, live=live, tunnel=tunnel, profiles=profiles,
-                           recorder=recorder, chat=chat, generator=generator)
+                           recorder=recorder, chat=chat, generator=generator, webcam=gateway.webcam)
 
     def calibration_state() -> dict:
         active = gateway.limiter.profile

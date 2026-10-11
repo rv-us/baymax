@@ -5,6 +5,7 @@ export type LinkState = "ok" | "down" | "unknown" | "stub";
 export interface Link { state: LinkState; detail: string; latency_ms?: number | null; model?: string }
 export interface Status {
   dry_run: boolean;
+  webcam?: boolean;
   links: { robot: Link; camera: Link; llm: Link };
   health: null | {
     battery_v: number | null; battery_pct: number | null; needs_charge: boolean | null;
@@ -15,7 +16,7 @@ export interface Status {
 }
 export interface SafetyStop { kind: "pain" | "fall"; title: string; detail: string; transcript: string | null; t: number; stop_errors: string[] }
 export interface Safety { stop: SafetyStop | null; alerts: { kind: string; detail: string; t: number }[] }
-export interface Frame { visible: boolean; x: number; size: number }
+export interface Frame { visible: boolean; x: number; size: number; simulated?: boolean }
 export interface Live {
   running: boolean; state?: string | null; plan?: string | null; simulate?: boolean; pace?: number;
   exercise?: { name: string; cue: string; index: number; count: number };

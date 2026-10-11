@@ -29,7 +29,7 @@ export function CameraPanel({ compact = false }: { compact?: boolean }) {
 
   const s = status.value;
   const f = live.value.frame;
-  const fake = s?.dry_run;
+  const fake = s?.dry_run && !s?.webcam;
   return (
     <section class={`screen camera ${compact ? "compact" : ""}`} aria-label="Robot camera">
       <div class="screen-body">
@@ -50,6 +50,7 @@ export function CameraPanel({ compact = false }: { compact?: boolean }) {
       <header class="screen-head">
         <span class="screen-title">Camera</span>
         {fake && <span class="tag on-screen">Fake frame</span>}
+        {s?.webcam && <span class="tag on-screen">Laptop webcam</span>}
       </header>
       <footer class="screen-foot">
         {!f.visible

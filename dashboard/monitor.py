@@ -57,7 +57,8 @@ class Monitor:
 
     def camera_ok(self, size: int) -> None:
         self.camera = {"state": "ok", "last_frame": time.time(),
-                       "detail": "Fake frame (dry run)" if self.settings.dry_run else f"{size // 1024} kB frames"}
+                       "detail": ("Laptop webcam" if self.gateway.webcam is not None else "Fake frame (dry run)")
+                       if self.settings.dry_run else f"{size // 1024} kB frames"}
 
     def camera_failed(self, message: str) -> None:
         self.camera = {"state": "down", "detail": message, "last_frame": self.camera.get("last_frame")}
@@ -83,6 +84,7 @@ class Monitor:
         h = self.health or {}
         return {
             "dry_run": self.settings.dry_run,
+            "webcam": self.gateway.webcam is not None,
             "links": {"robot": self.robot, "camera": self.camera, "llm": self.llm},
             "health": {"battery_v": h.get("battery_v"), "battery_pct": h.get("approx_pct"),
                        "needs_charge": h.get("needs_charge"), "hottest": h.get("hottest"),

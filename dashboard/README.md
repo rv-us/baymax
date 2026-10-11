@@ -8,6 +8,9 @@ pip install -r dashboard/requirements.txt
 python -m dashboard --dry-run                               # no robot, GX10 or camera needed
 BAYMAX_API_TOKEN=secret python -m dashboard --robot-url http://<robot>:8000 --ollama-url http://<gx10>:11434
 python -m dashboard --dry-run --host 0.0.0.0                # also reachable from other machines on the LAN
+python -m dashboard --dry-run --webcam off                    # keep the fake camera frame (--webcam 1 picks another camera)
+
+In a dry run the laptop's webcam is used as the robot camera when one can be opened (`--webcam auto`, the default with `--dry-run`; needs `opencv-python` and `mediapipe`). `arm_mvp`'s estimator tracks the patient's arms on every frame: the camera panel shows the skeleton, the patient-in-frame state comes from it, and a live session mirrors a real patient in real time (the log is marked `source: live-webcam`, not synthetic). Exercises that track a joint it can't read (knee, trunk) fall back to the simulated patient and the log says so. Frames are not sent to the GX10 yet.
 ```
 
 Open http://127.0.0.1:8080. The built web app is committed (`web/dist`), so running needs no node and no internet.

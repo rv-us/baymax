@@ -133,21 +133,31 @@ class SimTracker:
                 log.debug("mirror move skipped: %s", e)
         return sent
 
-    def run_set(self, exercise, post_event, cancelled, reps_done: int = 0) -> SetResult:
+    def _begin_set(self, exercise, reps_done: int):
+        """What a set is scored against, when it began, and the samples so far (a set that
+        resumes after a pause continues the same trace, with a gap of no-pose frames)."""
         live = self.live
         target = {"tolerance": 15.0, **set_target(exercise)}
-        if reps_done and self.carry:  # back after a pause: the gap is frames with no pose
+        if reps_done and self.carry:
             gap = int(min(60.0, (time.time() - self.paused_at) * live.pace) * synthetic.HZ)
             self.carry += [None] * gap
             self.carry_ref += [self.carry_ref[-1] if self.carry_ref else 0.0] * gap
         else:
             self.carry, self.carry_ref = [], []
             self.sets_run, self.set_started = self.sets_run + 1, time.time()
-        started = self.set_started
+        return target, self.set_started, list(self.carry)
+
+    def run_set(self, exercise, post_event, cancelled, reps_done: int = 0) -> SetResult:
+        target, started, done = self._begin_set(exercise, reps_done)
         todo = synthetic.patient_trace(self.rng, target, exercise.reps - reps_done, self.profile,
                                        rep_offset=reps_done + (self.sets_run - 1) * exercise.reps)
-        done = list(self.carry)
-        # The robot mirrors the exercise a quarter-rep ahead of the patient, never further.
+        return self._mirror(exercise, post_event, cancelled, reps_done, target, started, done, iter(todo))
+
+    def _mirror(self, exercise, post_event, cancelled, reps_done, target, started, done, angles,
+                joints: bool = True) -> SetResult:
+        """Follow the patient's tracked angle sample by sample (`angles` blocks or not as its
+        source dictates) while the robot mirrors the exercise a quarter-rep ahead of them."""
+        live = self.live
         est = pacing.ProgressEstimator(target, start=reps_done)
         leader = pacing.PaceLeader(target["tempo_s"], exercise.reps, start=reps_done)
         frames = preview.demo_frames(exercise.demo) if exercise.mirror == "arms" else []
@@ -155,7 +165,7 @@ class SimTracker:
         ref = list(self.carry_ref)
         sent: dict = {}
         finished = True
-        for i, angle in enumerate(todo):
+        for i, angle in enumerate(angles):
             if not live.frame["visible"]:
                 post_event("left_frame")
             if cancelled():
@@ -175,12 +185,46 @@ class SimTracker:
         if finished:
             self._move_robot(frames, 0, sent)  # back to the start pose
         self.carry, self.carry_ref, self.paused_at = (done, ref, time.time()) if not finished else ([], [], 0.0)
-        ref_all = ref
-        trace = {"hz": synthetic.HZ, "patient": done, "reference": ref_all[:len(done)],
-                 "joints": synthetic.joint_traces(done, target)}
+        trace = {"hz": synthetic.HZ, "patient": done, "reference": ref[:len(done)]}
+        if joints:
+            trace["joints"] = synthetic.joint_traces(done, target)
         reps = len(reps_from_trace(trace, target))
         return SetResult(reps, exercise.reps, [], len(done) / synthetic.HZ, finished=finished,
                          started=started, trace=trace)
+
+
+class WebcamTracker(SimTracker):
+    """The same loop, with the patient's joint angle read from the webcam's arm tracking
+    (arm_mvp) instead of a synthetic patient. A joint the tracker can't read (knees, trunk)
+    falls back to the simulated patient for that exercise, and the log says so."""
+
+    TRACKED = ("shoulder_elevation", "elbow")
+    STALE_S = 1.0
+
+    def __init__(self, live, seed: int):
+        super().__init__(live, seed)
+        self.cam = live.gateway.webcam
+        self.synthetic = False
+
+    def patient_visible(self) -> bool:
+        return self.live.frame["visible"]
+
+    def run_set(self, exercise, post_event, cancelled, reps_done: int = 0) -> SetResult:
+        if exercise.track_joint not in self.TRACKED:
+            self.synthetic = True
+            return super().run_set(exercise, post_event, cancelled, reps_done)
+        target, started, done = self._begin_set(exercise, reps_done)
+        limit = time.time() + exercise.reps * target["tempo_s"] * 2.5 + 20  # a patient who can't finish
+
+        def angles():
+            while time.time() < limit:
+                pose = self.cam.pose()
+                fresh = time.time() - pose["t"] < self.STALE_S and pose["visible"]
+                yield pose["angles"].get(exercise.track_joint) if fresh else None
+                if len(reps_from_trace({"hz": synthetic.HZ, "patient": done}, target)) >= exercise.reps:
+                    return
+
+        return self._mirror(exercise, post_event, cancelled, reps_done, target, started, done, angles(), joints=False)
 
 
 class Live:
@@ -249,14 +293,17 @@ class Live:
             self.simulate, self.pace = bool(simulate), max(0.25, min(8.0, float(pace)))
             self.ears = Ears(self)
             self.frame.update(visible=True, x=0.0, size=0.6)
-            tracker = SimTracker(self, seed if seed is not None else int(time.time()))
+            use_cam = self.gateway.webcam is not None and self.gateway.webcam.tracking
+            tracker = (WebcamTracker if use_cam else SimTracker)(self, seed if seed is not None else int(time.time()))
+            if use_cam:
+                self.pace = 1.0  # a real patient moves in real time
             loop_settings = LoopSettings(ready_wait_s=8, answer_timeout_s=30, pause_timeout_s=30,
                                          sessions_dir=self.settings.sessions_dir)
             self.workout = Workout(plan, Robot(TapBackend(self)), self.ears, tracker, TemplateCoach(),
                                    loop_settings, sleep=self.sleep)
             self.state = {"running": True, "plan": plan.name, "plan_id": plan_name, "simulate": self.simulate,
                           "pace": self.pace, "frame": self.frame, "advice": None, "reps": 0,
-                          "synthetic_tracker": True, "last": None, "error": None}
+                          "synthetic_tracker": not use_cam, "last": None, "error": None}
             self.update()
             self._thread = threading.Thread(target=self._run, name="dashboard-live", daemon=True)
             self._thread.start()
@@ -273,10 +320,11 @@ class Live:
         path = getattr(w, "saved_path", None)
         if path:
             sid = path.replace("\\", "/").rsplit("/", 1)[-1][:-5]
-            try:  # the tracker was simulated, so say so in the log
+            try:  # a simulated patient is marked as such in the log; the webcam's is real data
                 with open(path, encoding="utf-8") as f:
                     data = json.load(f)
-                data.update(synthetic=True, source="live-simulated-tracker")
+                fake = getattr(w.tracker, "synthetic", True)
+                data.update(synthetic=fake, source="live-simulated-tracker" if fake else "live-webcam")
                 self.sessions.save(sid, data)
             except (OSError, ValueError):
                 pass
@@ -324,6 +372,20 @@ class Live:
                           "The camera can't see the patient.")
         self.update(frame=dict(self.frame), advice=frame_advice(self.frame))
         return self.frame
+
+    def apply_pose(self, pose: dict) -> None:
+        """Where the webcam sees the patient (called about 5 times a second). Same state the
+        dry-run sliders set, so the camera panel, the advice and the pause-on-walk-out work as
+        they will with the robot's own camera."""
+        new = {"visible": bool(pose["visible"]), "x": round(pose["x"], 2), "size": round(pose["size"], 2)}
+        first = self.frame.get("simulated", True)
+        if first or any(self.frame.get(k) != v for k, v in new.items()):
+            self.frame["simulated"] = False
+            if self.running:
+                self.set_frame(**new)
+            else:
+                self.frame.update(new)
+                self.update(frame=dict(self.frame), advice=frame_advice(self.frame))
 
     def reposition(self, kind: str, steps: int = 1) -> dict:
         if kind not in REPOSITION:
